@@ -129,6 +129,19 @@
     #closeBtn:hover {
       color: red;
     }
+
+    /* Checkbox */
+    #dontShowLabel {
+      display: block;
+      margin-top: 20px;
+      font-size: 16px;
+      color: #0ff;
+      cursor: pointer;
+    }
+
+    #dontShowLabel input {
+      margin-right: 8px;
+    }
   </style>
 </head>
 <body>
@@ -159,6 +172,10 @@
         <div class="price">$12</div>
         <div class="desc">Full admin power: ban users <b>forever</b>.</div>
       </div>
+
+      <label id="dontShowLabel">
+        <input type="checkbox" id="dontShowCheckbox"> Don't show this again
+      </label>
     </div>
   </div>
 
@@ -169,8 +186,22 @@
     let snowRunning = true;
 
     function closePopup() {
+      const dontShow = document.getElementById("dontShowCheckbox").checked;
+      if(dontShow) {
+        localStorage.setItem("hideAdminPopup", "true");
+      }
       document.getElementById("popup").style.display = "none";
+
       // stop snow
+      snowRunning = false;
+      const canvas = document.getElementById("snowCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Check localStorage to skip popup
+    if(localStorage.getItem("hideAdminPopup") === "true") {
+      document.getElementById("popup").style.display = "none";
       snowRunning = false;
       const canvas = document.getElementById("snowCanvas");
       const ctx = canvas.getContext("2d");
