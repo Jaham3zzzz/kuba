@@ -422,197 +422,209 @@
     </div>
 
     <div class="game-container">
-        <iframe id="gameFrame" src="" allowfullscreen allow="fullscreen *"></iframe>
-    </div>
-
-    <div class="popup" id="banPopup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closeBanPopup()">&times;</span>
-            <h2>Ban/Unban a Player</h2>
-            <input type="text" id="banNumber" placeholder="Enter player's number" maxlength="6">
-            <button id="banBtn" onclick="banPlayer()">Ban Player</button>
-            <button id="unbanBtn" onclick="unbanPlayer()">Unban Player</button>
-            <button id="viewBannedBtn" onclick="viewBannedIds()">View Banned IDs</button>
-            <p id="banMessage"></p>
-            <div id="bannedIdsList"></div>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
-            authDomain: "stuff-8cfdc.firebaseapp.com",
-            projectId: "stuff-8cfdc",
-            storageBucket: "stuff-8cfdc.appspot.com",
-            messagingSenderId: "327097823566",
-            appId: "1:327097823566:web:a32cf5fd0ce8770fabee1f",
-            measurementId: "G-Y9ELB5DFWR"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        let isAdmin = false;
-
-        let userNumber = localStorage.getItem('userNumber');
-        if (!userNumber) {
-            userNumber = Math.floor(Math.random() * 900000) + 100000;
-            localStorage.setItem('userNumber', userNumber);
-        }
-        document.getElementById('userNumber').textContent = `Your ID: ${userNumber}`;
-
-        document.getElementById('adminLogin').addEventListener('click', async function(e) {
-            e.stopPropagation();
-            try {
-                await auth.signOut();
-                const email = prompt("Enter admin email:");
-                if (!email) return;
-                const password = prompt("Enter admin password:");
-                if (!password) return;
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                if (userCredential.user) {
-                    isAdmin = true;
-                    alert("Admin login successful!");
-                    document.getElementById('banPopup').style.display = 'block';
-                }
-            } catch (error) {
-                alert("Admin login failed: " + error.message);
-            }
-        });
-
-        auth.onAuthStateChanged((user) => {
-            isAdmin = !!user;
-        });
-
-        async function banPlayer() {
-            if (!isAdmin) return alert("You must be an admin.");
-            const input = document.getElementById('banNumber').value.trim();
-            const msg = document.getElementById('banMessage');
-            if (!/^\d{6}$/.test(input)) return msg.textContent = "Invalid 6-digit number";
-            if (input === "462521") return msg.textContent = "Cannot ban the owner!";
-            const doc = await db.collection('bans').doc(input).get();
-            if (doc.exists) {
-                msg.textContent = `User ${input} is already banned!`;
-            } else {
-                await db.collection('bans').doc(input).set({ id: input, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                msg.textContent = `User ${input} banned globally!`;
-            }
-        }
-
-        async function unbanPlayer() {
-            if (!isAdmin) return alert("You must be an admin.");
-            const input = document.getElementById('banNumber').value.trim();
-            if (!/^\d{6}$/.test(input)) return document.getElementById('banMessage').textContent = "Invalid 6-digit number";
-            await db.collection('bans').doc(input).delete();
-            document.getElementById('banMessage').textContent = `User ${input} unbanned!`;
-        }
-
-        async function viewBannedIds() {
-            const snapshot = await db.collection('bans').get();
-            const bannedNumbers = snapshot.docs.map(doc => doc.id);
-            const list = document.getElementById('bannedIdsList');
-            list.innerHTML = bannedNumbers.length ? `<ul>${bannedNumbers.map(id => `<li>${id}</li>`).join('')}</ul>` : "No banned IDs";
-            list.style.display = 'block';
-        }
-
-        async function checkBan() {
-            const userNumber = localStorage.getItem('userNumber');
-            const doc = await db.collection('bans').doc(userNumber).get();
-            if (doc.exists) {
-                document.body.innerHTML = `<h1 style="color: red">GLOBAL BAN - CONTACT ADMIN</h1>`;
-                throw new Error("Globally banned");
-            }
-        }
-
-        checkBan();
-
-        function closeBanPopup() {
-            document.getElementById('banPopup').style.display = 'none';
-            document.getElementById('bannedIdsList').style.display = 'none';
-        }
-
-        function openGameInNewTab(url) {
-            window.open(url, '_blank');
-        }
-
-        function embedGame(url) {
-            const iframe = document.getElementById('gameFrame');
-            iframe.src = url;
-            document.querySelector('.game-container').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-// Add functionality for menu button
-document.getElementById('menuButton').addEventListener('click', function() {
-    window.location.reload(); // This will reload the current page
-});
-    </script>
-
-
-<!--Favicoin here -->
-<script>
-  const icons = [
-    'https://media.tenor.com/I7km_-daD90AAAAC/moon-anime.gif',
-    'https://th.bing.com/th/id/OIP.hDIk9e-kCjGuqS1IOCqRKQHaEK?cb=iwp2&rs=1&pid=ImgDetMain',
-    'https://i.pinimg.com/originals/ff/2e/29/ff2e29081cfdbcd21b534aeb37df76b9.jpg'
-  ];
-  let i = 0;
-
-  function changeFavicon() {
-    const head = document.head;
-    const oldLink = document.getElementById('favicon');
-    if (oldLink) head.removeChild(oldLink);
-
-    const link = document.createElement('link');
-    link.id = 'favicon';
-    link.rel = 'icon';
-    link.href = icons[i];
-    head.appendChild(link);
-
-    i = (i + 1) % icons.length;
-  }
-
-  setInterval(changeFavicon, 500);
-</script>
-<div id="activeUsersDisplay">
-  Active Users: <span id="activeUsersCount">0</span>
+    <iframe id="gameFrame" src="" allowfullscreen allow="fullscreen *"></iframe>
 </div>
+
+<div class="popup" id="banPopup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closeBanPopup()">&times;</span>
+        <h2>Ban/Unban a Player</h2>
+        <input type="text" id="banNumber" placeholder="Enter player's number" maxlength="6">
+        <button id="banBtn" onclick="banPlayer()">Ban Player</button>
+        <button id="unbanBtn" onclick="unbanPlayer()">Unban Player</button>
+        <button id="viewBannedBtn" onclick="viewBannedIds()">View Banned IDs</button>
+        <p id="banMessage"></p>
+        <div id="bannedIdsList"></div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
+        authDomain: "stuff-8cfdc.firebaseapp.com",
+        projectId: "stuff-8cfdc",
+        storageBucket: "stuff-8cfdc.appspot.com",
+        messagingSenderId: "327097823566",
+        appId: "1:327097823566:web:a32cf5fd0ce8770fabee1f",
+        measurementId: "G-Y9ELB5DFWR"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    let isAdmin = false;
+
+    let userNumber = localStorage.getItem('userNumber');
+    if (!userNumber) {
+        userNumber = Math.floor(Math.random() * 900000) + 100000;
+        localStorage.setItem('userNumber', userNumber);
+    }
+    document.getElementById('userNumber').textContent = `Your ID: ${userNumber}`;
+
+    document.getElementById('adminLogin').addEventListener('click', async function(e) {
+        e.stopPropagation();
+        try {
+            await auth.signOut();
+            const email = prompt("Enter admin email:");
+            if (!email) return;
+            const password = prompt("Enter admin password:");
+            if (!password) return;
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            if (userCredential.user) {
+                isAdmin = true;
+                alert("Admin login successful!");
+                document.getElementById('banPopup').style.display = 'block';
+            }
+        } catch (error) {
+            alert("Admin login failed: " + error.message);
+        }
+    });
+
+    auth.onAuthStateChanged((user) => {
+        isAdmin = !!user;
+    });
+
+    async function banPlayer() {
+        if (!isAdmin) return alert("You must be an admin.");
+        const input = document.getElementById('banNumber').value.trim();
+        const msg = document.getElementById('banMessage');
+        if (!/^\d{6}$/.test(input)) return msg.textContent = "Invalid 6-digit number";
+        if (input === "462521") return msg.textContent = "Cannot ban the owner!";
+        const doc = await db.collection('bans').doc(input).get();
+        if (doc.exists) {
+            msg.textContent = `User ${input} is already banned!`;
+        } else {
+            await db.collection('bans').doc(input).set({ id: input, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            msg.textContent = `User ${input} banned globally!`;
+        }
+    }
+
+    async function unbanPlayer() {
+        if (!isAdmin) return alert("You must be an admin.");
+        const input = document.getElementById('banNumber').value.trim();
+        if (!/^\d{6}$/.test(input)) return document.getElementById('banMessage').textContent = "Invalid 6-digit number";
+        await db.collection('bans').doc(input).delete();
+        document.getElementById('banMessage').textContent = `User ${input} unbanned!`;
+    }
+
+    async function viewBannedIds() {
+        const snapshot = await db.collection('bans').get();
+        const bannedNumbers = snapshot.docs.map(doc => doc.id);
+        const list = document.getElementById('bannedIdsList');
+        list.innerHTML = bannedNumbers.length ? `<ul>${bannedNumbers.map(id => `<li>${id}</li>`).join('')}</ul>` : "No banned IDs";
+        list.style.display = 'block';
+    }
+
+    async function checkBan() {
+        const userNumber = localStorage.getItem('userNumber');
+        const doc = await db.collection('bans').doc(userNumber).get();
+        if (doc.exists) {
+            document.body.innerHTML = `<h1 style="color: red">GLOBAL BAN - CONTACT ADMIN</h1>`;
+            throw new Error("Globally banned");
+        }
+    }
+
+    checkBan();
+
+    function closeBanPopup() {
+        document.getElementById('banPopup').style.display = 'none';
+        document.getElementById('bannedIdsList').style.display = 'none';
+    }
+
+    function openGameInNewTab(url) {
+        window.open(url, '_blank');
+    }
+
+    function embedGame(url) {
+        const iframe = document.getElementById('gameFrame');
+        iframe.src = url;
+        document.querySelector('.game-container').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Add functionality for menu button
+    document.getElementById('menuButton').addEventListener('click', function() {
+        window.location.reload(); // This will reload the current page
+    });
+</script>
+
+<!-- Favicoin here -->
+<script>
+    const icons = [
+        'https://media.tenor.com/I7km_-daD90AAAAC/moon-anime.gif',
+        'https://th.bing.com/th/id/OIP.hDIk9e-kCjGuqS1IOCqRKQHaEK?cb=iwp2&rs=1&pid=ImgDetMain',
+        'https://i.pinimg.com/originals/ff/2e/29/ff2e29081cfdbcd21b534aeb37df76b9.jpg'
+    ];
+    let i = 0;
+
+    function changeFavicon() {
+        const head = document.head;
+        const oldLink = document.getElementById('favicon');
+        if (oldLink) head.removeChild(oldLink);
+
+        const link = document.createElement('link');
+        link.id = 'favicon';
+        link.rel = 'icon';
+        link.href = icons[i];
+        head.appendChild(link);
+
+        i = (i + 1) % icons.length;
+    }
+
+    setInterval(changeFavicon, 500);
+</script>
+
+<div id="activeUsersDisplay">
+    Active Users: <span id="activeUsersCount">0</span>
+</div>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getDatabase, ref, set, onDisconnect, onValue, child } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBrK-Qs8tEEwXYujZyBOv97zW2tNQX5puU",
-    authDomain: "thing-6e6bb.firebaseapp.com",
-    databaseURL: "https://thing-6e6bb-default-rtdb.firebaseio.com",
-    projectId: "thing-6e6bb",
-    storageBucket: "thing-6e6bb.firebasestorage.app",
-    messagingSenderId: "1075284275539",
-    appId: "1:1075284275539:web:960c1bc5c2525f6db2f1a6",
-    measurementId: "G-FFH4ED09KP"
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
+        authDomain: "stuff-8cfdc.firebaseapp.com",
+        databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
+        projectId: "stuff-8cfdc",
+        storageBucket: "stuff-8cfdc.firebasestorage.app",
+        messagingSenderId: "327097823566",
+        appId: "1:327097823566:web:3442b4f46dbd2731abee1f",
+        measurementId: "G-YT9DVJ7RF7"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-  const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-  const onlineUsersRef = ref(db, 'onlineUsers');
-  const userRef = child(onlineUsersRef, userId);
+    // Use existing userNumber from localStorage or generate a unique ID string if missing
+    let userNumber = localStorage.getItem('userNumber');
+    if (!userNumber) {
+        userNumber = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('userNumber', userNumber);
+    }
 
-  set(userRef, true).catch(err => console.error('Set error:', err));
-  onDisconnect(userRef).remove();
+    const userRef = ref(database, 'onlineUsers/' + userNumber);
 
-  onValue(onlineUsersRef, (snapshot) => {
-    const users = snapshot.val() || {};
-    const count = Object.keys(users).length;
-    const el = document.getElementById('activeUsersCount');
-    if (el) el.textContent = count;
-  }, (error) => {
-    console.error('Value error:', error);
-  });
-</script><script></script>
+    // Mark user as online
+    set(userRef, true).catch(console.error);
+
+    // Remove user on disconnect
+    onDisconnect(userRef).remove();
+
+    // Update active users count display
+    const onlineUsersRef = ref(database, 'onlineUsers');
+    onValue(onlineUsersRef, (snapshot) => {
+        const users = snapshot.val() || {};
+        const count = Object.keys(users).length;
+        const el = document.getElementById('activeUsersCount');
+        if (el) el.textContent = count;
+    }, (error) => {
+        console.error(error);
+    });
+</script>
+
 
 </body>
 </html>
