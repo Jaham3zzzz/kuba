@@ -56,12 +56,14 @@
 
     #popupContent {
       background: #111;
-      padding: 40px;
-      border-radius: 16px;
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
-      width: 650px;
-      max-width: 95%;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
       position: relative;
       animation: scaleUp 0.5s ease-in-out;
     }
@@ -75,7 +77,7 @@
       margin-bottom: 0;
       color: cyan;
       text-shadow: 0 0 20px cyan, 0 0 40px cyan;
-      font-size: 36px;
+      font-size: 28px;
       animation: glow 1.5s infinite alternate;
     }
 
@@ -115,7 +117,7 @@
     .tier h3 {
       margin: 0;
       color: white;
-      font-size: 22px;
+      font-size: 20px;
     }
 
     .price {
@@ -131,12 +133,13 @@
 
     /* Close button */
     #closeBtn {
-      position: absolute;
-      top: 50px; /* lowered */
-      right: 20px;
-      font-size: 24px;
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      font-size: 26px;
       color: white;
       cursor: pointer;
+      z-index: 10000;
       transition: color 0.2s;
     }
 
@@ -147,7 +150,7 @@
     /* Checkbox */
     #dontShowLabel {
       display: block;
-      margin-top: 10px; /* moved higher */
+      margin-top: 10px;
       font-size: 16px;
       color: #0ff;
       cursor: pointer;
@@ -165,7 +168,6 @@
   <!-- Popup -->
   <div id="popup">
     <div id="popupContent">
-      <span id="closeBtn" onclick="closePopup()">✖</span>
       <h2>UPDATE!!!</h2>
       <p class="subtitle">Kuba 3.0 coming soon</p>
       <p class="cashNote">Send payment to <b>CashApp: $jaham3zzzz</b></p>
@@ -203,6 +205,7 @@
         <input type="checkbox" id="dontShowCheckbox"> Don't show this again
       </label>
     </div>
+    <span id="closeBtn" onclick="closePopup()">✖</span>
   </div>
 
   <!-- Game iframe -->
@@ -236,7 +239,6 @@
         localStorage.setItem("hideAdminPopup", "true");
       }
       document.getElementById("popup").style.display = "none";
-
       snowRunning = false;
       const canvas = document.getElementById("snowCanvas");
       const ctx = canvas.getContext("2d");
