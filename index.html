@@ -71,7 +71,7 @@
     }
 
     #popup h2 {
-      margin-bottom: 10px;
+      margin-bottom: 0;
       color: cyan;
       text-shadow: 0 0 20px cyan, 0 0 40px cyan;
       font-size: 36px;
@@ -81,6 +81,13 @@
     @keyframes glow {
       from { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
       to { text-shadow: 0 0 20px cyan, 0 0 40px cyan; }
+    }
+
+    #popup p.subtitle {
+      color: #0ff;
+      font-size: 16px;
+      margin-top: 4px;
+      margin-bottom: 20px;
     }
 
     #popup p.cashNote {
@@ -159,6 +166,7 @@
     <div id="popupContent">
       <span id="closeBtn" onclick="closePopup()">✖</span>
       <h2>UPDATE!!!</h2>
+      <p class="subtitle">Kuba 3.0 coming soon</p>
       <p class="cashNote">Send payment to <b>CashApp: $jaham3zzzz</b></p>
 
       <div class="tier">
