@@ -131,7 +131,7 @@
     /* Close button */
     #closeBtn {
       position: absolute;
-      top: 15px;
+      top: 50px; /* lowered */
       right: 20px;
       font-size: 24px;
       color: white;
@@ -146,7 +146,7 @@
     /* Checkbox */
     #dontShowLabel {
       display: block;
-      margin-top: 20px;
+      margin-top: 10px; /* moved higher */
       font-size: 16px;
       color: #0ff;
       cursor: pointer;
@@ -168,29 +168,36 @@
       <h2>UPDATE!!!</h2>
       <p class="subtitle">Kuba 3.0 coming soon</p>
       <p class="cashNote">Send payment to <b>CashApp: $jaham3zzzz</b></p>
-  <div class="tier">
-  <h3>Request Game</h3>
-  <div class="price">$1</div>
-  <div class="desc">Get the game you want. If I can’t provide it, you get a refund.(yes even Golf Orbit)</div>
-</div>
+
+      <!-- Request Game $1 -->
+      <div class="tier">
+        <h3>Request Game</h3>
+        <div class="price">$1</div>
+        <div class="desc">Get the game you want — yes, even Golf Orbit. If I can’t provide it, you get a refund.</div>
+      </div>
+
+      <!-- Tier 1 -->
       <div class="tier">
         <h3>Tier 1 - Pre Admin</h3>
         <div class="price">$2</div>
         <div class="desc">You can request bans but need approval.</div>
       </div>
 
+      <!-- Tier 2 -->
       <div class="tier">
         <h3>Tier 2 - Temp Ban</h3>
         <div class="price">$6</div>
         <div class="desc">You can ban someone for up to <b>2 days (unlocks admin login)</b>.</div>
       </div>
 
+      <!-- Tier 3 -->
       <div class="tier">
         <h3>Tier 3 - Lifetime Ban</h3>
         <div class="price">$12</div>
         <div class="desc">Full admin power: ban users <b>forever (unlocks admin login)</b>.</div>
       </div>
 
+      <!-- Don't show again -->
       <label id="dontShowLabel">
         <input type="checkbox" id="dontShowCheckbox"> Don't show this again
       </label>
@@ -217,7 +224,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Check localStorage to skip popup
+    // Skip popup if previously checked
     if(localStorage.getItem("hideAdminPopup") === "true") {
       document.getElementById("popup").style.display = "none";
       snowRunning = false;
