@@ -73,8 +73,14 @@
     #popup h2 {
       margin-bottom: 10px;
       color: cyan;
-      text-shadow: 0 0 15px cyan;
-      font-size: 30px;
+      text-shadow: 0 0 20px cyan, 0 0 40px cyan;
+      font-size: 36px;
+      animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
+      to { text-shadow: 0 0 20px cyan, 0 0 40px cyan; }
     }
 
     #popup p.cashNote {
@@ -152,7 +158,7 @@
   <div id="popup">
     <div id="popupContent">
       <span id="closeBtn" onclick="closePopup()">✖</span>
-      <h2>Buy Admin Tier</h2>
+      <h2>UPDATE!!!</h2>
       <p class="cashNote">Send payment to <b>CashApp: $jaham3zzzz</b></p>
 
       <div class="tier">
