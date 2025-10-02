@@ -19,7 +19,7 @@
       border: none;
     }
 
-    /* Popup styles */
+    /* Popup overlay */
     #popup {
       position: fixed;
       top: 0;
@@ -35,44 +35,70 @@
 
     #popupContent {
       background: white;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      width: 320px;
     }
 
-    #popup button {
-      margin-top: 15px;
-      padding: 10px 20px;
+    #popup h2 {
+      margin-bottom: 20px;
+    }
+
+    .tierButton {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
       border: none;
-      border-radius: 6px;
-      background: #0078ff;
-      color: white;
+      border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
+      background: #0078ff;
+      color: white;
+      transition: background 0.2s;
     }
 
-    #popup button:hover {
+    .tierButton:hover {
       background: #005fcc;
+    }
+
+    #selectedTier {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <!-- The popup -->
+  <!-- Popup -->
   <div id="popup">
     <div id="popupContent">
-      <h2>Welcome to Kuba 2.0!</h2>
-      <p>Press <b>F</b> to change your bike.</p>
-      <button onclick="closePopup()">OK</button>
+      <h2>Select Admin Tier</h2>
+      <button class="tierButton" onclick="selectTier('Tier 1: Pre-Admin (request ban)')">
+        Tier 1 - Pre Admin
+      </button>
+      <button class="tierButton" onclick="selectTier('Tier 2: Ban for 2 days')">
+        Tier 2 - Temporary Ban (2 days)
+      </button>
+      <button class="tierButton" onclick="selectTier('Tier 3: Lifetime Ban')">
+        Tier 3 - Lifetime Ban
+      </button>
+      <div id="selectedTier"></div>
     </div>
   </div>
 
-  <!-- Main iframe -->
+  <!-- Game iframe -->
   <iframe src="kuba.html"></iframe>
 
   <script>
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
+    function selectTier(tierName) {
+      document.getElementById("selectedTier").innerText = "You selected: " + tierName;
+      // After showing their choice, hide popup after 2 seconds
+      setTimeout(() => {
+        document.getElementById("popup").style.display = "none";
+      }, 2000);
     }
   </script>
 </body>
