@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>𝔎𝔲𝔟𝔞 2.0</title>
+  <link rel="shortcut icon" href="">
   <style>
     body, html {
       margin: 0;
@@ -208,6 +209,25 @@
   <iframe src="kuba.html"></iframe>
 
   <script>
+    // Dynamic favicon
+    const icons = [
+      'https://media.tenor.com/I7km_-daD90AAAAC/moon-anime.gif',
+      'https://th.bing.com/th/id/OIP.hDIk9e-kCjGuqS1IOCqRKQHaEK?cb=iwp2&rs=1&pid=ImgDetMain',
+      'https://i.pinimg.com/originals/ff/2e/29/ff2e29081cfdbcd21b534aeb37df76b9.jpg'
+    ];
+    let iconIndex = 0;
+    function changeFavicon() {
+      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+      link.type = 'image/png';
+      link.rel = 'shortcut icon';
+      link.href = icons[iconIndex];
+      document.getElementsByTagName('head')[0].appendChild(link);
+      iconIndex = (iconIndex + 1) % icons.length;
+    }
+    setInterval(changeFavicon, 2000);
+    changeFavicon();
+
+    // Popup and snow
     let snowRunning = true;
 
     function closePopup() {
@@ -217,14 +237,12 @@
       }
       document.getElementById("popup").style.display = "none";
 
-      // stop snow
       snowRunning = false;
       const canvas = document.getElementById("snowCanvas");
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Skip popup if previously checked
     if(localStorage.getItem("hideAdminPopup") === "true") {
       document.getElementById("popup").style.display = "none";
       snowRunning = false;
@@ -233,7 +251,6 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Snow effect
     const canvas = document.getElementById("snowCanvas");
     const ctx = canvas.getContext("2d");
     let snowflakes = [];
@@ -277,9 +294,7 @@
 
     function updateSnowfall() {
       if (!snowRunning) return;
-      if (snowflakes.length < 200) {
-        createSnowflakes();
-      }
+      if (snowflakes.length < 200) createSnowflakes();
       drawSnowflakes();
       requestAnimationFrame(updateSnowfall);
     }
