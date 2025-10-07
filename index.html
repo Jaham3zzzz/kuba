@@ -2,306 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>𝔎𝔲𝔟𝔞 2.0</title>
-  <link rel="shortcut icon" href="">
+  <title>Study Portal</title>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: black;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+    }
+
+    header {
+      background-color: #3f51b5;
       color: white;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* Snow canvas */
-    #snowCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 5000;
-    }
-
-    /* Popup overlay */
-    #popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
+      padding: 1rem 2rem;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      animation: fadeIn 1s forwards;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    #popupContent {
-      background: #111;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      animation: scaleUp 0.5s ease-in-out;
-    }
-
-    @keyframes scaleUp {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    #popup h2 {
-      margin-bottom: 0;
-      color: cyan;
-      text-shadow: 0 0 20px cyan, 0 0 40px cyan;
-      font-size: 28px;
-      animation: glow 1.5s infinite alternate;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 10px cyan, 0 0 20px cyan; }
-      to { text-shadow: 0 0 20px cyan, 0 0 40px cyan; }
-    }
-
-    #popup p.subtitle {
-      color: #0ff;
-      font-size: 16px;
-      margin-top: 4px;
-      margin-bottom: 20px;
-    }
-
-    #popup p.cashNote {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #0ff;
-    }
-
-    .tier {
-      margin: 20px 0;
-      padding: 20px;
-      background: #222;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,255,255,0.2);
-      transition: transform 0.2s;
-      text-align: left;
-    }
-
-    .tier:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 20px cyan;
-    }
-
-    .tier h3 {
+    header h1 {
       margin: 0;
-      color: white;
-      font-size: 20px;
+      font-size: 1.5rem;
     }
 
-    .price {
-      font-size: 18px;
-      color: lime;
-      margin: 6px 0;
+    .container {
+      display: flex;
+      height: calc(100vh - 70px);
     }
 
-    .desc {
-      font-size: 15px;
-      color: #ccc;
+    nav {
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 1rem;
     }
 
-    /* Close button */
-    #closeBtn {
+    nav h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    nav ul li {
+      margin-bottom: 0.8rem;
+      color: #555;
+      cursor: pointer;
+    }
+
+    nav ul li:hover {
+      color: #3f51b5;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .section {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .section h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    #secretFrame {
       position: fixed;
-      top: 10px;
-      right: 10px;
-      font-size: 26px;
-      color: white;
-      cursor: pointer;
-      z-index: 10000;
-      transition: color 0.2s;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: none;
+      z-index: 9999;
     }
 
-    #closeBtn:hover {
-      color: red;
-    }
-
-    /* Checkbox */
-    #dontShowLabel {
+    #secretFrame.active {
       display: block;
-      margin-top: 10px;
-      font-size: 16px;
-      color: #0ff;
-      cursor: pointer;
     }
 
-    #dontShowLabel input {
-      margin-right: 8px;
+    @media (max-width: 600px) {
+      nav {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Snow effect -->
-  <canvas id="snowCanvas"></canvas>
 
-  <!-- Popup -->
-  <div id="popup">
-    <div id="popupContent">
-      <h2>UPDATE!!!</h2>
-      <p class="subtitle">Kuba 3.0 coming soon</p>
-      <p class="cashNote">Send payment to <b>CashApp/Cash</b></p>
+<header>
+  <h1>My Study Portal</h1>
+  <div>Logged in as: student@example.com</div>
+</header>
 
-      <!-- Request Game $1 -->
-      <div class="tier">
-        <h3>Request Game</h3>
-        <div class="price">$1</div>
-        <div class="desc">Get the game you want — yes, even Golf Orbit. If I can’t provide it, you get a refund.</div>
-      </div>
+<div class="container">
+  <nav>
+    <h2>Navigation</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>My Notes</li>
+      <li>Assignments</li>
+      <li>Calendar</li>
+      <li>Study Timer</li>
+      <li>Settings</li>
+    </ul>
+  </nav>
 
-      <!-- Tier 1 -->
-      <div class="tier">
-        <h3>Tier 1 - Pre Admin</h3>
-        <div class="price">$2</div>
-        <div class="desc">You can request bans but need approval.</div>
-      </div>
-
-      <!-- Tier 2 -->
-      <div class="tier">
-        <h3>Tier 2 - Temp Ban</h3>
-        <div class="price">$6</div>
-        <div class="desc">You can ban someone for up to <b>2 days (unlocks admin login)</b>.</div>
-      </div>
-
-      <!-- Tier 3 -->
-      <div class="tier">
-        <h3>Tier 3 - Lifetime Ban</h3>
-        <div class="price">$12</div>
-        <div class="desc">Full admin power: ban users <b>forever (unlocks admin login)</b>.</div>
-      </div>
-
-      <!-- Don't show again -->
-      <label id="dontShowLabel">
-        <input type="checkbox" id="dontShowCheckbox"> Don't show this again
-      </label>
+  <main>
+    <div class="section">
+      <h3>Today's Tasks</h3>
+      <ul>
+        <li>📘 Read Chapter 4 - History</li>
+        <li>📝 Finish Math Homework</li>
+        <li>📅 Review for Biology Quiz</li>
+      </ul>
     </div>
-    <span id="closeBtn" onclick="closePopup()">✖</span>
-  </div>
 
-  <!-- Game iframe -->
-  <iframe src="kuba.html"></iframe>
+    <div class="section">
+      <h3>Quick Notes</h3>
+      <p>Don’t forget to check the shared Google Doc for group project ideas. Professor Smith posted some additional resources in the course forum.</p>
+    </div>
 
-  <script>
-    // Dynamic favicon
-    const icons = [
-      'https://media.tenor.com/I7km_-daD90AAAAC/moon-anime.gif',
-      'https://th.bing.com/th/id/OIP.hDIk9e-kCjGuqS1IOCqRKQHaEK?cb=iwp2&rs=1&pid=ImgDetMain',
-      'https://i.pinimg.com/originals/ff/2e/29/ff2e29081cfdbcd21b534aeb37df76b9.jpg'
-    ];
-    let iconIndex = 0;
-    function changeFavicon() {
-      const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-      link.type = 'image/png';
-      link.rel = 'shortcut icon';
-      link.href = icons[iconIndex];
-      document.getElementsByTagName('head')[0].appendChild(link);
-      iconIndex = (iconIndex + 1) % icons.length;
-    }
-    setInterval(changeFavicon, 2000);
-    changeFavicon();
+    <div class="section">
+      <h3>Upcoming Deadlines</h3>
+      <ul>
+        <li>🗓️ Oct 9 - Math Assignment 3</li>
+        <li>🗓️ Oct 11 - Biology Quiz</li>
+        <li>🗓️ Oct 14 - History Essay Draft</li>
+      </ul>
+    </div>
+  </main>
+</div>
 
-    // Popup and snow
-    let snowRunning = true;
+<iframe id="secretFrame" src=""></iframe>
 
-    function closePopup() {
-      const dontShow = document.getElementById("dontShowCheckbox").checked;
-      if(dontShow) {
-        localStorage.setItem("hideAdminPopup", "true");
-      }
-      document.getElementById("popup").style.display = "none";
-      snowRunning = false;
-      const canvas = document.getElementById("snowCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+<script>
+  document.addEventListener('keydown', function (e) {
+    const frame = document.getElementById('secretFrame');
+
+    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
+      e.preventDefault();
+      frame.src = 'kuba.html';
+      frame.classList.add('active');
     }
 
-    if(localStorage.getItem("hideAdminPopup") === "true") {
-      document.getElementById("popup").style.display = "none";
-      snowRunning = false;
-      const canvas = document.getElementById("snowCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (e.key === 'Escape') {
+      frame.classList.remove('active');
+      frame.src = '';
     }
+  });
+</script>
 
-    const canvas = document.getElementById("snowCanvas");
-    const ctx = canvas.getContext("2d");
-    let snowflakes = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    function createSnowflakes() {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const radius = Math.random() * 4 + 1;
-      const speed = Math.random() * 1 + 0.5;
-      snowflakes.push({ x, y, radius, speed });
-    }
-
-    function drawSnowflakes() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "white";
-      ctx.beginPath();
-      for (let flake of snowflakes) {
-        ctx.moveTo(flake.x, flake.y);
-        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-      }
-      ctx.fill();
-      moveSnowflakes();
-    }
-
-    function moveSnowflakes() {
-      for (let flake of snowflakes) {
-        flake.y += flake.speed;
-        if (flake.y > canvas.height) {
-          flake.y = -flake.radius;
-          flake.x = Math.random() * canvas.width;
-        }
-      }
-    }
-
-    function updateSnowfall() {
-      if (!snowRunning) return;
-      if (snowflakes.length < 200) createSnowflakes();
-      drawSnowflakes();
-      requestAnimationFrame(updateSnowfall);
-    }
-
-    updateSnowfall();
-  </script>
 </body>
 </html>
