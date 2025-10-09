@@ -502,7 +502,7 @@
         const input = document.getElementById('banNumber').value.trim();
         const msg = document.getElementById('banMessage');
         if (!/^\d{6}$/.test(input)) return msg.textContent = "Invalid 6-digit number";
-        if (input === "462521") return msg.textContent = "Cannot ban the owner!";
+        if (input === "214636") return msg.textContent = "Cannot ban the king!";
         const doc = await db.collection('bans').doc(input).get();
         if (doc.exists) {
             msg.textContent = `User ${input} is already banned!`;
