@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuba Movie Launcher</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #0b0b0b;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 20px;
+      font-size: 28px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .movie-button {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-size: cover;
+      background-position: center;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .movie-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    }
+
+    .movie-button::after {
+      content: attr(data-title);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      padding: 8px 0;
+      backdrop-filter: blur(3px);
+    }
+
+    #iframeContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      z-index: 999;
+      background: black;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    #closeBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      z-index: 1000;
+      font-weight: bold;
+    }
+
+    #closeBtn:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Kubas 🎬 Movie Launcher</h1>
+
+  <div class="button-grid">
+    <!-- Example movie buttons -->
+    <button class="movie-button" 
+      style="background-image: url('https://m.media-amazon.com/images/M/MV5BODY2MTAzOTQ4M15BMl5BanBnXkFtZTgwNzg5MTE0MjI@._V1_FMjpg_UX1000_.jpg');"
+      data-title="Spider-Man Homecoming (2017)"
+      onclick="openInIframe('https://drive.google.com/file/d/1QxSURVJ3CzrTMQtxs5KnPh7apxF4nkOe/preview')">
+    </button>
+
+    <button class="movie-button" 
+      style="background-image: url('https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg');"
+      data-title="Spider-Man No Way Home"
+      onclick="openInIframe('https://drive.google.com/file/d/12y_7LQ10kgktFaB1Jk5-N96dBt2C6Ejb/preview')">
+    </button>
+
+    <button class="movie-button" 
+      style="background-image: url('https://upload.wikimedia.org/wikipedia/en/1/13/Toy_Story.jpg');"
+      data-title="Toy Story"
+      onclick="openInIframe('https://drive.google.com/file/d/11zJofD5xdf-jkXTE0jzVgehctEQpyKmy/preview')">
+    </button>
+
+    <button class="movie-button" 
+      style="background-image: url('https://m.media-amazon.com/images/M/MV5BN2FlOTgyOTctMTE1Ny00MzFhLWE5NjctNTMxNzM5N2I2Yzk1XkEyXkFqcGc@._V1_.jpg');"
+      data-title="Captain Underpants"
+      onclick="openInIframe('https://drive.google.com/file/d/1BW7yv_y4uk99Nsjbc--z1beQ_bYYmUXk/preview')">
+    </button>
+
+    <button class="movie-button" 
+      style="background-image: url('https://upload.wikimedia.org/wikipedia/en/2/27/The_Incredibles_%282004_animated_feature_film%29.jpg');"
+      data-title="The Incredibles (2004)"
+      onclick="openInIframe('https://drive.google.com/file/d/1WsLZ0e6IsnjVVy5hhbrBwmOYoGApy1xo/preview')">
+    </button>
+
+    <button class="movie-button" 
+      style="background-image: url('https://lumiere-a.akamaihd.net/v1/images/image_ed8d7a4e.jpeg?region=0%2C0%2C800%2C1200');"
+      data-title="Home Alone"
+      onclick="openInIframe('https://drive.google.com/file/d/1l7dSSnBmw9Fnku5lxl7zYk7CsQa4JU3d/preview')">
+    </button>
+        <button class="movie-button" 
+      style="background-image: url('https://img.freepik.com/free-vector/coming-soon-background-with-focus-light-effect-design_1017-27277.jpg?semt=ais_hybrid&w=740&q=80');"
+      data-title="Request Movie"
+      onclick="openInIframe('https://img.freepik.com/premium-vector/bright-red-button-with-text-contact-me-mobile-phone-icon-vector-element-website_604355-367.jpg')">
+    </button>
+
+    <!-- Add more buttons by copying one of these -->
+  </div>
+
+  <div id="iframeContainer">
+    <button id="closeBtn" onclick="closeIframe()">✖ Close</button>
+    <iframe id="webFrame" src=""></iframe>
+  </div>
+
+  <script>
+    function openInIframe(url) {
+      document.getElementById("webFrame").src = url;
+      document.getElementById("iframeContainer").style.display = "block";
+    }
+
+    function closeIframe() {
+      document.getElementById("webFrame").src = "";
+      document.getElementById("iframeContainer").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
