@@ -1,0 +1,6 @@
+name = "kuba"
+main = "src/index.js"
+compatibility_date = "2025-10-23"
+
+[assets]
+directory = "./dist"
