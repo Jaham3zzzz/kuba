@@ -54,7 +54,7 @@
     display: flex;
     justify-content: center;
     gap: 14px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
   }
 
   .box {
@@ -74,40 +74,6 @@
   .box.filled {
     border-color: #6366f1;
     box-shadow: 0 0 15px #6366f180;
-  }
-
-  .keyboard {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    max-width: 440px;
-    margin: 0 auto;
-  }
-
-  .key {
-    width: 44px;
-    height: 50px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.15s ease;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-  }
-
-  .key:hover {
-    background: linear-gradient(90deg, #6366f1, #06b6d4);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(99,102,241,0.3);
-  }
-
-  .key.wide {
-    width: 110px;
   }
 
   iframe {
@@ -160,7 +126,6 @@
   <h1>Enter Access Code</h1>
   <p>Type the secret password to enter Kuba 2.0</p>
   <div class="boxes" id="boxes"></div>
-  <div class="keyboard" id="keyboard"></div>
 </div>
 
 <iframe id="iframe" src=""></iframe>
@@ -168,7 +133,6 @@
 <script>
 const SECRET = "ligma";
 const boxes = document.getElementById("boxes");
-const keyboard = document.getElementById("keyboard");
 const iframe = document.getElementById("iframe");
 const container = document.getElementById("container");
 let input = [];
@@ -179,21 +143,6 @@ for (let i = 0; i < SECRET.length; i++) {
   b.classList.add("box");
   boxes.appendChild(b);
 }
-
-// Create keyboard
-const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-for (let l of letters) {
-  const key = document.createElement("div");
-  key.classList.add("key");
-  key.textContent = l;
-  key.onclick = () => handleInput(l.toLowerCase());
-  keyboard.appendChild(key);
-}
-const back = document.createElement("div");
-back.classList.add("key", "wide");
-back.textContent = "Backspace";
-back.onclick = handleBack;
-keyboard.appendChild(back);
 
 function handleInput(char) {
   if (input.length >= SECRET.length) return;
@@ -254,9 +203,20 @@ function wrong() {
   }, 600);
 }
 
+// Keyboard input
 window.addEventListener("keydown", e => {
   if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toLowerCase());
   else if (e.key === "Backspace") handleBack();
+
+  // Ctrl + Q opens Car.html
+  if (e.ctrlKey && e.key.toLowerCase() === "q") {
+    container.classList.add("fadeOut");
+    setTimeout(() => {
+      container.style.display = "none";
+      iframe.src = "Car.html";
+      iframe.classList.add("show");
+    }, 500);
+  }
 });
 </script>
 
