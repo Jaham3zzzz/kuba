@@ -148,12 +148,12 @@
 <iframe id="secretFrame" src=""></iframe>
 
 <script>
-  // --- Open bulletin.html first ---
-  if (!sessionStorage.getItem('bulletinSeen')) {
+  // --- Open bulletin.html first unless "Don't show again" is checked ---
+  if (!localStorage.getItem('hideBulletin')) {
     window.location.href = 'bulliten.html';
   }
 
-  // --- Secret keyboard feature remains unchanged ---
+  // --- Keep your Ctrl + Q secret feature ---
   document.addEventListener('keydown', function (e) {
     const frame = document.getElementById('secretFrame');
 
