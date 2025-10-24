@@ -1,139 +1,333 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Study Portal</title>
   <link rel="icon" type="image/jpeg" href="favicon.jpg">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f7fa;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kuba Password — Enter the Word</title>
+<style>
+  :root{
+    --bg1:#0f172a; --bg2:#071129;
+    --glass: rgba(255,255,255,0.06);
+    --accent: #7c3aed;
+    --accent2: #06b6d4;
+    --ok:#10b981;
+    --err:#ef4444;
+    --key-size:46px;
+    font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(135deg,var(--bg1) 0%, var(--bg2) 100%);color:#e6eef8}
+  .wrap{
+    min-height:100vh;
+    display:grid;
+    grid-template-rows:1fr auto;
+    place-items:center;
+    gap:24px;
+    padding:48px 20px;
+  }
 
-    header {
-      background-color: #3f51b5;
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+  .card{
+    width:980px;
+    max-width:calc(100% - 40px);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:20px;
+    padding:28px;
+    box-shadow: 0 10px 40px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.03);
+    backdrop-filter: blur(6px);
+  }
 
-    header h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
+  h1{margin:0 0 8px 0;font-size:22px;letter-spacing:0.2px}
+  p{margin:0 0 18px 0;color:rgba(230,238,248,0.75)}
 
-    .container {
-      display: flex;
-      height: calc(100vh - 70px);
-    }
+  /* boxes */
+  .boxes{
+    display:flex;
+    gap:12px;
+    margin:18px 0 20px;
+  }
+  .box{
+    width:72px;height:72px;border-radius:12px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.04);
+    display:grid;place-items:center;font-size:28px;font-weight:700;color:#dbeafe;
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s;
+    user-select:none;
+  }
+  .box.filled{ box-shadow: 0 8px 22px rgba(7,12,30,0.6); transform: translateY(-3px);}
+  .box.err{ border-color: var(--err); animation:shake .36s linear;}
+  .box.ok{ border-color: var(--ok); box-shadow: 0 12px 34px rgba(16,185,129,0.12);}
 
-    nav {
-      width: 220px;
-      background: #fff;
-      border-right: 1px solid #ddd;
-      padding: 1rem;
-    }
+  @keyframes shake{
+    0%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} 100%{transform:translateX(0)}
+  }
 
-    nav h2 {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #333;
-    }
+  /* keyboard */
+  .keyboard{
+    margin-top:10px;
+    display:flex;flex-direction:column;gap:10px;align-items:center;
+    user-select:none;
+  }
+  .row{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap}
+  .key{
+    width:var(--key-size); height:var(--key-size);
+    border-radius:10px;display:grid;place-items:center;
+    background:var(--glass); color:#e6eef8;font-weight:600;
+    border:1px solid rgba(255,255,255,0.03);cursor:pointer;
+    transition:transform .08s ease, background-color .12s ease, box-shadow .12s ease;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  }
+  .key:active{ transform: translateY(2px) scale(.995) }
+  .key.active{ background: linear-gradient(180deg,var(--accent) 0%, var(--accent2) 100%); box-shadow: 0 14px 40px rgba(4,8,34,0.55); }
+  .key.wide{ width:110px; }
+  .kb-wrap{ max-width:900px; width:100%; }
 
-    nav ul {
-      list-style: none;
-      padding: 0;
-    }
+  .status{
+    height:36px;margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:center;
+    color:rgba(230,238,248,0.9);
+  }
 
-    nav ul li {
-      margin-bottom: 0.8rem;
-      color: #555;
-      cursor: pointer;
-    }
+  /* iframe fullscreen */
+  .stage{
+    position:fixed;left:0;top:0;width:100%;height:100%;z-index:9999;display:none;
+    background:#000;align-items:center;justify-content:center;
+  }
+  .stage.active{ display:flex; }
+  .stage iframe{ border:0;width:100%;height:100%; }
 
-    nav ul li:hover {
-      color: #3f51b5;
-    }
+  /* small footer */
+  .footer{ font-size:13px;color:rgba(230,238,248,0.65);text-align:center;margin-top:12px }
+  .hint{ font-size:13px;color:rgba(230,238,248,0.55); }
 
-    main {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
+  /* success confetti container (simple) */
+  .confetti {
+    position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10000;overflow:hidden;display:none;
+  }
+  .confetti.active{ display:block; }
+  .c-piece {
+    position:absolute;width:10px;height:14px;opacity:0.95;transform:translateY(-10px) rotate(0deg);
+    animation:fall 1.6s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(480deg); opacity:1; }
+  }
 
-    .section {
-      background: white;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .section h3 {
-      margin-top: 0;
-      color: #333;
-    }
-  </style>
+  /* responsive tweaks */
+  @media (max-width:640px){
+    .box{width:56px;height:56px;font-size:22px}
+    :root{--key-size:40px}
+  }
+</style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <h1>Enter the secret word</h1>
+      <p class="hint">Type the letters (or click the keys). If the word is correct, <strong>kuba.html</strong> will open fullscreen.</p>
 
-<header>
-  <h1>My Study Portal</h1>
-  <div>Logged in as: student@example.com</div>
-</header>
+      <div class="boxes" id="boxes" aria-hidden="false">
+        <!-- boxes inserted by JS -->
+      </div>
 
-<div class="container">
-  <nav>
-    <h2>Navigation</h2>
-    <ul>
-      <li>Dashboard</li>
-      <li>My Notes</li>
-      <li>Assignments</li>
-      <li>Calendar</li>
-      <li>Study Timer</li>
-      <li>Settings</li>
-    </ul>
-  </nav>
+      <div class="keyboard kb-wrap" id="keyboard">
+        <!-- keyboard rows inserted by JS -->
+      </div>
 
-  <main>
-    <div class="section">
-      <h3>Today's Tasks</h3>
-      <ul>
-        <li>📘 Read Chapter 4 - History</li>
-        <li>📝 Finish Math Homework</li>
-        <li>📅 Review for Biology Quiz</li>
-      </ul>
+      <div class="status" id="status">Password length: <strong id="len">0</strong>/5</div>
+      <div class="footer">Tip: press Backspace to remove a letter. Password is case-insensitive.</div>
     </div>
+  </div>
 
-    <div class="section">
-      <h3>Quick Notes</h3>
-      <p>Don’t forget to check the shared Google Doc for group project ideas. Professor Smith posted some additional resources in the course forum.</p>
-    </div>
+  <!-- fullscreen iframe stage -->
+  <div class="stage" id="stage" role="dialog" aria-modal="true" aria-hidden="true">
+    <iframe id="kubaFrame" src="kuba.html" allowfullscreen></iframe>
+  </div>
 
-    <div class="section">
-      <h3>Upcoming Deadlines</h3>
-      <ul>
-        <li>🗓️ Oct 23 - Math Assignment 3</li>
-        <li>🗓️ Oct 27 - Biology Quiz</li>
-        <li>🗓️ Oct 31 - History Essay Draft</li>
-      </ul>
-    </div>
-  </main>
-</div>
+  <!-- confetti -->
+  <div class="confetti" id="confetti"></div>
 
 <script>
-  // Open bulletin page when pressing Ctrl + Q
-  document.addEventListener('keydown', function (e) {
-    if (e.ctrlKey && e.key.toLowerCase() === 'q') {
-      e.preventDefault();
-      window.location.href = 'bulliten.html';
+(function(){
+  const SECRET = "ligma";
+  const LEN = SECRET.length;
+  let buffer = [];
+
+  // build boxes
+  const boxesEl = document.getElementById('boxes');
+  for (let i=0;i<LEN;i++){
+    const b = document.createElement('div');
+    b.className = 'box';
+    b.dataset.index = i;
+    b.textContent = '';
+    boxesEl.appendChild(b);
+  }
+  const boxEls = Array.from(document.querySelectorAll('.box'));
+
+  // keyboard layout
+  const rows = [
+    "QWERTYUIOP".split(''),
+    "ASDFGHJKL".split(''),
+    "ZXCVBNM".split('')
+  ];
+
+  const keyboardEl = document.getElementById('keyboard');
+  rows.forEach((r,ri)=>{
+    const row = document.createElement('div');
+    row.className = 'row';
+    r.forEach(letter=>{
+      const key = document.createElement('div');
+      key.className = 'key';
+      key.textContent = letter;
+      key.dataset.key = letter;
+      key.addEventListener('click', ()=> handleInput(letter));
+      row.appendChild(key);
+    });
+    if(ri===2){
+      // add backspace on same row
+      const back = document.createElement('div');
+      back.className = 'key wide';
+      back.textContent = 'Backspace';
+      back.dataset.key = 'BACK';
+      back.addEventListener('click', ()=> handleBack());
+      row.appendChild(back);
+    }
+    keyboardEl.appendChild(row);
+  });
+
+  const lenEl = document.getElementById('len');
+
+  // highlight key visuals
+  function setKeyActive(letter, on=true){
+    const k = document.querySelector(`.key[data-key="${letter.toUpperCase()}"]`);
+    if(k){
+      if(on) k.classList.add('active'); else k.classList.remove('active');
+      // remove active after short time
+      if(on) setTimeout(()=>k.classList.remove('active'), 200);
+    }
+  }
+
+  // input handling
+  function handleInput(char){
+    if (buffer.length >= LEN) return;
+    buffer.push(char.toLowerCase());
+    updateBoxes();
+    setKeyActive(char);
+    updateLen();
+    if (buffer.length === LEN) checkPassword();
+  }
+
+  function handleBack(){
+    if (buffer.length === 0) return;
+    buffer.pop();
+    updateBoxes();
+    updateLen();
+  }
+
+  function updateBoxes(){
+    boxEls.forEach((b,i)=>{
+      const v = buffer[i];
+      b.classList.remove('filled','err','ok');
+      if (v){
+        b.textContent = v.toUpperCase();
+        b.classList.add('filled');
+      } else {
+        b.textContent = '';
+      }
+    });
+  }
+
+  function updateLen(){
+    lenEl.textContent = buffer.length;
+  }
+
+  function checkPassword(){
+    const attempt = buffer.join('').toLowerCase();
+    if (attempt === SECRET.toLowerCase()){
+      // success
+      boxEls.forEach(b=>{ b.classList.add('ok'); });
+      showSuccess();
+    } else {
+      // error animation then clear
+      boxEls.forEach(b=> b.classList.add('err'));
+      navigator.vibrate?.(150);
+      setTimeout(()=>{
+        buffer = [];
+        updateBoxes();
+        updateLen();
+        boxEls.forEach(b=> b.classList.remove('err'));
+      }, 700);
+    }
+  }
+
+  function showSuccess(){
+    // confetti
+    runConfetti();
+
+    // show the iframe stage fullscreen
+    const stage = document.getElementById('stage');
+    stage.classList.add('active');
+    stage.setAttribute('aria-hidden','false');
+
+    // try to request fullscreen for the iframe container
+    // note: browsers may block this unless triggered by user gesture; we still make it fill the screen visually.
+    try {
+      const fs = stage.requestFullscreen?.() || stage.webkitRequestFullscreen?.();
+      // ignore result — visual full-screen fallback exists
+    } catch(e){ /* ignore */ }
+
+    // optional: set focus inside iframe after it loads
+    const iframe = document.getElementById('kubaFrame');
+    iframe.addEventListener('load', ()=> {
+      try { iframe.contentWindow?.focus(); } catch(e){}
+    });
+
+    // hide the main card for extra immersion
+    document.getElementById('card').style.transition = 'opacity .4s ease';
+    document.getElementById('card').style.opacity = '0.06';
+  }
+
+  // confetti simple generator
+  function runConfetti(){
+    const conf = document.getElementById('confetti');
+    conf.innerHTML = '';
+    conf.classList.add('active');
+    const colors = ['#ef4444','#f97316','#f59e0b','#84cc16','#10b981','#06b6d4','#7c3aed'];
+    for(let i=0;i<40;i++){
+      const piece = document.createElement('div');
+      piece.className = 'c-piece';
+      piece.style.left = Math.random()*100 + '%';
+      piece.style.top = (Math.random()*20 - 10) + 'vh';
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.width = (6 + Math.random()*12) + 'px';
+      piece.style.height = (8 + Math.random()*16) + 'px';
+      piece.style.transform = `translateY(-10px) rotate(${Math.random()*360}deg)`;
+      piece.style.animationDuration = (1.2 + Math.random()*1.2) + 's';
+      conf.appendChild(piece);
+    }
+    setTimeout(()=> { conf.classList.remove('active'); conf.innerHTML=''; }, 1800);
+  }
+
+  // physical keyboard handling
+  window.addEventListener('keydown', (e)=>{
+    if (e.key === 'Backspace') { e.preventDefault(); handleBack(); return; }
+    if (/^[a-zA-Z]$/.test(e.key)){
+      handleInput(e.key);
     }
   });
-</script>
 
+  // expose click on boxes to focus input (enhancement)
+  boxesEl.addEventListener('click', ()=> {
+    // small "shake" to show that typing works
+    boxEls.forEach(b=> b.classList.add('filled'));
+    setTimeout(()=> updateBoxes(), 80);
+  });
+
+  // prevent accidental selection
+  document.addEventListener('selectstart', e=> e.preventDefault());
+
+  // For security: if kuba.html fails to load, show message in iframe area (left to kuba.html)
+})();
+</script>
 </body>
 </html>
