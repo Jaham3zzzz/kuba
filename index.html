@@ -148,6 +148,12 @@
 <iframe id="secretFrame" src=""></iframe>
 
 <script>
+  // --- Open bulletin.html first ---
+  if (!sessionStorage.getItem('bulletinSeen')) {
+    window.location.href = 'bulliten.html';
+  }
+
+  // --- Secret keyboard feature remains unchanged ---
   document.addEventListener('keydown', function (e) {
     const frame = document.getElementById('secretFrame');
 
