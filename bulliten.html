@@ -27,21 +27,8 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
-    img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin: 1rem 0;
-    }
-
-    .controls {
-      margin-top: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }
-
     button {
+      margin-top: 1.5rem;
       padding: 0.7rem 2rem;
       font-size: 1rem;
       background: #fff;
@@ -56,43 +43,27 @@
       background: #e3e3e3;
     }
 
-    label {
-      font-size: 0.9rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    input[type="checkbox"] {
-      transform: scale(1.2);
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 1rem 0;
     }
   </style>
 </head>
 <body>
   <div class="content">
-    <h1>📰 Kuba 2.0 Bulletin Board</h1>
-    <p>Welcome! Here’s what’s new today:</p>
-
-    <p>🔥 Big update coming soon — stay tuned!</p>
+    <h1>📰 Kuba 2.0 Bulletin</h1>
+    <p>🔥 Big update dropping soon — stay tuned!</p>
     <img src="example.jpg" alt="Cool update image">
-    <p>🎉 Event this weekend! Don’t miss out!</p>
+    <p>🎉 Don’t miss this weekend’s event!</p>
 
-    <div class="controls">
-      <button onclick="enterPortal()">OK</button>
-      <label>
-        <input type="checkbox" id="dontShowAgain">
-        Don't show again
-      </label>
-    </div>
+    <button onclick="goToKuba()">OK</button>
   </div>
 
   <script>
-    function enterPortal() {
-      const dontShow = document.getElementById('dontShowAgain').checked;
-      if (dontShow) {
-        localStorage.setItem('hideBulletin', 'true');
-      }
-      window.location.href = 'index.html';
+    function goToKuba() {
+      // Send a message back to the parent (index.html)
+      window.parent.postMessage('openKuba', '*');
     }
   </script>
 </body>
