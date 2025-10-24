@@ -77,7 +77,8 @@
       color: #333;
     }
 
-    #secretFrame {
+    /* Hidden iframe for popups */
+    #popupFrame {
       position: fixed;
       top: 0;
       left: 0;
@@ -88,14 +89,8 @@
       z-index: 9999;
     }
 
-    #secretFrame.active {
+    #popupFrame.active {
       display: block;
-    }
-
-    @media (max-width: 600px) {
-      nav {
-        display: none;
-      }
     }
   </style>
 </head>
@@ -145,28 +140,31 @@
   </main>
 </div>
 
-<iframe id="secretFrame" src=""></iframe>
+<iframe id="popupFrame"></iframe>
 
 <script>
-  // --- Open bulletin.html first unless "Don't show again" is checked ---
-  if (!localStorage.getItem('hideBulletin')) {
-    window.location.href = 'bulliten.html';
-  }
-
-  // --- Keep your Ctrl + Q secret feature ---
   document.addEventListener('keydown', function (e) {
-    const frame = document.getElementById('secretFrame');
+    const frame = document.getElementById('popupFrame');
 
+    // Ctrl + Q opens bulliten.html
     if (e.ctrlKey && e.key.toLowerCase() === 'q') {
       e.preventDefault();
-      frame.src = 'kuba.html';
+      frame.src = 'bulliten.html';
       frame.classList.add('active');
     }
 
+    // Escape closes any open frame
     if (e.key === 'Escape') {
       frame.classList.remove('active');
       frame.src = '';
     }
+
+    // Listen for message from bulliten.html to open kuba.html
+    window.addEventListener('message', (event) => {
+      if (event.data === 'openKuba') {
+        frame.src = 'kuba.html';
+      }
+    });
   });
 </script>
 
