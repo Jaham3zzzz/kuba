@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kuba Access Portal</title>
 <style>
-  * {
-    box-sizing: border-box;
-  }
+  * { box-sizing: border-box; }
   body {
     margin: 0;
     height: 100vh;
@@ -29,6 +27,7 @@
     box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.08);
     animation: fadeIn 1.2s ease forwards;
+    transition: all 1s ease;
   }
 
   @keyframes fadeIn {
@@ -130,20 +129,28 @@
   }
 
   .fadeOut {
-    animation: fadeOut 1s ease forwards;
+    opacity: 0;
+    transform: scale(0.96);
   }
 
-  @keyframes fadeOut {
-    to {opacity: 0; transform: scale(0.96);}
+  /* Correct animation */
+  .correct {
+    animation: correctPulse 1s ease forwards;
+  }
+  @keyframes correctPulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px #22c55e80; border-color: #22c55e; }
+    50% { transform: scale(1.1); box-shadow: 0 0 35px #22c55e; border-color: #22c55e; }
+    100% { transform: scale(1); box-shadow: 0 0 15px #22c55e80; border-color: #22c55e; }
   }
 
-  .glow {
-    animation: glowPulse 1.5s infinite;
+  /* Wrong animation */
+  .shake {
+    animation: shake 0.5s ease;
   }
-
-  @keyframes glowPulse {
-    0%, 100% {box-shadow: 0 0 15px #6366f160;}
-    50% {box-shadow: 0 0 25px #06b6d480;}
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
   }
 </style>
 </head>
@@ -156,7 +163,7 @@
   <div class="keyboard" id="keyboard"></div>
 </div>
 
-<iframe id="iframe" src="kuba.html"></iframe>
+<iframe id="iframe" src=""></iframe>
 
 <script>
 const SECRET = "ligma";
@@ -192,8 +199,13 @@ function handleInput(char) {
   if (input.length >= SECRET.length) return;
   input.push(char);
   updateBoxes();
-  if (input.join("") === SECRET) {
-    success();
+
+  if (input.length === SECRET.length) {
+    if (input.join("") === SECRET) {
+      success();
+    } else {
+      wrong();
+    }
   }
 }
 
@@ -210,21 +222,38 @@ function updateBoxes() {
   });
 }
 
-// Add animations for success
 function success() {
   document.querySelectorAll(".box").forEach(b => {
-    b.classList.add("glow");
+    b.classList.add("correct");
+    setTimeout(() => b.classList.remove("correct"), 800);
   });
   setTimeout(() => {
     container.classList.add("fadeOut");
-  }, 500);
+  }, 800);
   setTimeout(() => {
     container.style.display = "none";
+    iframe.src = "kuba.html";
     iframe.classList.add("show");
-  }, 1400);
+  }, 1600);
 }
 
-// Keyboard typing support
+function wrong() {
+  container.classList.add("shake");
+  document.querySelectorAll(".box").forEach(b => {
+    b.style.borderColor = "#ef4444";
+    b.style.boxShadow = "0 0 20px #ef444480";
+  });
+  setTimeout(() => {
+    container.classList.remove("shake");
+    document.querySelectorAll(".box").forEach(b => {
+      b.style.borderColor = "rgba(255,255,255,0.15)";
+      b.style.boxShadow = "none";
+    });
+    input = [];
+    updateBoxes();
+  }, 600);
+}
+
 window.addEventListener("keydown", e => {
   if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toLowerCase());
   else if (e.key === "Backspace") handleBack();
