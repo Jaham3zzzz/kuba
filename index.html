@@ -107,17 +107,6 @@
       height: 100%;
       border: none;
     }
-
-    #iframeContainer #closeFrame {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 1.5rem;
-      color: white;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -157,22 +146,16 @@
   <!-- Hidden fullscreen iframe -->
   <div id="iframeContainer">
     <iframe id="carFrame" src="Car.html" frameborder="0"></iframe>
-    <button id="closeFrame">✕</button>
   </div>
 
   <script>
-    // Listen for Ctrl + Q
+    // Listen for Ctrl + Q to open iframe
     document.addEventListener("keydown", function (event) {
       if (event.ctrlKey && event.key.toLowerCase() === "q") {
         event.preventDefault();
         const iframeContainer = document.getElementById("iframeContainer");
         iframeContainer.style.display = "flex";
       }
-    });
-
-    // Close fullscreen iframe
-    document.getElementById("closeFrame").addEventListener("click", function () {
-      document.getElementById("iframeContainer").style.display = "none";
     });
   </script>
 </body>
