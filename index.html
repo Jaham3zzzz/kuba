@@ -1,225 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Portal</title>
-  <link rel="icon" type="image/jpeg" href="favicon.jpg">
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
-    font-family: 'Poppins', sans-serif;
-    color: #f1f5f9;
-    overflow: hidden;
-  }
-
-  .container {
-    text-align: center;
-    backdrop-filter: blur(20px);
-    background: rgba(255,255,255,0.05);
-    padding: 60px 40px;
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.08);
-    animation: fadeIn 1.2s ease forwards;
-    transition: all 1s ease;
-  }
-
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(40px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-
-  h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, #818cf8, #06b6d4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  p {
-    opacity: 0.8;
-    margin-bottom: 30px;
-    letter-spacing: 0.3px;
-  }
-
-  .boxes {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-bottom: 10px;
-  }
-
-  .box {
-    width: 65px;
-    height: 65px;
-    border: 2px solid rgba(255,255,255,0.15);
-    border-radius: 14px;
-    font-size: 28px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.25s ease;
-    background: rgba(255,255,255,0.05);
-  }
-
-  .box.filled {
-    border-color: #6366f1;
-    box-shadow: 0 0 15px #6366f180;
-  }
-
-  iframe {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-    opacity: 0;
-    z-index: 999;
-    pointer-events: none;
-    transition: opacity 1s ease;
-  }
-
-  iframe.show {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .fadeOut {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-
-  /* Correct animation */
-  .correct {
-    animation: correctPulse 1s ease forwards;
-  }
-  @keyframes correctPulse {
-    0% { transform: scale(1); box-shadow: 0 0 15px #22c55e80; border-color: #22c55e; }
-    50% { transform: scale(1.1); box-shadow: 0 0 35px #22c55e; border-color: #22c55e; }
-    100% { transform: scale(1); box-shadow: 0 0 15px #22c55e80; border-color: #22c55e; }
-  }
-
-  /* Wrong animation */
-  .shake {
-    animation: shake 0.5s ease;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-10px); }
-    40%, 80% { transform: translateX(10px); }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rizz Page</title>
+  <style>
+    body {
+      background-color: #000;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+    iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: none;
+      z-index: 999;
+    }
+  </style>
 </head>
 <body>
+  <img src="rizz.png" alt="Rizz Image" id="rizz-img" />
+  <iframe id="car-frame" src=""></iframe>
 
-<div class="container" id="container">
-  <h1>Enter Access Code</h1>
-  <p>Type the password to enter Kuba 3.0 or stick to 2.0</p>
-  <div class="boxes" id="boxes"></div>
-</div>
-
-<iframe id="iframe" src=""></iframe>
-
-<script>
-const SECRET = "ligma";
-const boxes = document.getElementById("boxes");
-const iframe = document.getElementById("iframe");
-const container = document.getElementById("container");
-let input = [];
-
-// Create boxes
-for (let i = 0; i < SECRET.length; i++) {
-  const b = document.createElement("div");
-  b.classList.add("box");
-  boxes.appendChild(b);
-}
-
-function handleInput(char) {
-  if (input.length >= SECRET.length) return;
-  input.push(char);
-  updateBoxes();
-
-  if (input.length === SECRET.length) {
-    if (input.join("") === SECRET) {
-      success();
-    } else {
-      wrong();
-    }
-  }
-}
-
-function handleBack() {
-  input.pop();
-  updateBoxes();
-}
-
-function updateBoxes() {
-  const all = document.querySelectorAll(".box");
-  all.forEach((b, i) => {
-    b.textContent = input[i] ? input[i].toUpperCase() : "";
-    b.classList.toggle("filled", !!input[i]);
-  });
-}
-
-function success() {
-  document.querySelectorAll(".box").forEach(b => {
-    b.classList.add("correct");
-    setTimeout(() => b.classList.remove("correct"), 800);
-  });
-  setTimeout(() => {
-    container.classList.add("fadeOut");
-  }, 800);
-  setTimeout(() => {
-    container.style.display = "none";
-    iframe.src = "Car.html";
-    iframe.classList.add("show");
-  }, 1600);
-}
-
-function wrong() {
-  container.classList.add("shake");
-  document.querySelectorAll(".box").forEach(b => {
-    b.style.borderColor = "#ef4444";
-    b.style.boxShadow = "0 0 20px #ef444480";
-  });
-  setTimeout(() => {
-    container.classList.remove("shake");
-    document.querySelectorAll(".box").forEach(b => {
-      b.style.borderColor = "rgba(255,255,255,0.15)";
-      b.style.boxShadow = "none";
+  <script>
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "q") {
+        e.preventDefault();
+        const frame = document.getElementById("car-frame");
+        if (frame.src === "") {
+          frame.src = "car.html";
+        }
+        frame.style.display = "block";
+      }
     });
-    input = [];
-    updateBoxes();
-  }, 600);
-}
-
-// Keyboard input
-window.addEventListener("keydown", e => {
-  if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toLowerCase());
-  else if (e.key === "Backspace") handleBack();
-
-  // Ctrl + Q opens Car.html
-  if (e.ctrlKey && e.key.toLowerCase() === "q") {
-    container.classList.add("fadeOut");
-    setTimeout(() => {
-      container.style.display = "none";
-      iframe.src = "Car.html";
-      iframe.classList.add("show");
-    }, 500);
-  }
-});
-</script>
-
+  </script>
 </body>
 </html>
