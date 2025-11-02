@@ -13,10 +13,11 @@ body {background:black;color:white;overflow-x:hidden;}
 /* NAV */
 nav {
   position:fixed; top:0;width:100%; background:rgba(0,0,0,0.8);
-  backdrop-filter:blur(10px); display:flex; justify-content:space-between; align-items:center;
-  padding:12px 20px; z-index:10;
+  backdrop-filter:blur(10px); display:flex; justify-content:center; align-items:center;
+  padding:12px 20px; z-index:10; gap:20px;
 }
-nav h1 {font-size:20px;font-weight:600;background:linear-gradient(45deg,#ff0050,#00f2ea);-webkit-background-clip:text;color:transparent;}
+nav h1 {font-size:16px;font-weight:600;background:linear-gradient(45deg,#ff0050,#00f2ea);-webkit-background-clip:text;color:transparent;}
+.nav-buttons {display:flex; gap:15px;}
 nav button {
   background:none;border:1px solid #555;padding:6px 12px;color:white;border-radius:8px;cursor:pointer;transition:0.3s;
 }
@@ -119,7 +120,7 @@ video {
 
 <nav>
   <h1>KubaTik</h1>
-  <div>
+  <div class="nav-buttons">
     <button id="viewFyp">FYP</button>
     <button id="viewLiked">❤️ Liked</button>
   </div>
@@ -301,4 +302,3 @@ populateFYP();
 </script>
 </body>
 </html>
-
