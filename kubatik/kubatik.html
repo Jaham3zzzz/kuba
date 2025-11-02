@@ -143,15 +143,7 @@ video {
 </div>
 
 <script>
-// Total number of videos in your folder
-const totalVideos = 20;
-
-// Function to pick a random video
-function getRandomVideo() {
-  const index = Math.floor(Math.random() * totalVideos);
-  return index === 0 ? "videos/Download.mp4" : `videos/Download (${index}).mp4`;
-}
-
+const videoFiles = ["videos/vid1.mp4","videos/vid2.mp4","videos/vid3.mp4"];
 const mainFeed = document.getElementById("mainFeed");
 const likedSection = document.getElementById("likedSection");
 const likedList = document.getElementById("likedList");
@@ -166,26 +158,32 @@ const closeBtn = modal.querySelector(".close-btn");
 let likedVideos = JSON.parse(localStorage.getItem("likedVideos")) || [];
 let watchedVideos = JSON.parse(localStorage.getItem("watchedVideos")) || [];
 
-// Populate FYP with random videos
+// Populate FYP
 function populateFYP() {
   mainFeed.innerHTML = '';
-  // create 10 random videos per feed load
-  for (let i = 0; i < 10; i++) {
-    const src = getRandomVideo();
-    const wrapper = document.createElement("div");
-    wrapper.className = "video-wrapper";
-    wrapper.dataset.src = src;
-    wrapper.innerHTML = `
-      <video src="${src}" loop autoplay playsinline></video>
-      <div class="overlay"><div class="icon like-btn">❤️</div></div>
-      <div class="pause-overlay">⏸</div>
-      <div class="progress-bar-container"><div class="progress-bar"></div></div>
-    `;
-    mainFeed.appendChild(wrapper);
+  const unlikedVideos = videoFiles.filter(v => !likedVideos.includes(v));
+  if(unlikedVideos.length===0){
+    mainFeed.style.display="none";
+    endMessage.style.display="flex";
+  } else {
+    mainFeed.style.display="block";
+    endMessage.style.display="none";
+    unlikedVideos.forEach(src=>{
+      const wrapper = document.createElement("div");
+      wrapper.className="video-wrapper";
+      wrapper.dataset.src=src;
+      wrapper.innerHTML=`
+        <video src="${src}" loop autoplay playsinline></video>
+        <div class="overlay"><div class="icon like-btn">❤️</div></div>
+        <div class="pause-overlay">⏸</div>
+        <div class="progress-bar-container"><div class="progress-bar"></div></div>
+      `;
+      mainFeed.appendChild(wrapper);
+    });
+    observeVideos();
+    updateLikedUI();
+    addPauseAndProgress();
   }
-  observeVideos();
-  updateLikedUI();
-  addPauseAndProgress();
 }
 
 // Intersection observer
