@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Portal</title>
   <link rel="icon" type="image/jpeg" href="favicon.jpg">
+
   <style>
     * {
       margin: 0;
@@ -107,8 +109,61 @@
       height: 100%;
       border: none;
     }
+
+    /* ACCESS DENIED overlay (professional) */
+    #deniedScreen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, #0d0000 0%, #000 100%);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .denied-content {
+      text-align: center;
+      animation: fadeInZoom 1s ease forwards;
+    }
+
+    #deniedScreen h1 {
+      font-family: "Courier New", monospace;
+      font-size: 6rem;
+      color: red;
+      text-shadow: 0 0 20px red, 0 0 40px #ff3333;
+      animation: glitch 1s infinite;
+    }
+
+    #deniedScreen p {
+      color: #ff5555;
+      margin-top: 20px;
+      font-size: 1.5rem;
+      animation: flickerText 1.2s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-5px, 3px); }
+      40% { transform: translate(5px, -3px); }
+      60% { transform: translate(-3px, 5px); }
+      80% { transform: translate(3px, -5px); }
+      100% { transform: translate(0); }
+    }
+
+    @keyframes flickerText {
+      0%, 19%, 21%, 100% { opacity: 1; }
+      20%, 22%, 25% { opacity: 0.2; }
+    }
+
+    @keyframes fadeInZoom {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
   </style>
 </head>
+
 <body>
   <header>
     <h1>StudySpace</h1>
@@ -145,18 +200,58 @@
 
   <!-- Hidden fullscreen iframe -->
   <div id="iframeContainer">
-    <iframe id="carFrame" src="kuba.html" frameborder="0"></iframe>
+    <iframe id="carFrame" src="kuba.html"></iframe>
+  </div>
+
+  <!-- ACCESS DENIED -->
+  <div id="deniedScreen">
+    <div class="denied-content">
+      <h1>ACCESS DENIED</h1>
+      <p>Bru You Thought</p>
+    </div>
   </div>
 
   <script>
-    // Listen for Ctrl + Q to open iframe
+    // HELPER FUNCTION: Convert "HH:MM" to minutes
+    function timeStringToMinutes(timeStr) {
+      const parts = timeStr.split(":");
+      const hours = parseInt(parts[0], 10);
+      const minutes = parseInt(parts[1], 10);
+      return hours * 60 + minutes;
+    }
+
+    // SCHOOL HOURS: Edit these strings to change times
+    const schoolStart = timeStringToMinutes("7:30");  // 7:30 AM
+    const schoolEnd   = timeStringToMinutes("15:30"); // 2:45 PM
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // Only restrict during school hours
+    if (currentMinutes >= schoolStart && currentMinutes <= schoolEnd) {
+      fetch("https://api.ipify.org?format=json")
+        .then(res => res.json())
+        .then(data => {
+          const userIP = data.ip;
+          const allowedIP = "50.205.101.22"; // School WiFi
+
+          if (userIP !== allowedIP) {
+            // Show ACCESS DENIED screen
+            document.getElementById("deniedScreen").style.display = "flex";
+            document.querySelector("main").style.display = "none";
+            document.querySelector("header").style.display = "none";
+          }
+        });
+    }
+
+    // Ctrl + Q — open iframe
     document.addEventListener("keydown", function (event) {
       if (event.ctrlKey && event.key.toLowerCase() === "q") {
         event.preventDefault();
-        const iframeContainer = document.getElementById("iframeContainer");
-        iframeContainer.style.display = "flex";
+        document.getElementById("iframeContainer").style.display = "flex";
       }
     });
   </script>
+
 </body>
 </html>
