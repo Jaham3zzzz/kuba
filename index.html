@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -212,36 +211,52 @@
   </div>
 
   <script>
-    // HELPER FUNCTION: Convert "HH:MM" to minutes
-    function timeStringToMinutes(timeStr) {
-      const parts = timeStr.split(":");
-      const hours = parseInt(parts[0], 10);
-      const minutes = parseInt(parts[1], 10);
-      return hours * 60 + minutes;
+    // Function to get GPU info
+    function getGPUInfo() {
+      let canvas = document.createElement("canvas");
+      let gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      if (!gl) return "Not supported";
+      let debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (debugInfo) {
+        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      }
+      return "Unknown GPU";
     }
 
-    // SCHOOL HOURS: Edit these strings to change times
-    const schoolStart = timeStringToMinutes("7:30");  // 7:30 AM
-    const schoolEnd   = timeStringToMinutes("15:30"); // 2:45 PM
+    // Allowed device info
+    const allowedDevice = {
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0",
+      platform: "Win32",
+      screenResolution: "1366x768",
+      hardwareConcurrency: 4,
+      gpu: "ANGLE (Intel, Intel(R) UHD Graphics (0x000046D1) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+    };
 
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    // Gather current device info
+    const currentDevice = {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      screenResolution: `${screen.width}x${screen.height}`,
+      hardwareConcurrency: navigator.hardwareConcurrency || "Unknown",
+      gpu: getGPUInfo()
+    };
 
-    // Only restrict during school hours
-    if (currentMinutes >= schoolStart && currentMinutes <= schoolEnd) {
-      fetch("https://api.ipify.org?format=json")
-        .then(res => res.json())
-        .then(data => {
-          const userIP = data.ip;
-          const allowedIP = "50.205.101.22"; // School WiFi
+    // Check if device matches
+    function isDeviceAllowed() {
+      return (
+        currentDevice.userAgent === allowedDevice.userAgent &&
+        currentDevice.platform === allowedDevice.platform &&
+        currentDevice.screenResolution === allowedDevice.screenResolution &&
+        currentDevice.hardwareConcurrency === allowedDevice.hardwareConcurrency &&
+        currentDevice.gpu === allowedDevice.gpu
+      );
+    }
 
-          if (userIP !== allowedIP) {
-            // Show ACCESS DENIED screen
-            document.getElementById("deniedScreen").style.display = "flex";
-            document.querySelector("main").style.display = "none";
-            document.querySelector("header").style.display = "none";
-          }
-        });
+    // Block or allow
+    if (!isDeviceAllowed()) {
+      document.getElementById("deniedScreen").style.display = "flex";
+      document.querySelector("main").style.display = "none";
+      document.querySelector("header").style.display = "none";
     }
 
     // Ctrl + Q — open iframe
@@ -252,6 +267,5 @@
       }
     });
   </script>
-
 </body>
 </html>
