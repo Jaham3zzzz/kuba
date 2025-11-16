@@ -1,271 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Study Portal</title>
-  <link rel="icon" type="image/jpeg" href="favicon.jpg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Portal</title>
+<link rel="icon" type="image/jpeg" href="favicon.jpg">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #0e0e0e;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  header, main { padding: 20px; }
 
-    body {
-      background: #f9fafb;
-      color: #222;
-    }
+  /* StudySpace styles */
+  header.study-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a73e8;
+    color: white;
+    padding: 1rem 2rem;
+  }
+  header.study-header h1 { font-size: 1.5rem; }
+  header.study-header nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: opacity 0.2s;
+  }
+  header.study-header nav a:hover { opacity: 0.8; }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1a73e8;
-      color: white;
-      padding: 1rem 2rem;
-    }
+  .hero {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #1a1a1a;
+  }
+  .hero h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+  .hero p { font-size: 1.1rem; color: #ccc; margin-bottom: 1rem; }
+  .hero button {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
 
-    header h1 {
-      font-size: 1.5rem;
-    }
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2rem 1rem;
+    gap: 1rem;
+  }
+  .feature {
+    background: #1f1f1f;
+    padding: 1rem;
+    border-radius: 6px;
+    flex: 1 1 300px;
+  }
+  .feature h3 { color: #1a73e8; margin-bottom: 0.5rem; }
+  .feature p { margin-bottom: 0.5rem; }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 1rem;
-      transition: opacity 0.2s;
-    }
+  /* Notes Input */
+  .feature textarea {
+    width: 100%;
+    height: 80px;
+    border-radius: 4px;
+    border: none;
+    padding: 5px;
+    resize: none;
+  }
+  .feature button { margin-top: 5px; padding: 0.3rem 0.5rem; }
 
-    nav a:hover {
-      opacity: 0.8;
-    }
+  /* Hidden Iframe */
+  #iframeContainer {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #000;
+    z-index: 9998;
+  }
+  #iframeContainer iframe { width: 100%; height: 100%; border: none; }
 
-    .hero {
-      text-align: center;
-      padding: 5rem 1rem;
-      background: #eaf2ff;
-    }
-
-    .hero h2 {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      color: #444;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero button {
-      background: #1a73e8;
-      color: white;
-      border: none;
-      padding: 0.8rem 1.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .features {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      padding: 3rem 1rem;
-      background: white;
-    }
-
-    .feature {
-      max-width: 300px;
-      text-align: center;
-      margin: 1rem;
-    }
-
-    .feature h3 {
-      color: #1a73e8;
-      margin-bottom: 0.5rem;
-    }
-
-    /* Iframe overlay */
-    #iframeContainer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    #iframeContainer iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* ACCESS DENIED overlay (professional) */
-    #deniedScreen {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: radial-gradient(circle, #0d0000 0%, #000 100%);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .denied-content {
-      text-align: center;
-      animation: fadeInZoom 1s ease forwards;
-    }
-
-    #deniedScreen h1 {
-      font-family: "Courier New", monospace;
-      font-size: 6rem;
-      color: red;
-      text-shadow: 0 0 20px red, 0 0 40px #ff3333;
-      animation: glitch 1s infinite;
-    }
-
-    #deniedScreen p {
-      color: #ff5555;
-      margin-top: 20px;
-      font-size: 1.5rem;
-      animation: flickerText 1.2s infinite;
-    }
-
-    @keyframes glitch {
-      0% { transform: translate(0); }
-      20% { transform: translate(-5px, 3px); }
-      40% { transform: translate(5px, -3px); }
-      60% { transform: translate(-3px, 5px); }
-      80% { transform: translate(3px, -5px); }
-      100% { transform: translate(0); }
-    }
-
-    @keyframes flickerText {
-      0%, 19%, 21%, 100% { opacity: 1; }
-      20%, 22%, 25% { opacity: 0.2; }
-    }
-
-    @keyframes fadeInZoom {
-      0% { opacity: 0; transform: scale(0.5); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-  </style>
+  /* Access Denied Screen */
+  #deniedScreen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: black;
+    color: red;
+    font-size: 40px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    text-align: center;
+  }
+  #deniedScreen div { font-size:20px; margin-top:15px; }
+</style>
 </head>
-
 <body>
-  <header>
-    <h1>StudySpace</h1>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Courses</a>
-      <a href="#">Notes</a>
-      <a href="#">About</a>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero">
-      <h2>Your Personal Study Hub</h2>
-      <p>Organize notes, track progress, and stay productive while learning.</p>
-      <button>Start Studying</button>
-    </section>
+<!-- StudySpace header/main (allowed content) -->
+<header class="study-header">
+  <h1>StudySpace</h1>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Courses</a>
+    <a href="#">Notes</a>
+    <a href="#">About</a>
+  </nav>
+</header>
 
-    <section class="features">
-      <div class="feature">
-        <h3>📚 Manage Notes</h3>
-        <p>Keep all your study materials neatly organized.</p>
-      </div>
-      <div class="feature">
-        <h3>🧠 Smart Reminders</h3>
-        <p>Never miss a study session again with smart notifications.</p>
-      </div>
-      <div class="feature">
-        <h3>📈 Track Progress</h3>
-        <p>See your learning stats and stay motivated.</p>
-      </div>
-    </section>
-  </main>
+<main id="studyContent">
+  <section class="hero">
+    <h2>Your Personal Study Hub</h2>
+    <p>Take notes, track progress, and stay productive while learning.</p>
+    <button onclick="addCourse()">Add New Course</button>
+  </section>
 
-  <!-- Hidden fullscreen iframe -->
-  <div id="iframeContainer">
-    <iframe id="carFrame" src="kuba.html"></iframe>
-  </div>
+  <section class="features" id="courses">
+    <!-- Courses / notes will go here -->
+  </section>
+</main>
 
-  <!-- ACCESS DENIED -->
-  <div id="deniedScreen">
-    <div class="denied-content">
-      <h1>ACCESS DENIED</h1>
-      <p>Bru You Thought</p>
-    </div>
-  </div>
+<!-- Hidden Iframe -->
+<div id="iframeContainer">
+  <iframe src="https://google.com"></iframe>
+</div>
 
-  <script>
-    // Function to get GPU info
-    function getGPUInfo() {
-      let canvas = document.createElement("canvas");
-      let gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) return "Not supported";
-      let debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-      if (debugInfo) {
-        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+<!-- Access Denied Screen -->
+<div id="deniedScreen">
+  ACCESS DENIED<br>
+  <div>Get a real J*B</div>
+</div>
+
+<script>
+  // ------------------------------
+  // GPU/Browser Check + Owner IP
+  // ------------------------------
+  function getGPUInfo() {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) return "Not supported";
+    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+    if (debugInfo) return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+    return "Unknown GPU";
+  }
+
+  const currentGPU = getGPUInfo();
+  function gpuAllowed() { return currentGPU.includes("Intel(R) UHD Graphics"); }
+  function browserAllowed() { const ua = navigator.userAgent; return ua.includes("Chrome") || ua.includes("Edg"); }
+
+  const ownerIP = "32.218.220.240";
+
+  fetch("https://api.ipify.org?format=json")
+    .then(response => response.json())
+    .then(data => {
+      const userIP = data.ip;
+      const isOwner = userIP === ownerIP;
+
+      if (!isOwner && (!gpuAllowed() || !browserAllowed())) {
+        document.getElementById("deniedScreen").style.display = "flex";
+        document.getElementById("studyContent").style.display = "none";
+        document.querySelector("header").style.display = "none";
       }
-      return "Unknown GPU";
-    }
-
-    // Allowed device info
-    const allowedDevice = {
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0",
-      platform: "Win32",
-      screenResolution: "1366x768",
-      hardwareConcurrency: 4,
-      gpu: "ANGLE (Intel, Intel(R) UHD Graphics (0x000046D1) Direct3D11 vs_5_0 ps_5_0, D3D11)"
-    };
-
-    // Gather current device info
-    const currentDevice = {
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-      screenResolution: `${screen.width}x${screen.height}`,
-      hardwareConcurrency: navigator.hardwareConcurrency || "Unknown",
-      gpu: getGPUInfo()
-    };
-
-    // Check if device matches
-    function isDeviceAllowed() {
-      return (
-        currentDevice.userAgent === allowedDevice.userAgent &&
-        currentDevice.platform === allowedDevice.platform &&
-        currentDevice.screenResolution === allowedDevice.screenResolution &&
-        currentDevice.hardwareConcurrency === allowedDevice.hardwareConcurrency &&
-        currentDevice.gpu === allowedDevice.gpu
-      );
-    }
-
-    // Block or allow
-    if (!isDeviceAllowed()) {
-      document.getElementById("deniedScreen").style.display = "flex";
-      document.querySelector("main").style.display = "none";
-      document.querySelector("header").style.display = "none";
-    }
-
-    // Ctrl + Q — open iframe
-    document.addEventListener("keydown", function (event) {
-      if (event.ctrlKey && event.key.toLowerCase() === "q") {
-        event.preventDefault();
-        document.getElementById("iframeContainer").style.display = "flex";
+    })
+    .catch(err => {
+      // fallback if IP fetch fails
+      if (!gpuAllowed() || !browserAllowed()) {
+        document.getElementById("deniedScreen").style.display = "flex";
+        document.getElementById("studyContent").style.display = "none";
+        document.querySelector("header").style.display = "none";
       }
     });
-  </script>
+
+  // ------------------------------
+  // Ctrl + Q → iframe
+  // ------------------------------
+  document.addEventListener("keydown", function(e){
+    if (e.ctrlKey && e.key.toLowerCase() === "q") {
+      e.preventDefault();
+      document.getElementById("iframeContainer").style.display = "flex";
+    }
+  });
+
+  // ------------------------------
+  // Study functionality
+  // ------------------------------
+  let courses = JSON.parse(localStorage.getItem("studyCourses")) || [];
+
+  function saveCourses() { localStorage.setItem("studyCourses", JSON.stringify(courses)); }
+
+  function renderCourses() {
+    const container = document.getElementById("courses");
+    container.innerHTML = "";
+    courses.forEach((c,i) => {
+      const div = document.createElement("div");
+      div.className = "feature";
+      div.innerHTML = `
+        <h3>${c.title}</h3>
+        <textarea placeholder="Write your notes here...">${c.notes}</textarea>
+        <br>
+        <button onclick="saveNote(${i}, this.previousElementSibling.value)">Save Note</button>
+        <button onclick="markDone(${i})">${c.done?'Mark Undone':'Mark Done'}</button>
+      `;
+      if(c.done) div.style.opacity = 0.6;
+      container.appendChild(div);
+    });
+  }
+
+  function addCourse() {
+    const title = prompt("Course Name:");
+    if(title) {
+      courses.push({title, notes:'', done:false});
+      saveCourses();
+      renderCourses();
+    }
+  }
+
+  function saveNote(index, text){
+    courses[index].notes = text;
+    saveCourses();
+    alert("Note saved!");
+  }
+
+  function markDone(index){
+    courses[index].done = !courses[index].done;
+    saveCourses();
+    renderCourses();
+  }
+
+  renderCourses();
+</script>
 </body>
 </html>
