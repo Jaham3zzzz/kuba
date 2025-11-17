@@ -160,7 +160,7 @@
   function gpuAllowed() { return currentGPU.includes("Intel(R) UHD Graphics"); }
   function browserAllowed() { const ua = navigator.userAgent; return ua.includes("Chrome") || ua.includes("Edg"); }
 
-  const ownerIP = "32.218.220.240";
+  const ownerIP = "32.218.221.0";
 
   fetch("https://api.ipify.org?format=json")
     .then(response => response.json())
