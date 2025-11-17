@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Access</title>
+
+<style>
+    /* ===== Global Styling ===== */
+    body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #0e1117, #1a1f2b);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: white;
+    }
+
+    /* ===== Glassmorphism Lock Box ===== */
+    .lock-container {
+        text-align: center;
+        padding: 40px 35px;
+        width: 330px;
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 40px rgba(0, 200, 255, 0.1);
+        transition: 0.4s ease;
+        animation: fadeIn 0.7s ease;
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Lock Icon ===== */
+    .lock-icon {
+        font-size: 95px;
+        margin-bottom: 10px;
+        transition: 0.4s ease;
+        text-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+    }
+
+    /* ===== Input Field ===== */
+    input {
+        margin-top: 20px;
+        padding: 13px;
+        width: 85%;
+        border: none;
+        border-radius: 12px;
+        outline: none;
+        font-size: 18px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #00eaff;
+        text-align: center;
+        letter-spacing: 2px;
+        transition: 0.25s;
+        box-shadow: inset 0 0 10px rgba(0, 200, 255, 0.2);
+    }
+    input:focus {
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 0 15px rgba(0, 200, 255, 0.4);
+    }
+
+    /* ===== Button ===== */
+    button {
+        margin-top: 18px;
+        padding: 12px 25px;
+        width: 90%;
+        background: linear-gradient(135deg, #009dff, #00eaff);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 600;
+        color: #000;
+        transition: 0.3s;
+        box-shadow: 0 0 18px rgba(0, 200, 255, 0.4);
+    }
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px rgba(0, 200, 255, 0.6);
+    }
+
+    /* ===== Shake (Wrong) ===== */
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+
+    /* ===== Unlock Animation ===== */
+    .unlock {
+        transform: scale(1.15);
+        color: #00ffaa;
+        text-shadow: 0 0 25px #00ffaa;
+    }
+
+    /* ===== Iframe (hidden until unlocked) ===== */
+    #contentFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: none;
+        animation: fadeIn 0.8s ease;
+    }
+</style>
+</head>
+<body>
+
+<!-- ===== Lock Window ===== -->
+<div class="lock-container" id="lockBox">
+    <div class="lock-icon" id="lockIcon">🔒</div>
+    <h2 style="margin:0; color:#a8b3cf; font-weight:400;">Secure Access</h2>
+    <input type="password" id="codeInput" placeholder="Enter Passcode">
+    <button onclick="checkPass()">Unlock</button>
+</div>
+
+<!-- ===== Page Loader ===== -->
+<iframe id="contentFrame"></iframe>
+
+<script>
+function checkPass() {
+    const input = document.getElementById("codeInput").value;
+    const box = document.getElementById("lockBox");
+    const icon = document.getElementById("lockIcon");
+
+    if (input === "ligma") {
+        // SUCCESS
+        icon.innerHTML = "🔓";
+        icon.classList.add("unlock");
+
+        box.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
+
+        setTimeout(() => {
+            box.style.opacity = "0";
+            box.style.transform = "scale(0.9)";
+        }, 300);
+
+        setTimeout(() => {
+            box.style.display = "none";
+            let frame = document.getElementById("contentFrame");
+            frame.style.display = "block";
+            frame.src = "kuba3.0.html";
+        }, 700);
+
+    } else {
+        // WRONG
+        box.style.animation = "shake 0.35s";
+        box.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
+        icon.style.color = "#ff4d4d";
+
+        setTimeout(() => {
+            box.style.animation = "";
+            icon.style.color = "white";
+            box.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
+        }, 400);
+    }
+}
+</script>
+
+</body>
+</html>
