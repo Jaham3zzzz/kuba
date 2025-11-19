@@ -156,22 +156,14 @@ function startLockout() {
 })();
 
 if (checkLockout()) { /* already locked */ }
-// ========================================================
 
 // ========== PASSWORD CHECK & DECOYS ==========
 const fake1 = "admin";
 const fake2 = "letmein";
 const fake3 = "password123";
 
-// Encoded "eduardo" for your ROT13 + base64 chain
-const real = "TVJIMUxLV2J4PT0=";
-
-function rot13(str) {
-    return str.replace(/[a-zA-Z]/g, c => {
-        const base = c <= "Z" ? 65 : 97;
-        return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
-    });
-}
+// Encode real password in Base64
+const real = btoa("eduardo"); 
 
 function checkPass() {
     const input = document.getElementById("codeInput").value;
@@ -185,9 +177,7 @@ function checkPass() {
     }
 
     try {
-        const s1 = atob(real);
-        const s2 = rot13(s1);
-        const REALPASS = atob(s2);
+        const REALPASS = atob(real); // decode Base64 to get "eduardo"
 
         if (input === REALPASS) {
             icon.innerHTML = "🔓";
