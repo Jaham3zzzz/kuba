@@ -1,13 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Secure Access</title>
 
 <style>
-    /* ===== Global Styling ===== */
     body {
         margin: 0;
         height: 100vh;
@@ -19,7 +17,6 @@
         color: white;
     }
 
-    /* ===== Glassmorphism Lock Box ===== */
     .lock-container {
         text-align: center;
         padding: 40px 35px;
@@ -33,13 +30,11 @@
         animation: fadeIn 0.7s ease;
     }
 
-    /* Fade-in animation */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ===== Lock Icon ===== */
     .lock-icon {
         font-size: 95px;
         margin-bottom: 10px;
@@ -47,7 +42,6 @@
         text-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
     }
 
-    /* ===== Input Field ===== */
     input {
         margin-top: 20px;
         padding: 13px;
@@ -63,12 +57,7 @@
         transition: 0.25s;
         box-shadow: inset 0 0 10px rgba(0, 200, 255, 0.2);
     }
-    input:focus {
-        background: rgba(255, 255, 255, 0.12);
-        box-shadow: inset 0 0 15px rgba(0, 200, 255, 0.4);
-    }
 
-    /* ===== Button ===== */
     button {
         margin-top: 18px;
         padding: 12px 25px;
@@ -83,12 +72,7 @@
         transition: 0.3s;
         box-shadow: 0 0 18px rgba(0, 200, 255, 0.4);
     }
-    button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 25px rgba(0, 200, 255, 0.6);
-    }
 
-    /* ===== Shake (Wrong) ===== */
     @keyframes shake {
         0% { transform: translateX(0); }
         25% { transform: translateX(-10px); }
@@ -97,14 +81,12 @@
         100% { transform: translateX(0); }
     }
 
-    /* ===== Unlock Animation ===== */
     .unlock {
         transform: scale(1.15);
         color: #00ffaa;
         text-shadow: 0 0 25px #00ffaa;
     }
 
-    /* ===== Iframe (hidden until unlocked) ===== */
     #contentFrame {
         width: 100%;
         height: 100%;
@@ -116,7 +98,6 @@
 </head>
 <body>
 
-<!-- ===== Lock Window ===== -->
 <div class="lock-container" id="lockBox">
     <div class="lock-icon" id="lockIcon">🔒</div>
     <h2 style="margin:0; color:#a8b3cf; font-weight:400;">Secure Access</h2>
@@ -124,46 +105,149 @@
     <button onclick="checkPass()">Unlock</button>
 </div>
 
-<!-- ===== Page Loader ===== -->
 <iframe id="contentFrame"></iframe>
 
 <script>
-function checkPass() {
-    const input = document.getElementById("codeInput").value;
-    const box = document.getElementById("lockBox");
-    const icon = document.getElementById("lockIcon");
+// ===========================================================
+// =============== 30-MINUTE DEVTOOLS LOCKOUT =================
+// ===========================================================
 
-    if (input === "choripan") {
-        // SUCCESS
-        icon.innerHTML = "🔓";
-        icon.classList.add("unlock");
+const LOCKOUT_MINUTES = 30;
+const LOCK_KEY = "devtools_lockout_until_v2";
 
-        box.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
+function showLockout() {
+    document.body.innerHTML = `
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            background:black;
+            color:red;
+            font-size:28px;
+            text-align:center;
+            font-family:Segoe UI, sans-serif;">
+            Access locked for security reasons.<br>
+            Try again in 30 minutes.
+        </div>
+    `;
+}
 
-        setTimeout(() => {
-            box.style.opacity = "0";
-            box.style.transform = "scale(0.9)";
-        }, 300);
+function checkLockout() {
+    const until = localStorage.getItem(LOCK_KEY);
+    if (!until) return false;
 
-        setTimeout(() => {
-            box.style.display = "none";
-            let frame = document.getElementById("contentFrame");
-            frame.style.display = "block";
-            frame.src = "kuba3.0.html";
-        }, 700);
-
+    const now = Date.now();
+    if (now < Number(until)) {
+        showLockout();
+        return true;
     } else {
-        // WRONG
-        box.style.animation = "shake 0.35s";
-        box.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
-        icon.style.color = "#ff4d4d";
-
-        setTimeout(() => {
-            box.style.animation = "";
-            icon.style.color = "white";
-            box.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
-        }, 400);
+        localStorage.removeItem(LOCK_KEY);
+        return false;
     }
+}
+
+function startLockout() {
+    const unlockTime = Date.now() + LOCKOUT_MINUTES * 60_000;
+    localStorage.setItem(LOCK_KEY, unlockTime);
+    showLockout();
+}
+
+(function detectDevTools() {
+    let triggered = false;
+
+    setInterval(() => {
+        const start = performance.now();
+        debugger;
+        const end = performance.now();
+
+        if (end - start > 100) {
+            if (!triggered) {
+                triggered = true;
+                startLockout();
+            }
+        } else {
+            triggered = false;
+        }
+    }, 600);
+})();
+
+if (checkLockout()) {
+    // user already locked out
+}
+// ===========================================================
+// ================= END DEVTOOLS LOCKOUT ====================
+// ===========================================================
+
+
+// =========== YOUR HARD-MODE OBFUSCATED LOCK SCRIPT =========
+
+(function antiDbg(){
+    function b(){debugger; b();}
+    setTimeout(b, 200);
+})();
+
+const fake1 = "admin";
+const fake2 = "letmein";
+const fake3 = "password123";
+
+const real = "WVd4MVlYUnJiM1JwYVencGFXNHc=";
+
+function checkPass() {
+    (function(){
+        const _0x1 = document.getElementById("codeInput").value;
+        const _0x2 = document.getElementById("lockBox");
+        const _0x3 = document.getElementById("lockIcon");
+        const _0x4 = document.getElementById("contentFrame");
+
+        console.log("Checking password on remote server...");
+        setTimeout(()=>{}, 400);
+
+        if (_0x1 === fake1 || _0x1 === fake2 || _0x1 === fake3) {
+            alert("Incorrect password.");
+        }
+
+        const s1 = atob(real);
+        let s2 = "";
+        for (let i = 0; i < s1.length; i++) {
+            const ch = s1[i];
+            if (/[a-zA-Z]/.test(ch)) {
+                const a = ch <= "Z" ? 65 : 97;
+                s2 += String.fromCharCode( ((ch.charCodeAt(0) - a + 13) % 26) + a );
+            } else s2 += ch;
+        }
+        const REALPASS = atob(s2);
+
+        eval(`
+            if (_0x1 === REALPASS) {
+                _0x3.innerHTML = "🔓";
+                _0x3.classList.add("unlock");
+                _0x2.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
+
+                setTimeout(() => {
+                    _0x2.style.opacity = "0";
+                    _0x2.style.transform = "scale(0.9)";
+                }, 300);
+
+                setTimeout(() => {
+                    _0x2.style.display = "none";
+                    _0x4.style.display = "block";
+                    _0x4.src = "kuba3.0.html";
+                }, 700);
+
+            } else {
+                _0x2.style.animation = "shake 0.35s";
+                _0x2.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
+                _0x3.style.color = "#ff4d4d";
+
+                setTimeout(() => {
+                    _0x2.style.animation = "";
+                    _0x3.style.color = "white";
+                    _0x2.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
+                }, 400);
+            }
+        `);
+    })();
 }
 </script>
 
