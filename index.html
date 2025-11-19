@@ -157,8 +157,15 @@
   }
 
   const currentGPU = getGPUInfo();
-  function gpuAllowed() { return currentGPU.includes("Intel(R) UHD Graphics"); }
-  function browserAllowed() { const ua = navigator.userAgent; return ua.includes("Chrome") || ua.includes("Edg"); }
+  function gpuAllowed() { 
+    return currentGPU.includes("Intel(R) UHD Graphics") || 
+           currentGPU.includes("ANGLE (Intel, Intel(R) Graphics (0x000046D4) Direct3D11 vs_5_0 ps_5_0, D3D11)"); 
+  }
+
+  function browserAllowed() { 
+    const ua = navigator.userAgent; 
+    return ua.includes("Chrome") || ua.includes("Edg"); 
+  }
 
   const ownerIP = "32.218.221.0";
 
@@ -221,7 +228,7 @@
   function addCourse() {
     const title = prompt("Course Name:");
     if(title) {
-      courses.push({title, notes:'', done:false});
+      courses.push({title:'', notes:'', done:false});
       saveCourses();
       renderCourses();
     }
