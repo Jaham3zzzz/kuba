@@ -108,12 +108,9 @@
 <iframe id="contentFrame"></iframe>
 
 <script>
-// ===========================================================
-// =============== 30-MINUTE DEVTOOLS LOCKOUT =================
-// ===========================================================
-
+// ================== DEVTOOLS LOCKOUT ==================
 const LOCKOUT_MINUTES = 30;
-const LOCK_KEY = "devtools_lockout_until_v2";
+const LOCK_KEY = "devtools_lockout_until";
 
 function showLockout() {
     document.body.innerHTML = `
@@ -136,118 +133,93 @@ function showLockout() {
 function checkLockout() {
     const until = localStorage.getItem(LOCK_KEY);
     if (!until) return false;
-
     const now = Date.now();
-    if (now < Number(until)) {
-        showLockout();
-        return true;
-    } else {
-        localStorage.removeItem(LOCK_KEY);
-        return false;
-    }
+    if (now < Number(until)) { showLockout(); return true; }
+    localStorage.removeItem(LOCK_KEY);
+    return false;
 }
 
 function startLockout() {
-    const unlockTime = Date.now() + LOCKOUT_MINUTES * 60_000;
-    localStorage.setItem(LOCK_KEY, unlockTime);
+    localStorage.setItem(LOCK_KEY, Date.now() + LOCKOUT_MINUTES * 60_000);
     showLockout();
 }
 
-(function detectDevTools() {
+(function detectDevTools(){
     let triggered = false;
-
     setInterval(() => {
         const start = performance.now();
         debugger;
         const end = performance.now();
-
-        if (end - start > 100) {
-            if (!triggered) {
-                triggered = true;
-                startLockout();
-            }
-        } else {
-            triggered = false;
-        }
+        if (end - start > 100 && !triggered) { triggered = true; startLockout(); }
+        else triggered = false;
     }, 600);
 })();
 
-if (checkLockout()) {
-    // user already locked out
-}
-// ===========================================================
-// ================= END DEVTOOLS LOCKOUT ====================
-// ===========================================================
+if (checkLockout()) { /* already locked */ }
+// ========================================================
 
-
-// =========== YOUR HARD-MODE OBFUSCATED LOCK SCRIPT =========
-
-(function antiDbg(){
-    function b(){debugger; b();}
-    setTimeout(b, 200);
-})();
-
+// ========== PASSWORD CHECK & DECOYS ==========
 const fake1 = "admin";
 const fake2 = "letmein";
 const fake3 = "password123";
 
+// Encoded "rizzy" for your ROT13 + base64 chain
 const real = "cHp5NnJheD0=";
 
+function rot13(str) {
+    return str.replace(/[a-zA-Z]/g, c => {
+        const base = c <= "Z" ? 65 : 97;
+        return String.fromCharCode((c.charCodeAt(0) - base + 13) % 26 + base);
+    });
+}
+
 function checkPass() {
-    (function(){
-        const _0x1 = document.getElementById("codeInput").value;
-        const _0x2 = document.getElementById("lockBox");
-        const _0x3 = document.getElementById("lockIcon");
-        const _0x4 = document.getElementById("contentFrame");
+    const input = document.getElementById("codeInput").value;
+    const box = document.getElementById("lockBox");
+    const icon = document.getElementById("lockIcon");
+    const frame = document.getElementById("contentFrame");
 
-        console.log("Checking password on remote server...");
-        setTimeout(()=>{}, 400);
+    if ([fake1,fake2,fake3].includes(input)) {
+        alert("Incorrect password.");
+        return;
+    }
 
-        if (_0x1 === fake1 || _0x1 === fake2 || _0x1 === fake3) {
-            alert("Incorrect password.");
-        }
-
+    try {
         const s1 = atob(real);
-        let s2 = "";
-        for (let i = 0; i < s1.length; i++) {
-            const ch = s1[i];
-            if (/[a-zA-Z]/.test(ch)) {
-                const a = ch <= "Z" ? 65 : 97;
-                s2 += String.fromCharCode( ((ch.charCodeAt(0) - a + 13) % 26) + a );
-            } else s2 += ch;
-        }
+        const s2 = rot13(s1);
         const REALPASS = atob(s2);
 
-        eval(`
-            if (_0x1 === REALPASS) {
-                _0x3.innerHTML = "🔓";
-                _0x3.classList.add("unlock");
-                _0x2.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
+        if (input === REALPASS) {
+            icon.innerHTML = "🔓";
+            icon.classList.add("unlock");
+            box.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
 
-                setTimeout(() => {
-                    _0x2.style.opacity = "0";
-                    _0x2.style.transform = "scale(0.9)";
-                }, 300);
+            setTimeout(() => {
+                box.style.opacity = "0";
+                box.style.transform = "scale(0.9)";
+            }, 300);
 
-                setTimeout(() => {
-                    _0x2.style.display = "none";
-                    _0x4.style.display = "block";
-                    _0x4.src = "kuba3.0.html";
-                }, 700);
+            setTimeout(() => {
+                box.style.display = "none";
+                frame.style.display = "block";
+                frame.src = "kuba3.0.html";
+            }, 700);
 
-            } else {
-                _0x2.style.animation = "shake 0.35s";
-                _0x2.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
-                _0x3.style.color = "#ff4d4d";
+        } else {
+            box.style.animation = "shake 0.35s";
+            box.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
+            icon.style.color = "#ff4d4d";
 
-                setTimeout(() => {
-                    _0x2.style.animation = "";
-                    _0x3.style.color = "white";
-                    _0x2.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
-                }, 400);
-            }
-        `);
-    })();
+            setTimeout(() => {
+                box.style.animation = "";
+                icon.style.color = "white";
+                box.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
+            }, 400);
+        }
+
+    } catch(e) {
+        console.error("Error decoding password:", e);
+    }
 }
 </script>
 
