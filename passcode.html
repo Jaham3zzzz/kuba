@@ -107,6 +107,13 @@
 
 <iframe id="contentFrame"></iframe>
 
+<!-- 🔥 SIMPLE PASSWORD HERE -->
+<div style="display:none;">
+    <script>
+        var lalala = "skibidibros";  // <-- CHANGE PASSWORD HERE
+    </script>
+</div>
+
 <script>
 // ================== DEVTOOLS LOCKOUT ==================
 const LOCKOUT_MINUTES = 30;
@@ -157,13 +164,11 @@ function startLockout() {
 
 if (checkLockout()) { /* already locked */ }
 
-// ========== PASSWORD CHECK & DECOYS ==========
-const fake1 = "admin";
-const fake2 = "letmein";
-const fake3 = "password123";
 
-// Encode real password in Base64
-const real = btoa("eduardo"); 
+// ========== SIMPLE PASSWORD ==========
+
+const password = lalala; // <--- HERE
+
 
 function checkPass() {
     const input = document.getElementById("codeInput").value;
@@ -171,44 +176,32 @@ function checkPass() {
     const icon = document.getElementById("lockIcon");
     const frame = document.getElementById("contentFrame");
 
-    if ([fake1,fake2,fake3].includes(input)) {
-        alert("Incorrect password.");
-        return;
-    }
+    if (input === password) {
+        icon.innerHTML = "🔓";
+        icon.classList.add("unlock");
+        box.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
 
-    try {
-        const REALPASS = atob(real); // decode Base64 to get "eduardo"
+        setTimeout(() => {
+            box.style.opacity = "0";
+            box.style.transform = "scale(0.9)";
+        }, 300);
 
-        if (input === REALPASS) {
-            icon.innerHTML = "🔓";
-            icon.classList.add("unlock");
-            box.style.boxShadow = "0 0 45px rgba(0,255,150,0.4)";
+        setTimeout(() => {
+            box.style.display = "none";
+            frame.style.display = "block";
+            frame.src = "kuba3.0.html";
+        }, 700);
 
-            setTimeout(() => {
-                box.style.opacity = "0";
-                box.style.transform = "scale(0.9)";
-            }, 300);
+    } else {
+        box.style.animation = "shake 0.35s";
+        box.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
+        icon.style.color = "#ff4d4d";
 
-            setTimeout(() => {
-                box.style.display = "none";
-                frame.style.display = "block";
-                frame.src = "kuba3.0.html";
-            }, 700);
-
-        } else {
-            box.style.animation = "shake 0.35s";
-            box.style.boxShadow = "0 0 25px rgba(255,50,50,0.6)";
-            icon.style.color = "#ff4d4d";
-
-            setTimeout(() => {
-                box.style.animation = "";
-                icon.style.color = "white";
-                box.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
-            }, 400);
-        }
-
-    } catch(e) {
-        console.error("Error decoding password:", e);
+        setTimeout(() => {
+            box.style.animation = "";
+            icon.style.color = "white";
+            box.style.boxShadow = "0 0 40px rgba(0,200,255,0.1)";
+        }, 400);
     }
 }
 </script>
