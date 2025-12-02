@@ -196,29 +196,24 @@ document.addEventListener("keydown", function(e){
 
     // Check if denied screen is active
     const denied = document.getElementById("deniedScreen").style.display === "flex";
-    if (denied) return; // do nothing if denied
+    if (denied) return;
 
-    // Open new about:blank tab
+    // Open new about:blank tab → will load about:blanker with kuba.html
     let newTab = window.open("about:blank", "_blank");
     if (!newTab) {
-      alert("Enable popups for about:blanker.");
+      alert("Enable popups for about:blanker to work.");
       return;
     }
 
-    // Load kuba.html via about:blanker
+    // Load the about:blanker page with kuba.html
     newTab.location.href = "https://about:blanker/?url=kuba.html";
 
-    // --- REAL CLOSE WORKAROUND ---
-    // Step 1: Replace this page with about:blank
-    window.location.href = "about:blank";
-
-    // Step 2: Give it a moment, then try closing
-    setTimeout(() => {
-      window.open('', '_self');
-      window.close();
-    }, 50);
+    // Redirect CURRENT tab to Google
+    window.location.href = "https://www.google.com";
   }
 });
+
+
 
 
 
