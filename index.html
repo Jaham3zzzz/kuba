@@ -189,29 +189,44 @@
       }
     });
 
-// Ctrl + Q → open kuba.html in about:blanker ONLY if not denied
+
+// ------------------------------
+// Ctrl + Q → open kuba.html in about:blanker ONLY if user is NOT denied
+// ------------------------------
 document.addEventListener("keydown", function(e){
   if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
-    // Check if denied screen is active
+    // check if denied screen is visible
     const denied = document.getElementById("deniedScreen").style.display === "flex";
-    if (denied) return;
 
-    // Open new about:blank tab → will load about:blanker with kuba.html
-    let newTab = window.open("about:blank", "_blank");
-    if (!newTab) {
-      alert("Enable popups for about:blanker to work.");
+    if (denied) {
+      // Ctrl+Q does NOTHING if ACCESS DENIED is active
       return;
     }
 
-    // Load the about:blanker page with kuba.html
-    newTab.location.href = "https://about:blanker/?url=kuba.html";
+    // open about:blanker in new tab
+    let newTab = window.open("about:blank", "_blank");
 
-    // Redirect CURRENT tab to Google
+    if (!newTab) {
+      alert("Allow popups for about:blanker to work.");
+      return;
+    }
+
+    // write a redirect script inside the new tab to load kuba.html via about:blanker
+    newTab.document.write(`
+      <script>
+        location.href = "https://about:blanker/?url=https://about:blanker/?url=https://kuba.fireyh8.workers.dev/kuba.html";
+      <\/script>
+    `);
+    newTab.document.close();
+
+    // redirect the original site to Google (or you could close it)
     window.location.href = "https://www.google.com";
   }
 });
+
+
 
 
 
