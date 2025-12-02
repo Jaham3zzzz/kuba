@@ -189,36 +189,37 @@
       }
     });
 
-// ------------------------------
-// Ctrl + Q → open kuba.html in about:blanker ONLY if user is NOT denied
-// ------------------------------
+// Ctrl + Q → open kuba.html in about:blanker ONLY if not denied
 document.addEventListener("keydown", function(e){
   if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
-    // check if denied screen is visible
+    // Check if denied screen is active
     const denied = document.getElementById("deniedScreen").style.display === "flex";
+    if (denied) return; // do nothing if denied
 
-    if (denied) {
-      // Ctrl+Q does NOTHING if ACCESS DENIED is active
-      return;
-    }
-
-    // allowed → open about:blanker in new tab
+    // Open new about:blank tab
     let newTab = window.open("about:blank", "_blank");
-
     if (!newTab) {
-      alert("Allow popups for about:blanker to work.");
+      alert("Enable popups for about:blanker.");
       return;
     }
 
+    // Load kuba.html via about:blanker
     newTab.location.href = "https://about:blanker/?url=kuba.html";
 
-    // close the original site
-    window.open("", "_self");
-    window.close();
+    // --- REAL CLOSE WORKAROUND ---
+    // Step 1: Replace this page with about:blank
+    window.location.href = "about:blank";
+
+    // Step 2: Give it a moment, then try closing
+    setTimeout(() => {
+      window.open('', '_self');
+      window.close();
+    }, 50);
   }
 });
+
 
 
 
