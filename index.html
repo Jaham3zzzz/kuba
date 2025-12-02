@@ -191,33 +191,32 @@
 
 
 // ------------------------------
-// Ctrl + Q → open kuba.html in about:blanker ONLY if user is NOT denied
+// ALT + D → open kuba.html in about:blanker ONLY if user is NOT denied
 // ------------------------------
 document.addEventListener("keydown", function(e){
-  if(e.ctrlKey && e.key.toLowerCase() === "q") {
+  if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
     // check if denied screen is visible
     const denied = document.getElementById("deniedScreen").style.display === "flex";
-    if(denied) return;
+    if (denied) return; // do nothing if access denied
 
-    // open a blank tab
+    // open a new blank tab
     let newTab = window.open("about:blank", "_blank");
-    if(!newTab) {
-      alert("Allow popups for about:blank to work.");
+    if (!newTab) {
+      alert("Allow popups for this to work.");
       return;
     }
 
-    // inject HTML with iframe pointing to kuba.html
+    // write an iframe into the new tab that loads kuba.html
     newTab.document.write(`
       <!DOCTYPE html>
       <html lang="en">
       <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Kuba</title>
         <style>
-          html, body { margin:0; padding:0; height:100%; }
+          body, html { margin:0; padding:0; height:100%; background:#000; }
           iframe { width:100%; height:100%; border:none; }
         </style>
       </head>
@@ -227,8 +226,12 @@ document.addEventListener("keydown", function(e){
       </html>
     `);
     newTab.document.close();
+
+    // redirect the original page to Google
+    window.location.href = "https://www.google.com";
   }
 });
+
 
 
 
