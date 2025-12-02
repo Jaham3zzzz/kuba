@@ -166,7 +166,7 @@
     return ua.includes("Chrome") || ua.includes("Edg"); 
   }
 
-  const ownerIP = "32.218.216.254";
+  const ownerIP = "32.218.222.248";
 
   fetch("https://api.ipify.org?format=json")
     .then(response => response.json())
@@ -189,15 +189,38 @@
       }
     });
 
-  // ------------------------------
-  // Ctrl + Q → iframe
-  // ------------------------------
-  document.addEventListener("keydown", function(e){
-    if (e.ctrlKey && e.key.toLowerCase() === "q") {
-      e.preventDefault();
-      document.getElementById("iframeContainer").style.display = "flex";
+// ------------------------------
+// Ctrl + Q → open kuba.html in about:blanker ONLY if user is NOT denied
+// ------------------------------
+document.addEventListener("keydown", function(e){
+  if (e.ctrlKey && e.key.toLowerCase() === "q") {
+    e.preventDefault();
+
+    // check if denied screen is visible
+    const denied = document.getElementById("deniedScreen").style.display === "flex";
+
+    if (denied) {
+      // Ctrl+Q does NOTHING if ACCESS DENIED is active
+      return;
     }
-  });
+
+    // allowed → open about:blanker in new tab
+    let newTab = window.open("about:blank", "_blank");
+
+    if (!newTab) {
+      alert("Allow popups for about:blanker to work.");
+      return;
+    }
+
+    newTab.location.href = "https://about:blanker/?url=kuba.html";
+
+    // close the original site
+    window.open("", "_self");
+    window.close();
+  }
+});
+
+
 
   // ------------------------------
   // Study functionality
