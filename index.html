@@ -205,32 +205,18 @@ document.addEventListener("keydown", function(e){
       return;
     }
 
-    // open about:blanker in new tab
-    let newTab = window.open("about:blank", "_blank");
+    // open kuba.html from the same repo/site
+    let newTab = window.open("kuba.html", "_blank");
 
     if (!newTab) {
-      alert("Allow popups for about:blanker to work.");
+      alert("Allow popups to open kuba.html.");
       return;
     }
 
-    // write a redirect script inside the new tab to load kuba.html via about:blanker
-    newTab.document.write(`
-      <script>
-        location.href = "https://about:blanker/?url=https://about:blanker/?url=https://kuba.fireyh8.workers.dev/kuba.html";
-      <\/script>
-    `);
-    newTab.document.close();
-
-    // redirect the original site to Google (or you could close it)
+    // redirect the original site (optional)
     window.location.href = "https://www.google.com";
   }
 });
-
-
-
-
-
-
 
 
   // ------------------------------
