@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Service Unavailable</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap');
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #111; /* Dark background */
+    color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .container {
+    text-align: center;
+    max-width: 600px;
+    padding: 40px;
+    background: #1a1a1a; /* Dark card */
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: fadeIn 2s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    animation: rotateLogo 3s linear infinite;
+  }
+
+  @keyframes rotateLogo {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin: 10px 0;
+    color: #0078D7; /* Microsoft blue accent */
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin-top: 10px;
+    line-height: 1.5;
+    color: #ccc;
+    animation: fadeText 2s ease forwards 1s;
+  }
+
+  @keyframes fadeText {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .error-code {
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: #888;
+    letter-spacing: 1px;
+    animation: fadeText 2s ease forwards 1.5s;
+  }
+
+  .underline {
+    display: inline-block;
+    width: 0;
+    height: 2px;
+    background: #0078D7;
+    margin-top: 10px;
+    animation: underlineAnim 2s ease forwards 1s;
+  }
+
+  @keyframes underlineAnim {
+    0% { width: 0; }
+    100% { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <!-- Microsoft-style logo (dark mode) -->
+    <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="22" height="22" fill="#F25022"/>
+      <rect x="26" y="0" width="22" height="22" fill="#7FBA00"/>
+      <rect x="0" y="26" width="22" height="22" fill="#00A4EF"/>
+      <rect x="26" y="26" width="22" height="22" fill="#FFB900"/>
+    </svg>
+
+    <h1>Service Unavailable</h1>
+    <div class="underline"></div>
+    <p>We’re sorry, but this service is temporarily unavailable.<br>Please try again later.</p>
+    <div class="error-code">Error Code: 503</div>
+  </div>
+</body>
+</html>
