@@ -201,24 +201,21 @@ document.addEventListener("keydown", function (e) {
     const newTab = window.open("about:blank", "_blank");
 
     if (newTab) {
-      newTab.document.write(`
-        <html>
-        <head><title>Loading…</title></head>
-        <body>
-          <script>
-            location.href = "kuba.html";
-          <\/script>
-        </body>
-        </html>
-      `);
-      newTab.document.close();
+      // fetch kuba.html content and inject it
+      fetch("kuba.html")
+        .then(response => response.text())
+        .then(html => {
+          newTab.document.open();
+          newTab.document.write(html);
+          newTab.document.close();
+        })
+        .catch(err => console.error("Failed to load kuba.html:", err));
     }
 
     // redirect current tab
     window.location.href = "https://app.blackbaud.com/signin/";
   }
 });
-
 
 
   // ------------------------------
