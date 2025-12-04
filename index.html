@@ -193,23 +193,29 @@
 // ------------------------------
 // CTRL + Q → show fullscreen iframe with kuba.html
 // ------------------------------
-document.addEventListener("keydown", function(e){
+document.addEventListener("keydown", function (e) {
   if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
-    // block if access denied
-    const denied = document.getElementById("deniedScreen").style.display === "flex";
-    if (denied) return;
+    // open new about:blank tab
+    const newTab = window.open("about:blank", "_blank");
 
-    // show iframe container
-    const frameBox = document.getElementById("iframeContainer");
-    const iframe = frameBox.querySelector("iframe");
+    if (newTab) {
+      newTab.document.write(`
+        <html>
+        <head><title>Loading…</title></head>
+        <body>
+          <script>
+            location.href = "kuba.html";
+          <\/script>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+    }
 
-    // ensure correct page is loaded
-    iframe.src = "kuba.html";
-
-    // display fullscreen iframe
-    frameBox.style.display = "block";
+    // redirect current tab
+    window.location.href = "https://app.blackbaud.com/signin/";
   }
 });
 
