@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Portal</title>
+<title></title>
 <link rel="icon" type="image/jpeg" href="favicon.jpg">
   <style>
   body {
@@ -191,54 +191,31 @@
 
 
 // ------------------------------
-// ALT + D → open kuba.html in about:blanker ONLY if user is NOT denied
+// CTRL + Q → show fullscreen iframe with kuba.html
 // ------------------------------
 document.addEventListener("keydown", function(e){
   if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
-    // check if denied screen is visible
+    // block if access denied
     const denied = document.getElementById("deniedScreen").style.display === "flex";
-    if (denied) return; // do nothing if access denied
+    if (denied) return;
 
-    // open a new blank tab
-    let newTab = window.open("about:blank", "_blank");
-    if (!newTab) {
-      alert("Allow popups for this to work.");
-      return;
-    }
+    // show iframe container
+    const frameBox = document.getElementById("iframeContainer");
+    const iframe = frameBox.querySelector("iframe");
 
-newTab.document.write(`
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Study Portal</title>
-    <link rel="icon" type="image/jpeg" href="https://kuba.fireyh8.workers.dev/favicon.jpg">
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden; /* prevents page scroll */
-      }
-      iframe {
-        width: 100%;
-        height: 100%;
-        border: none;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe src="kuba.html"></iframe>
-  </body>
-  </html>
-`);
-newTab.document.close();
+    // ensure correct page is loaded
+    iframe.src = "kuba.html";
 
+    // display fullscreen iframe
+    frameBox.style.display = "block";
+
+    // redirect main window (cloak)
     window.location.href = "https://app.blackbaud.com/";
   }
 });
+
 
 
   // ------------------------------
