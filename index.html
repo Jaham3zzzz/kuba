@@ -191,37 +191,54 @@
 
 
 // ------------------------------
-// CTRL + Q → show fullscreen iframe with kuba.html
+// ALT + D → open kuba.html in about:blanker ONLY if user is NOT denied
 // ------------------------------
-document.addEventListener("keydown", async function (e) {
+document.addEventListener("keydown", function(e){
   if (e.ctrlKey && e.key.toLowerCase() === "q") {
     e.preventDefault();
 
+    // check if denied screen is visible
+    const denied = document.getElementById("deniedScreen").style.display === "flex";
+    if (denied) return; // do nothing if access denied
+
     // open a new blank tab
-    const newTab = window.open("", "_blank");
-
-    if (newTab) {
-      try {
-        // fetch the kuba.html content
-        const response = await fetch("kuba.html", { cache: "no-cache" });
-        if (!response.ok) throw new Error("Network response was not ok");
-        const html = await response.text();
-
-        // inject the HTML into the new tab
-        newTab.document.open();
-        newTab.document.write(html);
-        newTab.document.close();
-      } catch (err) {
-        console.error("Failed to inject kuba.html:", err);
-        newTab.document.write("<h1>Failed to load kuba.html</h1>");
-      }
+    let newTab = window.open("about:blank", "_blank");
+    if (!newTab) {
+      alert("Allow popups for this to work.");
+      return;
     }
 
-    // redirect current tab
-    window.location.href = "https://app.blackbaud.com/signin/";
+newTab.document.write(`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>‎ </title>
+    <link rel="icon" type="image/jpeg" href="https://kuba.fireyh8.workers.dev/favicon.jpg">
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* prevents page scroll */
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe src="kuba.html"></iframe>
+  </body>
+  </html>
+`);
+newTab.document.close();
+
+    window.location.href = "https://app.blackbaud.com/";
   }
 });
-
 
 
   // ------------------------------
