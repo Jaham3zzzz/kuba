@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>𝔎𝔲𝔟𝔞 2.0</title>
+<title>𝔎𝔲𝔟𝔞 2.1‎</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/jpeg" href="favicon.jpg">
 <style>
@@ -54,9 +54,21 @@
   }
   #adminLogin:hover { background:#333; }
 
-  /* Fullscreen iframe */
-  #gameFrame { position: fixed; top:0; left:0; width:100%; height:100%; border:none; display:none; z-index:998; }
+ #gameFrame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+  z-index: 998;
 
+  /* NEW — prevents glitch */
+  opacity: 0;
+  background: #000;
+  transition: opacity 0.25s ease;
+}
   /* User ID & Active Users */
   #userNumber { position: fixed; bottom:10px; left:10px; color:white; font-size:14px; z-index:10000; }
   #activeUsersDisplay { position: fixed; bottom:10px; right:10px; background: rgba(0,0,0,0.8); padding:6px 10px; border-radius:6px; font-size:14px; color:white; z-index:10000; }
@@ -675,115 +687,220 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
-    authDomain: "stuff-8cfdc.firebaseapp.com",
-    databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
-    projectId: "stuff-8cfdc",
-    storageBucket: "stuff-8cfdc.appspot.com",
-    messagingSenderId: "327097823566",
-    appId: "1:327097823566:web:3442b4f46dbd2731abee1f"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-  const database = firebase.database();
-  let isAdmin = false;
+/* ---------------------------
+   FIREBASE INITIALIZATION
+----------------------------*/
+const firebaseConfig = {
+  apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
+  authDomain: "stuff-8cfdc.firebaseapp.com",
+  databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
+  projectId: "stuff-8cfdc",
+  storageBucket: "stuff-8cfdc.appspot.com",
+  messagingSenderId: "327097823566",
+  appId: "1:327097823566:web:3442b4f46dbd2731abee1f"
+};
 
-  // User Number
-  let userNumber = localStorage.getItem('userNumber');
-  if(!userNumber){
-    userNumber=Math.floor(Math.random()*900000)+100000;
-    localStorage.setItem('userNumber', userNumber);
-  }
-  document.getElementById('userNumber').textContent=`Your ID: ${userNumber}`;
+firebase.initializeApp(firebaseConfig);
 
-  // Active users
-  const userRef = database.ref('onlineUsers/'+userNumber);
-  userRef.set(true); userRef.onDisconnect().remove();
-  database.ref('onlineUsers').on('value', snap=>{
-    const users = snap.val()||{};
-    document.getElementById('activeUsersCount').textContent=Object.keys(users).length;
-  });
+const db = firebase.firestore();
+const auth = firebase.auth();
+const database = firebase.database();
 
-  // Ban check
-  async function checkBan(){
-    const doc = await db.collection('bans').doc(userNumber.toString()).get();
-    if(doc.exists){
-      document.getElementById('banOverlay').style.display='block';
-      throw new Error("Globally banned");
-    }
-  }
-  checkBan();
+let isAdmin = false;
 
-  function embedGame(url){
-    const frame=document.getElementById('gameFrame');
-    frame.src=url;
-    frame.style.display='block';
-    document.body.style.overflow='hidden';
-  }
-  function reloadPage(){ location.reload(); }
+/* ---------------------------
+   USER ID (Fix: ensures valid)
+----------------------------*/
+let userNumber = localStorage.getItem("userNumber");
 
-  const snowCount=100;
-  const container=document.querySelector('.snow-container');
-  const snowflakes=[];
-  for(let i=0;i<snowCount;i++){
-    const flake=document.createElement('div');
-    flake.className='snowflake';
-    const size=Math.random()*4+2;
-    flake.style.width=flake.style.height=size+'px';
-    flake.style.left=Math.random()*window.innerWidth+'px';
-    flake.style.top=Math.random()*window.innerHeight+'px';
-    container.appendChild(flake);
-    snowflakes.push({el:flake,x:parseFloat(flake.style.left),y:parseFloat(flake.style.top),speedY:Math.random()*1+0.5,speedX:Math.random()*0.5-0.25});
-  }
-  function animateSnow(){
-    snowflakes.forEach(f=>{ f.y+=f.speedY; f.x+=f.speedX;
-      if(f.y>window.innerHeight) f.y=-5;
-      if(f.x>window.innerWidth) f.x=0;
-      if(f.x<0) f.x=window.innerWidth;
-      f.el.style.top=f.y+'px'; f.el.style.left=f.x+'px';
-    });
-    requestAnimationFrame(animateSnow);
-  }
-  animateSnow();
-
-  async function adminLogin(){
-    try{
-      await auth.signOut();
-      const email=prompt("Enter admin email:"); if(!email) return;
-      const pw=prompt("Enter password:"); if(!pw) return;
-      const u = await auth.signInWithEmailAndPassword(email,pw);
-      if(u.user){ 
-        isAdmin=true; 
-        document.getElementById('banPopup').style.display='block'; 
-        alert("Admin logged in"); 
-      }
-    } catch(e){ alert("Login failed: "+e.message);}
-  }
-  auth.onAuthStateChanged(user=>{ isAdmin=!!user; });
-
-  async function banPlayer(){ if(!isAdmin) return alert("Admin only");
-    const id=document.getElementById('banNumber').value.trim();
-    if(!/^\d{6}$/.test(id)) return alert("Invalid 6-digit ID");
-    await db.collection('bans').doc(id).set({id: id, timestamp: firebase.firestore.FieldValue.serverTimestamp()});
-    alert(`User ${id} banned globally!`);
-  }
-  async function unbanPlayer(){ if(!isAdmin) return alert("Admin only");
-    const id=document.getElementById('banNumber').value.trim();
-    await db.collection('bans').doc(id).delete();
-    alert(`User ${id} unbanned!`);
-  }
-  async function viewBannedIds(){
-    const snap=await db.collection('bans').get();
-    const list = snap.docs.map(d=>d.id).join(", ");
-    alert("Banned IDs: "+(list||"None"));
-  }
-  function closeBanPopup(){ document.getElementById('banPopup').style.display='none'; }
-function openGameInNewTab(url) {
-    window.open(url, '_blank'); // opens in a new tab
+if (!userNumber || !/^\d{6}$/.test(userNumber)) {
+  userNumber = Math.floor(100000 + Math.random() * 900000);
+  localStorage.setItem("userNumber", userNumber);
 }
 
+document.getElementById("userNumber").textContent = `Your ID: ${userNumber}`;
+
+/* ---------------------------
+   ACTIVE USERS FIXES
+----------------------------*/
+const userRef = database.ref("onlineUsers/" + userNumber);
+userRef.set(true);
+userRef.onDisconnect().remove();
+
+database.ref("onlineUsers").on("value", snapshot => {
+  const users = snapshot.val() || {};
+  document.getElementById("activeUsersCount").textContent =
+    Object.keys(users).length;
+});
+
+/* ---------------------------
+   BAN CHECK FIXED
+----------------------------*/
+async function checkBan() {
+  try {
+    const doc = await db.collection("bans").doc(userNumber.toString()).get();
+
+    if (doc.exists) {
+      document.getElementById("banOverlay").style.display = "block";
+      document.body.style.overflow = "hidden";
+      return;
+    }
+  } catch (err) {
+    console.error("Ban check failed:", err);
+  }
+}
+
+checkBan();
+
+/* ---------------------------
+   GAME EMBED
+   Fix: Clear when closing
+----------------------------*/
+function embedGame(url) {
+    const frame = document.getElementById('gameFrame');
+
+    // Prepare iframe BEFORE showing (fixes the glitch)
+    frame.style.opacity = "0";
+    frame.style.display = "block";
+    frame.src = url;
+
+    // Disable scrolling immediately
+    document.body.style.overflow = "hidden";
+
+    // Smooth fade-in (prevents the 2-second flash/glitch)
+    setTimeout(() => {
+        frame.style.opacity = "1";
+    }, 10);
+}
+
+/* ---------------------------
+   MENU / RELOAD FIX
+----------------------------*/
+function reloadPage() {
+  const frame = document.getElementById("gameFrame");
+  frame.src = ""; // prevent audio from continuing
+  location.reload();
+}
+
+/* ---------------------------
+   SNOW FIX (Offscreen reset)
+----------------------------*/
+const snowCount = 100;
+const container = document.querySelector(".snow-container");
+const snowflakes = [];
+
+for (let i = 0; i < snowCount; i++) {
+  const flake = document.createElement("div");
+  flake.className = "snowflake";
+
+  const size = Math.random() * 4 + 2;
+
+  flake.style.width = size + "px";
+  flake.style.height = size + "px";
+  flake.style.left = Math.random() * window.innerWidth + "px";
+  flake.style.top = Math.random() * window.innerHeight + "px";
+
+  container.appendChild(flake);
+
+  snowflakes.push({
+    el: flake,
+    x: parseFloat(flake.style.left),
+    y: parseFloat(flake.style.top),
+    speedY: Math.random() * 1 + 0.7,
+    speedX: Math.random() * 0.5 - 0.25
+  });
+}
+
+function animateSnow() {
+  snowflakes.forEach(f => {
+    f.y += f.speedY;
+    f.x += f.speedX;
+
+    if (f.y > window.innerHeight) {
+      f.y = -10;
+      f.x = Math.random() * window.innerWidth;
+    }
+
+    if (f.x > window.innerWidth) f.x = 0;
+    if (f.x < 0) f.x = window.innerWidth;
+
+    f.el.style.top = f.y + "px";
+    f.el.style.left = f.x + "px";
+  });
+
+  requestAnimationFrame(animateSnow);
+}
+
+animateSnow();
+
+/* ---------------------------
+   ADMIN LOGIN FIXES
+----------------------------*/
+async function adminLogin() {
+  try {
+    await auth.signOut(); // ensure clean session
+
+    const email = prompt("Enter admin email:");
+    const pw = prompt("Enter password:");
+
+    if (!email || !pw) return;
+
+    const user = await auth.signInWithEmailAndPassword(email, pw);
+
+    if (user.user) {
+      isAdmin = true;
+      document.getElementById("banPopup").style.display = "block";
+      alert("Admin logged in");
+    }
+  } catch (e) {
+    alert("Login failed: " + e.message);
+  }
+}
+
+auth.onAuthStateChanged(user => {
+  isAdmin = !!user;
+});
+
+/* ---------------------------
+   BAN SYSTEM FIXES
+----------------------------*/
+async function banPlayer() {
+  if (!isAdmin) return alert("Admin only");
+
+  const id = document.getElementById("banNumber").value.trim();
+
+  if (!/^\d{6}$/.test(id)) return alert("Invalid 6-digit ID");
+
+  await db.collection("bans").doc(id).set({
+    id: id,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  alert(`User ${id} banned globally!`);
+}
+
+async function unbanPlayer() {
+  if (!isAdmin) return alert("Admin only");
+
+  const id = document.getElementById("banNumber").value.trim();
+
+  await db.collection("bans").doc(id).delete();
+  alert(`User ${id} unbanned`);
+}
+
+async function viewBannedIds() {
+  const snap = await db.collection("bans").get();
+  const list = snap.docs.map(d => d.id).join(", ");
+  alert("Banned IDs: " + (list || "None"));
+}
+
+function closeBanPopup() {
+  document.getElementById("banPopup").style.display = "none";
+}
+
+function openGameInNewTab(url) {
+  window.open(url, "_blank");
+}
 </script>
 </body>
 </html>
