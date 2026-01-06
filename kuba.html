@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1184,15 +1183,83 @@
     });
 
     // BAN SYSTEM
+    let isBanned = false; // State to track ban status locally
+
     async function checkBan() {
       try {
         const doc = await db.collection("bans").doc(userNumber.toString()).get();
         if (doc.exists) {
-          document.getElementById("banOverlay").style.display = "block";
-          document.body.style.overflow = "hidden";
+            isBanned = true;
+            enforceBanProtection();
         }
       } catch (err) { console.error("Ban check failed:", err); }
     }
+
+    // Function to vigorously enforce the ban overlay presence and style
+    function enforceBanProtection() {
+        // The secure loop function
+        const secureBan = () => {
+            if (!isBanned) return;
+            
+            let overlay = document.getElementById("banOverlay");
+            
+            // 1. Anti-Deletion: Recreate if missing
+            if (!overlay) {
+                overlay = document.createElement("div");
+                overlay.id = "banOverlay";
+                overlay.innerText = "BANNED - CONTACT ADMIN";
+                document.body.appendChild(overlay);
+            }
+
+            // 2. Anti-Modification: Enforce styles constantly
+            // We apply these inline to override any devtools attribute changes or stylesheet disabling
+            const requiredStyles = {
+                display: "block",
+                position: "fixed",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                background: "black",
+                color: "#FF3333",
+                fontSize: "32px",
+                fontWeight: "bold",
+                textAlign: "center",
+                paddingTop: "40vh",
+                zIndex: "2147483647", // Maximum z-index
+                pointerEvents: "all"
+            };
+
+            for (const [key, value] of Object.entries(requiredStyles)) {
+                if (overlay.style[key] !== value) {
+                    overlay.style[key] = value;
+                }
+            }
+
+            // 3. Enforce Body Scroll Lock
+            if (document.body.style.overflow !== "hidden") {
+                document.body.style.overflow = "hidden";
+            }
+
+            requestAnimationFrame(secureBan);
+        };
+
+        // Start the loop
+        secureBan();
+        
+        // 4. MutationObserver for immediate reaction (faster than RAF for DOM removals)
+        const observer = new MutationObserver((mutations) => {
+            if (isBanned) {
+                const overlay = document.getElementById("banOverlay");
+                if (!overlay) {
+                    // Re-creation handled by RAF loop, but we can trigger immediate recreation here
+                    secureBan(); 
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true });
+    }
+
     checkBan();
 
     // ADMIN LOGIC
