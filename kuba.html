@@ -1,1411 +1,840 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>𝔎𝔲𝔟𝔞 OS</title>
-  <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --ios-radius: 22%;
-            --dock-bg: rgba(255, 255, 255, 0.2);
-            --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-            --ios-ease: cubic-bezier(0.23, 1, 0.32, 1);
+            --primary: #6c5ce7;
+            --accent: #a29bfe;
+            --glass-bg: rgba(15, 15, 15, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(20px);
+            --text-main: #ffffff;
+            --text-muted: #b2bec3;
+            --navbar-height: 70px;
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            outline: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            outline: none;
         }
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: var(--font-main);
-            background-color: #2c2c2e;
-            position: relative;
-        }
+
         body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f0f0f;
+            /* BACKGROUND */
             background-image: url('https://i.imgur.com/5753Ply.jpeg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-        }
-
-        /* --- ADDED ADMIN/USER UI STYLES --- */
-        #userNumber { 
-            position: fixed; bottom:10px; left:10px; color:white; 
-            font-size:14px; z-index:10002; 
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-            pointer-events: none;
-        }
-        #activeUsersDisplay { 
-            position: fixed; bottom:10px; right:10px; 
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-            padding:6px 10px; border-radius:6px; font-size:14px; 
-            color:white; z-index:10002; 
-        }
-
-        /* ADMIN BUTTON POSITIONING - Above Dock */
-        #adminLogin { 
-            position: absolute; 
-            bottom: 190px; /* Roughly an inch above the dock area */
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 20px; 
-            font-size: 13px; font-weight: 500;
-            background: rgba(0,0,0,0.3); 
-            color: rgba(255,255,255,0.7); 
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 20px; 
-            cursor: pointer; 
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 200; 
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        #adminLogin:hover { 
-            background: rgba(255,255,255,0.2); 
-            color: white;
-            transform: translateX(-50%) scale(1.05); 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Ban Overlay - Higheswt Z-Index */
-        #banOverlay {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: black; color: #FF3333; font-size: 32px; font-weight: bold;
-            text-align: center; padding-top: 40vh; z-index: 20000; pointer-events: all;
-        }
-
-        /* Admin Popup */
-        #banPopup { 
-            display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); 
-            background: rgba(40,40,40,0.95); color:white; padding:20px; border-radius:18px; 
-            z-index: 20001; width:300px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-        }
-        #banPopup .close-btn { float:right; cursor:pointer; color: #ff5f5f; font-size:24px; line-height: 20px; }
-        #banPopup h2 { margin-bottom: 15px; font-size: 18px; text-align: center;}
-        #banPopup input { 
-            width:100%; margin-bottom:10px; padding:10px; border-radius: 8px; border:none;
-            background: rgba(255,255,255,0.1); color: white;
-        }
-        #banPopup button { 
-            margin:5px 0; width:100%; padding:10px; cursor:pointer; 
-            background: #007aff; border: none; border-radius: 8px; color: white; font-weight: 600;
-        }
-        #banPopup button:hover { opacity: 0.8; }
-        /* ---------------------------------- */
-
-        #wallpaper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://i.imgur.com/5753Ply.jpeg');
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
-            transition: transform 0.8s var(--ios-ease), filter 0.5s ease;
-        }
-        #wallpaper-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.2);
-            z-index: 1;
-            pointer-events: none;
-            transition: background 0.5s ease;
-        }
-        /* Search Active States */
-        body.search-open #wallpaper {
-            filter: blur(20px) brightness(0.7);
-            transform: scale(1.05);
-        }
-        body.search-open #screen {
-            transform: scale(0.95);
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        #screen {
+            color: var(--text-main);
             height: 100vh;
             width: 100vw;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            position: relative;
-            z-index: 2;
-            transition: transform 0.6s var(--ios-ease), opacity 0.6s ease;
-            background: transparent;
         }
-        body.app-open #wallpaper {
-            filter: blur(30px) brightness(0.6);
-            transform: scale(1.15);
-        }
-        body.app-open #screen {
-            transform: scale(0.92);
-            opacity: 0;
-        }
-        #status-bar {
-            height: 50px;
-            width: 100%;
-            padding: 0 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
+
+        body::before {
+            content: '';
             position: absolute;
-            top: 0;
-            z-index: 100;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        }
-        #pages-container {
-            flex: 1;
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: none;
-            scroll-behavior: smooth;
-        }
-        #pages-container::-webkit-scrollbar { display: none; }
-        .page {
-            min-width: 100vw;
-            height: 100%;
-            scroll-snap-align: start;
-            display: grid;
-            grid-template-columns: repeat(6, 110px);
-            grid-template-rows: repeat(4, 130px);
-            justify-content: center;
-            align-content: start;
-            padding-top: 110px;
-            grid-gap: 25px 50px;
-        }
-        .app-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s var(--ios-ease);
-        }
-        .app-icon {
-            width: 82px;
-            height: 82px;
-            border-radius: var(--ios-radius);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #fff;
-            font-size: 40px;
-            transition: transform 0.3s var(--ios-ease), box-shadow 0.3s;
-            overflow: hidden;
-        }
-        .app-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .app-item:active .app-icon {
-            transform: scale(0.82);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        }
-        .app-label {
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.4);
-            text-align: center;
-            width: 100%;
-        }
-        #dock-wrapper {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 40px;
-            gap: 20px;
-        }
-        #page-dots {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-        .page-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
-            transition: all 0.3s var(--ios-ease);
-        }
-        .page-dot.active {
-            background: rgba(255, 255, 255, 0.9);
-            width: 8px;
-        }
-        #dock {
-            background: var(--dock-bg);
-            backdrop-filter: blur(50px) saturate(200%);
-            -webkit-backdrop-filter: blur(50px) saturate(200%);
-            padding: 16px 24px;
-            border-radius: 40px;
-            display: flex;
-            gap: 22px;
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .dock-icon {
-            width: 74px;
-            height: 74px;
-            border-radius: var(--ios-radius);
-            transition: transform 0.3s var(--ios-ease);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: white;
-            font-size: 38px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .dock-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .dock-icon:hover { transform: scale(1.15) translateY(-10px); }
-        #app-window {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #fff;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transform: scale(0.8) translateY(100vh);
-            opacity: 0;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
             pointer-events: none;
-            transition: transform 0.6s var(--ios-ease), opacity 0.3s ease, border-radius 0.5s;
+        }
+
+        /* --- GLASS UTILITY --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- TOP NAVBAR --- */
+        #navbar {
+            width: 100%;
+            height: var(--navbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(to right, #fff, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            filter: drop-shadow(0 0 15px rgba(108, 92, 231, 0.3));
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 400px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 20px;
+            padding-left: 45px;
             border-radius: 50px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
         }
-        #app-window.open {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-            border-radius: 0;
+        
+        .search-icon {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 16px; pointer-events: none;
         }
-        #app-content {
-            flex: 1;
-            width: 100%;
-            overflow: hidden;
+
+        #search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.25);
         }
-        #app-content iframe {
-            width: 100%;
-            height: 100%;
+
+        /* --- BOTTOM UI ELEMENTS --- */
+
+        /* 1. ID Wrapper (Bottom Left) */
+        #id-wrapper {
+            position: fixed;
+            bottom: 10px;
+            left: 15px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column; /* Button on TOP of ID */
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        #admin-hover-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            background: var(--primary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
             border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
+
+        #id-wrapper:hover #admin-hover-btn {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        #overlay-id {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* 2. Active Users (Bottom Right) */
+        #overlay-active {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            z-index: 9999;
+            pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* 3. iPhone Home Bar - LOWERED POSITION */
         #home-bar-area {
             position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 40px; 
+            bottom: 0; /* Anchored to the very bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px; 
+            height: 20px; 
             display: flex;
             justify-content: center;
             align-items: flex-end; 
-            padding-bottom: 8px; 
+            padding-bottom: 6px; /* Small padding from edge */
             cursor: pointer;
-            z-index: 10;
+            z-index: 5002;
+            border-radius: 20px 20px 0 0;
         }
+        
         #home-bar {
-            width: 220px;
+            width: 130px;
             height: 5px;
-            background: #fff;
-            border-radius: 10px;
-            opacity: 0.8;
-            transition: opacity 0.3s, transform 0.2s;
+            background: #ffffff;
+            border-radius: 100px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            transition: 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
+        
         #home-bar-area:hover #home-bar {
-            opacity: 1;
+            transform: scaleY(1.3);
+            background: #f0f0f0;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
+        
         #home-bar-area:active #home-bar {
-            transform: scaleY(1.4);
+            transform: scale(0.95);
+            opacity: 0.8;
         }
-        #search-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+
+        /* --- MAIN CONTENT --- */
+        #main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            padding-bottom: 80px;
+            z-index: 5;
+            scroll-behavior: smooth;
             width: 100%;
-            height: 100%;
-            z-index: 50;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h2.section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        #exclusive-title::before {
+            content: ''; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 10px #FFD700;
+        }
+        
+        #library-title::before {
+            content: ''; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        #exclusiveGrid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .game-card {
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
+        
+        #exclusiveGrid .game-card:hover {
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .game-thumb-wrapper {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+        }
+
+        .game-thumb {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .game-card:hover .game-thumb { transform: scale(1.08); }
+
+        .game-info {
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .game-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- GAME WINDOW --- */
+        #app-window {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 5000;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding-top: 80px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease, backdrop-filter 0.3s;
+            transform: translateY(100vh);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
         }
-        #search-overlay.active {
-            pointer-events: auto;
-            opacity: 1;
+
+        #app-window.open { transform: translateY(0); }
+
+        #app-content { flex: 1; width: 100%; height: 100%; }
+        #app-content iframe { width: 100%; height: 100%; border: none; }
+
+        /* --- ADMIN POPUPS --- */
+        #banOverlay {
+            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+            background: black; color: #ff4757; font-size: 40px; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 2px;
+            text-align: center; padding-top: 40vh; z-index: 20000; pointer-events: all;
         }
-        #search-container {
-            width: 90%;
-            max-width: 400px;
-            transform: translateY(-20px);
-            transition: transform 0.4s var(--ios-ease);
+
+        #banPopup { 
+            display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); 
+            z-index: 20001; width:350px; padding:30px; border-radius: 24px;
+            background: rgba(15, 15, 20, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        #search-overlay.active #search-container {
-            transform: translateY(0);
+        #banPopup h2 { margin-bottom: 20px; font-size: 20px; text-align: center; color: var(--primary); }
+        #banPopup input { 
+            width:100%; margin-bottom:15px; padding:15px; border-radius: 12px; 
+            border:1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: white;
+            font-family: inherit;
         }
-        .search-bar-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            width: 100%;
+        #banPopup button { 
+            margin:5px 0; width:100%; padding:15px; cursor:pointer; 
+            background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700;
+            transition: 0.2s;
         }
-        #search-input {
-            width: 100%;
-            height: 50px;
-            border-radius: 15px;
-            border: none;
-            background: rgba(30, 30, 30, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 0 45px;
-            font-size: 19px;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            color: rgba(255,255,255,0.5);
-            font-size: 18px;
-        }
-        #search-results {
-            width: 90%;
-            max-width: 400px;
-            margin-top: 20px;
-            max-height: 60vh;
-            overflow-y: auto;
-            border-radius: 15px;
-            background: rgba(30, 30, 30, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            display: none;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .result-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .result-item:last-child { border-bottom: none; }
-        .result-item:hover { background: rgba(255,255,255,0.1); }
-        .result-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            overflow: hidden;
-            font-size: 20px;
-        }
-        .result-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .result-name {
-            color: white;
-            font-size: 17px;
-            font-weight: 500;
-        }
-        #close-search {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        #banPopup button:hover { opacity: 0.9; transform: scale(1.02); }
+        .close-btn { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px; color: #ff4757; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            #navbar { padding: 0 20px; height: 60px; }
+            .logo { font-size: 22px; }
+            .search-wrapper { width: 150px; }
+            #search-input { padding: 10px 15px; padding-left: 35px; }
+            .search-icon { left: 10px; font-size: 14px; }
+            
+            #exclusiveGrid { grid-template-columns: repeat(2, 1fr); }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+            
+            #id-wrapper { bottom: 10px; left: 10px; }
+            #overlay-active { bottom: 10px; right: 10px; }
+            #overlay-id, #overlay-active { font-size: 11px; padding: 6px 12px; }
         }
     </style>
 </head>
 <body>
 
-<!-- ADDED UI ELEMENTS -->
-<div id="userNumber"></div>
-<div id="activeUsersDisplay">Active Users: <span id="activeUsersCount">0</span></div>
-<div id="banOverlay">BANNED - CONTACT ADMIN</div>
+    <!-- ID WRAPPER (HOVER TO SEE ADMIN) -->
+    <div id="id-wrapper">
+        <button id="admin-hover-btn" onclick="adminLogin()">Admin Login</button>
+        <div id="overlay-id" class="glass-panel">
+            ID: <span id="userNumberDisplay" style="margin-left:5px">...</span>
+        </div>
+    </div>
 
-<!-- Admin Login Popup -->
-<div id="banPopup">
-  <span class="close-btn" onclick="closeBanPopup()">&times;</span>
-  <h2>Ban/Unban Player</h2>
-  <input type="text" id="banNumber" placeholder="Enter player ID" maxlength="6">
-  <button onclick="banPlayer()">Ban</button>
-  <button onclick="unbanPlayer()">Unban</button>
-  <button onclick="viewBannedIds()">View Banned IDs</button>
-</div>
-<!-- END ADDED UI ELEMENTS -->
+    <!-- ACTIVE USERS OVERLAY -->
+    <div id="overlay-active" class="glass-panel">
+        Active Users: <span id="activeUsersCount" style="margin-left:5px">0</span>
+    </div>
 
-<div id="wallpaper"></div>
-<div id="wallpaper-overlay"></div>
-<div id="search-overlay">
-    <div id="close-search" onclick="toggleSearch(false)"></div>
-    <div id="search-container">
-        <div class="search-bar-wrapper">
+    <!-- TOP NAVBAR -->
+    <div id="navbar" class="glass-panel">
+        <div class="logo">Kuba OS</div>
+        <div class="search-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="Search" autocomplete="off">
-        </div>
-        <div id="search-results"></div>
-    </div>
-</div>
-
-<div id="screen">
-    <div id="status-bar">
-        <div id="time">9:41 AM</div>
-        <div id="date">Sunday, December 28</div>
-    </div>
-    
-    <!-- PAGES CONTAINER -->
-    <div id="pages-container">
-        <div class="page" id="page1">
-            <div class="app-item" onclick="embedGame('https://super-violet-7c82.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.6989633fb434ae22b5c2a5c9e2bb4c26?rik=Ms6FCXQloBgxmg&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Geometry Dash Subzero</div>
-            </div>
-                        <div class="app-item" onclick="embedGame('https://holy-sky-d745.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://m.media-amazon.com/images/M/MV5BMmMwYzZjMzAtN2I3Ny00MTdhLTg1Y2YtNDZiMzhhODY3ZjJjXkEyXkFqcGc@._V1_QL75_UX190_CR0,2,190,281_.jpg"></div>
-                <div class="app-label">Friday Night Funkin</div>
-            </div>
-                                    <div class="app-item" onclick="embedGame('https://crimson-waterfall-f995.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://avatars.githubusercontent.com/u/39322951?s=280&v=4"></div>
-                <div class="app-label">Csgoclicker</div>
-            </div>
-                                                <div class="app-item" onclick="embedGame('https://billowing-bush-698f.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://m.media-amazon.com/images/I/71Ing8m2GYL.png"></div>
-                <div class="app-label">Find The Alien</div>
-            </div>
-                 <div class="app-item" onclick="embedGame('https://lingering-surf-e27b.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg"></div>
-                <div class="app-label">GTA: Vice City</div>
-            </div>
-                             <div class="app-item" onclick="embedGame('https://winter-waterfall-d092.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://mines.gen.in/wp-content/uploads/2024/11/maxresdefault-3.jpg"></div>
-                <div class="app-label">Stake Mines</div>
-            </div>
-        </div>
-        <div class="page" id="page2">
-            <div class="app-item" onclick="embedGame('https://resplendent-palmier-8c6a5d.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.99388c093ab0db9347d6ecfd99370474?rik=2ISiCYnsT4GNOA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Fruit Ninja</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cerulean-snickerdoodle-f3d692.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.0HdCPpdluIYEtiqIC77xGwHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Football Legends</div>
-            </div>
-            <div class="app-item" onclick="embedGame('movie.html')">
-                <div class="app-icon"><img src="https://stylebyemilyhenderson.com/wp-content/uploads/2020/04/UpdatedEmily-Henderson-Current-Animated-Movies-1670x1541.jpg"></div>
-                <div class="app-label">Movies</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://shimmering-cheesecake-937833.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.l8xk37EvBTR8CL0RpPftAQHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Retro Highway</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://stalwart-klepon-784ebe.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.X-k2bbsignNh-jtrFUlAugHaHa?cb=12&w=512&h=512&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Stickman Hook</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://gilded-genie-58d828.netlify.app/')">
-                <div class="app-icon"><img src="https://image.winudf.com/v2/image1/ZnJlZXBsYXkuY3Jvd2RydW4uY29tX2Jhbm5lcl8xNjM3MDc2MjUzXzA0OQ/banner.jpg?fakeurl=1&w=1200"></div>
-                <div class="app-label">Count Master</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://voluble-horse-2cfbce.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.O7Zbplj_YizcgRXuimGQrwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">OvO</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://resplendent-cannoli-c47d3e.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.YYpHf7mwlx4MEvsHt_otjQHaD4?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Cupcake 2048</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://rad-halva-cd4cc1.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.2998fc224fd74477acf630cb2625b17b?rik=%2bp3XG0LWCN9Fyw&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Drift Boss</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://relaxed-salamander-367e3e.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.ccAj9Qu50cIkXxrFHQsz7gHaEL?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">2 Player Mini Games</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://stirring-fenglisu-0afb18.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/Nsh4CmV0oWg/maxresdefault.jpg"></div>
-                <div class="app-label">Bad Parenting</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://leafy-kashata-f83d89.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.y4ku8S8edPDcG2q7fzPguAHaFm?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Tag</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://glistening-duckanoo-afe4fb.netlify.app/')">
-                <div class="app-icon"><img src="https://www.blurrygames.com/wp-content/uploads/2025/09/Blaze-Drifter.webp"></div>
-                <div class="app-label">Blaze Drifter</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://willowy-tanuki-97a60d.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.sVOku8N2vgaYoLUraZHVxQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Crazy Motorcycles</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://creative-tarsier-16110c.netlify.app/')">
-                <div class="app-icon"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/38.png"></div>
-                <div class="app-label">FNAF 1</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zippy-phoenix-73b81e.netlify.app/')">
-                <div class="app-icon"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/39.png"></div>
-                <div class="app-label">FNAF 2</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://peaceful-bunny-78a0f8.netlify.app/')">
-                <div class="app-icon"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/40.png"></div>
-                <div class="app-label">FNAF 3</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://willowy-cheesecake-09355e.netlify.app/')">
-                <div class="app-icon"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/41.png"></div>
-                <div class="app-label">FNAF 4</div>
-            </div>
-        </div>
-
-        <div class="page" id="page3">
-            <div class="app-item" onclick="embedGame('https://peaceful-sunshine-4d36f8.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.AacqfiZs8GvV56hXwaIgDwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Among Us</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zesty-gecko-5d9698.netlify.app/')">
-                <div class="app-icon"><img src="https://escaperoad2.org/data/image/what-is-escape-road-2-er2.png"></div>
-                <div class="app-label">Escape Road 2</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://creative-melba-87e471.netlify.app/')">
-                <div class="app-icon"><img src="https://wallpaperaccess.com/full/7145111.png"></div>
-                <div class="app-label">1v1.lol</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zippy-kangaroo-1f6637.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/2dLD1iWHz9U/maxresdefault.jpg"></div>
-                <div class="app-label">A Day In The Office</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zesty-paprenjak-423e0b.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.7eVggBVfXcynxy9CunCeRwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Duck life Battle</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://silly-semolina-b60400.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.4USnYTp6w9wm1FY0hPa-MAHaEU?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Idle Breakout</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://famous-torrone-97e76f.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.Xo-lTRetb-bRWXBAbHtmSwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Iron Snout</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://chipper-phoenix-97bc28.netlify.app/')">
-                <div class="app-icon"><img src="https://allroblox.com/wp-content/uploads/2025/02/blade-ball-2.jpeg"></div>
-                <div class="app-label">Blade Ball</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://clinquant-faun-4cb47e.netlify.app/')">
-                <div class="app-icon"><img src="https://tse2.mm.bing.net/th/id/OIP.Id_ojyc51qR0SwUklOiGlgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">a bite at freddy's</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://eloquent-dolphin-6a528f.netlify.app/')">
-                <div class="app-icon"><img src="https://lh3.googleusercontent.com/_ZuazlAYNUAmHfHABRjLjE8rIpwn1EXhzVlZwU5iG-V6wQtfMn1PX7dZHeIR7kHybzk=h900"></div>
-                <div class="app-label">Candy Crush</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://ornate-gecko-e4ed3c.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.7u7a63uRHZxoxktB6o7eIwHaEo?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Hollow Night</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://melodious-cheesecake-6d895e.netlify.app/')">
-                <div class="app-icon"><img src="https://recoilgame.net/wp-content/uploads/2024/03/Recoil-300x300.jpg"></div>
-                <div class="app-label">Recoil</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://dulcet-phoenix-54e225.netlify.app/')">
-                <div class="app-icon"><img src="https://tse2.mm.bing.net/th/id/OIP.8ZUDLedLB-TwYxwsDIYviwAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Retro Bowl Collage (Fixed!)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cerulean-yeot-85c94f.netlify.app/')">
-                <div class="app-icon"><img src="https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/TheLostBall.png"></div>
-                <div class="app-label">Rolling Forests</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://vocal-begonia-6b093a.netlify.app/')">
-                <div class="app-icon"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1131390/ss_603cc0936250511ea71d9467082c1f9b72ba0565.1920x1080.jpg?t=1567547034"></div>
-                <div class="app-label">Fluid Simulation</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://magical-tartufo-05b15d.netlify.app/')">
-                <div class="app-icon"><img src="https://tse2.mm.bing.net/th/id/OIP.Y6akAAbc8A6zp5dhqG58KAHaED?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">R.E.P.O</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://broken-snow-6cf9.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://tse2.mm.bing.net/th/id/OIP.OJbAuAZ0DheC2rJJznVtVAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Drive Mad</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://imaginative-arithmetic-deeb09.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ibb.co/rKh5T3KW/image.png"></div>
-                <div class="app-label">Wheelie Life (Update)</div>
-            </div>
-        </div>
-
-        <div class="page" id="page4">
-            <div class="app-item" onclick="embedGame('https://magenta-biscuit-9f0165.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.QAPpCTY7lR0Ofo5w2l6BRAHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Unicycle Hero</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://quiet-crisp-38718d.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.THckrV-rsMX4P0KNJlK79QHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Subway Surfers</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://lingering-firefly-b06e.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/41c7ae4db13e7d7596bb0528f40a4012/monster-tracks.png"></div>
-                <div class="app-label">Monster Tracks</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zippy-treacle-7a352f.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.e1d5be6be3de1ad9e1a6bc8b2495e886?rik=Fi0tMl39YPWr5w&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Cut The Rope Time Travel</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://tubular-syrniki-50bf0e.netlify.app/')">
-                <div class="app-icon"><img src="https://geometrylite.io/data/image/game/ragdoll-hit.png"></div>
-                <div class="app-label">Ragdoll Hit</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://tangerine-rugelach-abe006.netlify.app/')">
-                <div class="app-icon"><img src="https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/9b373b5219cd66a82389d81d7cda8e23/yohoho-io.jpeg"></div>
-                <div class="app-label">Yohoho.io</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://chic-bienenstitch-b9e4d7.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.c801faebc9a18dad80139ddec4eb69dc?rik=hhfttnuAa3vJFA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Super Stickman Golf</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://glittering-swan-4b911c.netlify.app/')">
-                <div class="app-icon"><img src="https://zapgames.io/data/image/game/rocket-goal.jpg"></div>
-                <div class="app-label">Rocket Goal</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://enchanting-hotteok-a20ea4.netlify.app/')">
-                <div class="app-icon"><img src="https://media.explodegames.com/photos/large/88_88-game.jpg?_1670423608"></div>
-                <div class="app-label">Hyper Snake</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://visionary-croquembouche-7a0f70.netlify.app/')">
-                <div class="app-icon"><img src="https://ozogames.com/wp-content/uploads/2025/09/Driftwave-image.webp"></div>
-                <div class="app-label">Drift Wave (Fixed)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://guileless-bombolone-c07d3b.netlify.app/')">
-                <div class="app-icon"><img src="https://store-images.s-microsoft.com/image/apps.42304.13646312602223146.fc3d6529-2147-49fc-bfda-1963fcd8fa65.7c7789ad-4b93-43aa-877f-fbc7b5271181"></div>
-                <div class="app-label">Adventure Drivers</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://musical-kheer-d0a23c.netlify.app/')">
-                <div class="app-icon"><img src="https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-635169-52.jpg"></div>
-                <div class="app-label">Touchdowners</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://chimerical-sundae-bd063a.netlify.app/')">
-                <div class="app-icon"><img src="https://geometrydashwave.com/data/image/game/We%20Skate.png"></div>
-                <div class="app-label">We Skate (Fixed)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://storied-smakager-b6980f.netlify.app/')">
-                <div class="app-icon"><img src="https://dreadheadparkour.online/dreadhead-parkour.webp"></div>
-                <div class="app-label">Dreadhead Parkour</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://starlit-begonia-83699b.netlify.app/')">
-                <div class="app-icon"><img src="https://es.pinkbike.org/246/sprt/i/share/grimdonutgame.jpg"></div>
-                <div class="app-label">Pinkbikes The Grim Donut</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://beautiful-fox-f4c5ed.netlify.app/')">
-                <div class="app-icon"><img src="https://golforbitgame.com/wp-content/uploads/2025/10/Golf-Orbit.webp"></div>
-                <div class="app-label">Golf Orbit</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://monumental-twilight-f1a341.netlify.app/')">
-                <div class="app-icon"><img src="https://www.drift-boss.cc/uploads/games/main/img_68a85c987cf14.jpg"></div>
-                <div class="app-label">Survival Race (OG)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://precious-sopapillas-914a2e.netlify.app/')">
-                <div class="app-icon"><img src="https://cdn.jsdelivr.net/gh/gn-math/covers@main/428.png"></div>
-                <div class="app-label">FNAF 4 Halloween</div>
-            </div>
-        </div>
-
-        <div class="page" id="page5">
-            <div class="app-item" onclick="embedGame('https://incomparable-pegasus-7d6a74.netlify.app/')">
-                <div class="app-icon"><img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3664820/5a38bbd2d1ed7118e4818fd48c33294f64e1a3c5/header.jpg?t=1747706268"></div>
-                <div class="app-label">SandBoxels</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://black-band-dbff.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.-F4aFPFR0z2PTHGnw1NFtAHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Geometry Dash</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://radiant-choux-1a15f7.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.rC_wi2pze6F4msmYEorg4AHaDt?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Clash Royale (Real)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://genuine-empanada-faf1ce.netlify.app/')">
-                <div class="app-icon"><img src="https://smash-karts.org/cache/data/image/game/screenshot_1719392717-m374x209.png"></div>
-                <div class="app-label">kart Bros</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://timely-tiramisu-9bb463.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.76a3cb7ee724bb2c8ceaf694c90cf499?rik=KHArqnn4FIOoAg&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Angry Birds Space</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://famous-fox-dec504.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.3t5DISFg0gnT39Q16z-jUQHaEH?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">War The Nights</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://aquamarine-empanada-408492.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.GNFcydloiWizYJm1ybxtNgHaDd?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Get Yoked</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://resonant-chebakia-eb8a2d.netlify.app/')">
-                <div class="app-icon"><img src="https://images.sftcdn.net/images/t_optimized,f_auto/p/3dfc5f54-19c3-42ca-a466-dbd33245748c/2417889023/bacon-may-die-screenshot.jpg"></div>
-                <div class="app-label">Bacon May Die</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://frolicking-brigadeiros-7c8f03.netlify.app/')">
-                <div class="app-icon"><img src="https://eggycar2.io/data/image/eggy-car-game.jpg"></div>
-                <div class="app-label">Eggy Car</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cosmic-bublanina-6d7709.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP._lZJJd7YR2dCg_WbL2NliwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Appel</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://willowy-crostata-839e22.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.Uhr4pC9Y5L63rWdmKxD04AHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Gun Spin</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://rad-donut-848f4f.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.b1280ec009c6948d15e20c22e120e51c?rik=uLeDpiMFvHMNNQ&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Mario Party (DS)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://tubular-fudge-9ae668.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.d3c824000c21c1299fa9ce14459cb4ca?rik=ZsygaCEON0n5ug&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Lego Ninjago (DS)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://remarkable-banoffee-409e3a.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.52acc25e64a21051d90f21f5a02c5462?rik=F3e9r1mApMmxzA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">GTA ChinaTown (DS)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://meek-florentine-28a84e.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/CalaFNhzDI0/maxresdefault.jpg"></div>
-                <div class="app-label">Batman DC 2 (DS)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://timely-fox-7b338b.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.NIqfRBY-t4Rr6MSI8jt-owHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">STAR WARS Complete Legacy (DS)</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://endearing-kitsune-65701d.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/F1xcj9Vh_o8/maxresdefault.jpg"></div>
-                <div class="app-label">Infinite Craft</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://silly-dieffenbachia-1cdca9.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.ca72b99eacd692e1d378ff98156083d2?rik=7dZAFh%2bJNA6Ulg&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Undertale</div>
-            </div>
-        </div>
-
-        <div class="page" id="page6">
-            <div class="app-item" onclick="embedGame('https://resilient-axolotl-adf087.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.JPVvnVzlC-ynDLwmztaa9QHaEK?rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Mario Combat</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://preeminent-manatee-0c70ee.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.xoYQIogFckRzklIuWhmsaAHaEW?rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">99% Lose Obby</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cool-hamster-605edb.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.Uw8co_9sHB9Gct8DQH3oSAHaFi?r=0&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Dad N Me</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://steady-florentine-fe58f0.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.cW4OFbIO2TD0EBlr6S9CWwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Stickman RPG</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://capable-arithmetic-9babbb.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/vzYYpS48R1g/maxresdefault.jpg"></div>
-                <div class="app-label">SandTres</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://quiet-kelpie-d8daea.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.d0bf684a7a0bc8d2a7a8d1388cb4d404?rik=2cFJq3TqhDxpRA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Minecraft</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://fastidious-sunshine-49b466.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.4da718925bdb511e83968d87079c2022?rik=m8E%2bk5m5xaBVGw&riu=http%3a%2f%2fwww.intomobile.com%2fwp-content%2fuploads%2f2011%2f08%2fJetpackJoyride_TitleCard.jpg&ehk=nBy%2bpT0VPPfZyaNxusYdEaqc60fDrJvzuvfUI5AA0f4%3d&risl=&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Jetpack Joyride</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://thriving-chebakia-ca798d.netlify.app/')">
-                <div class="app-icon"><img src="https://miro.medium.com/1*RqJKuyUx0X6WqC2-3WhCsw.jpeg"></div>
-                <div class="app-label">Crossy Road</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://hammerplay.cdn.msnfun.com/9ng6vdg4354c/v20/index.html?msstart_sdk_init=eyJwYXJlbnRPcmlnaW4iOiJodHRwczovL3d3dy5tc24uY29tIiwiY2xpZW50SWQiOiIzNzFCOTAyNThBOUM2OTk5MjVFRjg2N0I4QjI0NjhGQSIsImxvY2FsZSI6ImVuLX...')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.hqMqw56qhSKoH9oCRIWojwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Penalty Shooter</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://astounding-jalebi-92bc1d.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.92dfa4f0ecfe63bbc6fec12ff16dc5ef?rik=Gp1c3i71K4Ec9w&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Solar Smash</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://vocal-moonbeam-e6a9b6.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.ef77456c550751553dae99afba85bd2c?rik=XFHs06OS6Jww7Q&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Retro Bowl</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://leafy-daffodil-75ff7c.netlify.app/')">
-                <div class="app-icon"><img src="https://preview.redd.it/plinko-v0-w04f863eh2lc1.jpeg?auto=webp&s=c365fbbea9e92b5e724ea84db10eaa73d99e4410"></div>
-                <div class="app-label">Plinko</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://astonishing-lolly-ed6d65.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.ydBsXX0ZjKTLEX2hmnon_QHaDG?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Football Bros</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://jsitor.com/preview/bBv069i3U7B')">
-                <div class="app-icon"><img src="https://tse2.mm.bing.net/th/id/OIP.ZskFVecWkZGpvlYE524C5QHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Run 3</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://glittery-longma-a693fd.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/3ZHhodaMNf8/maxresdefault.jpg"></div>
-                <div class="app-label">apes vs Helium</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cerulean-belekoy-f09d64.netlify.app/')">
-                <div class="app-icon"><img src="https://wp.clutchpoints.com/wp-content/uploads/2025/10/Brawl-Stars-Brawl-Talk-shows-new-Brawler-Stranger-Things-event.jpg"></div>
-                <div class="app-label">Brawl Stars</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://glowing-treacle-0d78fd.netlify.app/')">
-                <div class="app-icon"><img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a5a54e10-b0d5-43bc-9d8a-e952f1d6ee96/dhnomv2-c4376d38-83e7-4173-9acc-08322f4a8b17.png/v1/fill/w_1032,h_775,q_70,strp/tomb_of_the_mask_logo_by_saeedferrari2k9_dhnomv2-pre.jpg"></div>
-                <div class="app-label">Tomb Of The Mask</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://luxury-pie-0ee6f7.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.YvGFFApITkaAeP31D_V3vgHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Uno</div>
-            </div>
-        </div>
-
-        <div class="page" id="page7">
-            <div class="app-item" onclick="embedGame('https://chimerical-kringle-abd70c.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.861a4c207c1a46f26e7f2263dd28d4be?rik=CyqsC0WFJ46QHA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">DouchBag Beach-Club</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://endearing-ganache-fa43bb.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/JydFMvxeSE0/hqdefault.jpg"></div>
-                <div class="app-label">DouchBag Chick</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://deluxe-faloodeh-785bdc.netlify.app/')">
-                <div class="app-icon"><img src="https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-810289-52.jpg"></div>
-                <div class="app-label">Liquid Soccer</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://startling-yeot-329f28.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.ULV4D8g7qoHN9ihkT7pbCwHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Monkey Mart</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://elaborate-sfogliatella-313549.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP._xw2Z9PzauJNFkkp8xDaowHaEU?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Tiny Fishing</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cosmic-raindrop-c8dd6b.netlify.app/')">
-                <div class="app-icon"><img src="https://baseballbros.io/splash.jpg"></div>
-                <div class="app-label">Baseball Bros</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://imaginative-froyo-589f94.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.gDm4VteNDhv__BHaEZ-ZtQHaDt?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Bit-Life</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://elegant-marigold-2108cf.netlify.app/')">
-                <div class="app-icon"><img src="https://external-preview.redd.it/table-tennis-world-tour-v0-62M0XdaQckoTVXbTw6apMJ7dtPMyNxqwMH67CqLErfA.jpg?auto=webp&s=eb3e9150c01862caf50a1f001f775edff2681c8a"></div>
-                <div class="app-label">Table Tennis</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://whimsical-creponne-ef862a.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.67iZywInioJRqEBdOlOPQQHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Toss The Turtle</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://graceful-naiad-f7767d.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.fd3rLIAYj7WAVbS6oAcFtAHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Cluster Rush</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://peaceful-kringle-1180d5.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.AsxM2u57ZyVDwrjrE1fEegHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Space Waves</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://idyllic-biscuit-9cf9e8.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.AX0OoWRmZMT9e0g1w503UgHaEK?rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Poly-Track</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://ornate-macaron-310903.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.QLCWr2ct8nKrhaIBnd_KsAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">The Binding Of Issac</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://singular-cuchufli-70aee8.netlify.app/')">
-                <div class="app-icon"><img src="https://ragdollarcher.com/wp-content/uploads/2024/11/Ragdoll-Archers-.webp"></div>
-                <div class="app-label">Ragdol Archers</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://playful-squirrel-b355e3.netlify.app/')">
-                <div class="app-icon"><img src="https://szgames.net/wp-content/uploads/2025/04/tunnel-rush.webp"></div>
-                <div class="app-label">Tunnel Rush</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://aesthetic-tapioca-3d2b1d.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.cGNVj1eSPUSQQD7SybswJgHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Getaway Shootout</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://green-mud-cf30.fireyh8.workers.dev/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.4a2JT7bxonuRQPdN9jnp_QHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Balatro</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://jolly-cat-322efe.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.WZ-roQyGeuqSKd9rfLd2vgHaDt?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">BTD6</div>
-            </div>
-        </div>
-
-        <div class="page" id="page8">
-            <div class="app-item" onclick="embedGame('https://inspiring-cuchufli-f303a2.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.8yX4Xrg2f53OijlDHBI3NAHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Block Blast</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://effortless-tarsier-957be7.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.rRRif92M-c8uqaY902sAuAAAAA?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Henry Stickmin</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://jade-seahorse-572323.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.1058adcb09ffe3a2d983ec274d422bc2?rik=3jPrWiDl%2bQLAdA&pid=ImgRaw&r=0"></div>
-                <div class="app-label">MotoXM 3</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://shimmering-sorbet-9fd94a.netlify.app/')">
-                <div class="app-icon"><img src="https://tse4.mm.bing.net/th/id/OIP.7wJ9InZ2dd9IJTAj65fmbwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Basket Bros</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://zesty-pudding-a2a8e5.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.8IPfil6f90_E6fZAqSnzCwHaEH?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Pixel-Shooter</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://inquisitive-bublanina-6ea52c.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.64220ae2f476f56573353ab2e1b81a2d?rik=buQuyofSgQ%2fVwg&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Rooftop Sniper</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://nimble-empanada-896d02.netlify.app/')">
-                <div class="app-icon"><img src="https://www.drifted.com/wp-content/uploads/2018/10/scrap-metal-3-full-size.jpg"></div>
-                <div class="app-label">Scrap Metal 3D</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://sparkly-faloodeh-cf9edf.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.1AZucEoKrq2AdsuE9fuYlAHaDt?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Snowball IO</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://calm-swan-8164ab.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.JQdqiXKeLVvMs1r3KXnTtwHaDt?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Snow Rider 3D</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://relaxed-marigold-f9d973.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.wTY8W_LmBRVwt19ynY2sEgHaF7?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Zach Survival</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://gregarious-jalebi-88ba12.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.1mmmNl_uv_AzCHTp1SkCyQHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Backyard Baseball</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://startling-fudge-2abe50.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.3b597c11d947425a3a6d481c6023cf1b?rik=cpYrIK0Q1SKsyQ&riu=http%3a%2f%2fimages5.fanpop.com%2fimage%2fphotos%2f29000000%2fPlants-vs-Zombies-Wallpaper-plants-vs-zombies-29019425-1900-1200.jpg&ehk=9hOOm%2fDY8EcKOhxcgnZbRB3p6s4aQBHPEOKnrTuanvQ%3d&risl=&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Plants vs Zombies</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://silver-semifreddo-3ea0d7.netlify.app/')">
-                <div class="app-icon"><img src="https://tse3.mm.bing.net/th/id/OIP.lKxDALL7WEj5c6FbrvQCRwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Bob The Robber</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://brilliant-sprite-3f39ef.netlify.app/')">
-                <div class="app-icon"><img src="https://tse1.mm.bing.net/th/id/OIP.3UBw6zwpmoCQyEiDRwJ1SgHaFj?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3"></div>
-                <div class="app-label">Bob The Robber 2</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://comfy-crisp-17a9ee.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/TJyE_LGy8Ew/maxresdefault.jpg"></div>
-                <div class="app-label">Bob The Robber 5</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://subtle-peony-2c8a23.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.kfCWk5a4blAovlndWvCn_AAAAA?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">DouchBag Life</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://inspiring-fenglisu-b18545.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.WHcesvm9_j0_VWijXn9PQgHaEM?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">DouchBag Workout</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://tangerine-piroshki-483b28.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ytimg.com/vi/FbqRpEbVvxo/maxresdefault.jpg"></div>
-                <div class="app-label">DouchBag Workout 2</div>
-            </div>
-        </div>
-
-        <div class="page" id="page9">
-            <div class="app-item" onclick="embedGame('https://starlit-pithivier-7a3e46.netlify.app/')">
-                <div class="app-icon"><img src="https://i.ibb.co/n8mnzFcK/Screenshot-20250503-154118.png"></div>
-                <div class="app-label">Extension Rem</div>
-            </div>
-            <div class="app-item" onclick="openGameInNewTab('https://www.cbc.ca/kidscbc2/content/games/hockey_hero/index.html')">
-                <div class="app-icon"><img src="https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/7ca343018f8c8339a24a7285cf50db47/hockeystars.png"></div>
-                <div class="app-label">Hockey Stars</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://stellular-gnome-6d76fb.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.k2RbG7UOQKAkxfMQsnNCIAAAAA?cb=iwc2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Clash Royale</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://aesthetic-heliotrope-0fffe2.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.l7kno7jkB9jjNBanK9LTGwHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Agar.io</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://musical-chimera-85bc22.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.0kjDIVbjDepS3fJ9EFhDzwHaFj?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Basket Random</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://peppy-shortbread-f69b2e.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.XRfQMRij31Uty9Jnzh1akgHaJ4?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Knightmare</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://lovely-sprinkles-a2c8ed.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.d5xc4WbwDXyio519gSYEVAHaEM?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">99 Balls</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://shimmering-mousse-e2b5fa.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.Abm_x-pLJvNzwxu8LR0UkwHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Pedro</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://shimmering-cranachan-5ac03a.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.7nIKK6er9HwEjoy8FXjYYgHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Slither.io</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://dazzling-clafoutis-5c10ba.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.dRVL3sno3sgBJX_HmxHOhQHaFv?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Mario Bros</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://poetic-rugelach-80b83e.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.0vD0byZ9A0A3ZC0KYtq4jwHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">A Small World Cup</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://leafy-daifuku-4c6a76.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.bzGTZdMHN4qCQOMpU-QsfgHaEx?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">There Is No Game</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://visionary-crostata-e97812.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.Lk817ZoTCuGMKBScupfq6wHaD4?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Time Shooter 3</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://cozy-cuchufli-410bab.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.WjZb7fCjM10_lFsFrjQVdwHaFj?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Slope</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://gleaming-swan-843d40.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/R.b0dc60cd459fe9c568d920677371a6d8?rik=mjvzK4I2oUQvHQ&riu=http%3a%2f%2fcdn.collider.com%2fwp-content%2fuploads%2f2016%2f02%2fangry-birds-03.jpg&ehk=A6ZOg8i0FsEMD1rI9DMVeJrF%2b8oiFYYBjBmdP5BUZow%3d&risl=&pid=ImgRaw&r=0"></div>
-                <div class="app-label">Angry Birds</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://earnest-stardust-e17238.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.dTmAPRmmEBm4QTd_E5o_8gHaHa?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Cookie Clicker</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://prismatic-cucurucho-984e32.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.VlPiG2-IR0R3XEPO388fmgHaD4?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">House Of Hazerds</div>
-            </div>
-            <div class="app-item" onclick="embedGame('https://imaginative-dusk-c97c25.netlify.app/')">
-                <div class="app-icon"><img src="https://th.bing.com/th/id/OIP.YUnOb_2r9G4yw5nyrcDYUAHaEK?cb=iwp2&rs=1&pid=ImgDetMain"></div>
-                <div class="app-label">Sonic Revert</div>
-            </div>
+            <input type="text" id="search-input" placeholder="Search games...">
         </div>
     </div>
-    
-    <!-- MOVED ADMIN LOGIN BUTTON HERE -->
-    <button id="adminLogin" onclick="adminLogin()">Admin Login</button>
-    
-    <div id="dock-wrapper">
-        <div id="page-dots">
-            <div class="page-dot active" data-page="0"></div>
-            <div class="page-dot" data-page="1"></div>
-            <div class="page-dot" data-page="2"></div>
-            <div class="page-dot" data-page="3"></div>
-            <div class="page-dot" data-page="4"></div>
-            <div class="page-dot" data-page="5"></div>
-            <div class="page-dot" data-page="6"></div>
-            <div class="page-dot" data-page="7"></div>
-            <div class="page-dot" data-page="8"></div>
-        </div>
-        <div id="dock">
-            <div class="dock-icon" onclick="embedGame('https://iridescent-sorbet-f4d53a.netlify.app/')"><img src="https://i.imgur.com/e2UdoyY_d.webp?maxwidth=760&fidelity=grand"></div>
-            <div class="dock-icon" onclick="embedGame('https://calm-cactus-65845c.netlify.app/')"><img src="https://i.postimg.cc/c4Dh4Tgt/Chat-GPT-Image-Nov-1-2025-08-41-59-PM.png"></div>
-            <div class="dock-icon" onclick="embedGame('https://falling-star-65ae.fireyh8.workers.dev/')"><img src="https://static.wixstatic.com/media/713b90_7841ba78e810446f8765776b69ee76e3~mv2.png"></div>
-            <div class="dock-icon" onclick="embedGame('https://solitary-disk-4d15.fireyh8.workers.dev/')"><img src="https://i.imgur.com/FtM2q2z.png"></div>
-            <div class="dock-icon" onclick="embedGame('https://clever-banoffee-7dcb76.netlify.app/')"><img src="https://nxbrew.net/wp-content/uploads/2019/05/request_game_2.jpg"></div>
-        </div>
-    </div>
-</div>
 
-<div id="app-window">
-    <div id="app-content"></div>
-    <div id="home-bar-area" onclick="closeApp()">
-        <div id="home-bar"></div>
-    </div>
-</div>
-
-<!-- FIREBASE SCRIPTS -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
-<!-- SYSTEM SCRIPT -->
-<script>
-    /* --------------------------- FIREBASE & ADMIN SYSTEM ----------------------------*/
-    const firebaseConfig = {
-      apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
-      authDomain: "stuff-8cfdc.firebaseapp.com",
-      databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
-      projectId: "stuff-8cfdc",
-      storageBucket: "stuff-8cfdc.appspot.com",
-      messagingSenderId: "327097823566",
-      appId: "1:327097823566:web:3442b4f46dbd2731abee1f"
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const database = firebase.database();
-    let isAdmin = false;
-
-    // USER ID
-    let userNumber = localStorage.getItem("userNumber");
-    if (!userNumber || !/^\d{6}$/.test(userNumber)) {
-      userNumber = Math.floor(100000 + Math.random() * 900000);
-      localStorage.setItem("userNumber", userNumber);
-    }
-    document.getElementById("userNumber").textContent = `ID: ${userNumber}`;
-
-    // ACTIVE USERS
-    const userRef = database.ref("onlineUsers/" + userNumber);
-    userRef.set(true);
-    userRef.onDisconnect().remove();
-
-    database.ref("onlineUsers").on("value", snapshot => {
-      const users = snapshot.val() || {};
-      document.getElementById("activeUsersCount").textContent = Object.keys(users).length;
-    });
-
-    // BAN SYSTEM
-    let isBanned = false; // State to track ban status locally
-
-    async function checkBan() {
-      try {
-        const doc = await db.collection("bans").doc(userNumber.toString()).get();
-        if (doc.exists) {
-            isBanned = true;
-            enforceBanProtection();
-        }
-      } catch (err) { console.error("Ban check failed:", err); }
-    }
-
-    // Function to vigorously enforce the ban overlay presence and style
-    function enforceBanProtection() {
-        // The secure loop function
-        const secureBan = () => {
-            if (!isBanned) return;
-            
-            let overlay = document.getElementById("banOverlay");
-            
-            // 1. Anti-Deletion: Recreate if missing
-            if (!overlay) {
-                overlay = document.createElement("div");
-                overlay.id = "banOverlay";
-                overlay.innerText = "BANNED - CONTACT ADMIN";
-                document.body.appendChild(overlay);
-            }
-
-            // 2. Anti-Modification: Enforce styles constantly
-            // We apply these inline to override any devtools attribute changes or stylesheet disabling
-            const requiredStyles = {
-                display: "block",
-                position: "fixed",
-                top: "0",
-                left: "0",
-                width: "100%",
-                height: "100%",
-                background: "black",
-                color: "#FF3333",
-                fontSize: "32px",
-                fontWeight: "bold",
-                textAlign: "center",
-                paddingTop: "40vh",
-                zIndex: "2147483647", // Maximum z-index
-                pointerEvents: "all"
-            };
-
-            for (const [key, value] of Object.entries(requiredStyles)) {
-                if (overlay.style[key] !== value) {
-                    overlay.style[key] = value;
-                }
-            }
-
-            // 3. Enforce Body Scroll Lock
-            if (document.body.style.overflow !== "hidden") {
-                document.body.style.overflow = "hidden";
-            }
-
-            requestAnimationFrame(secureBan);
-        };
-
-        // Start the loop
-        secureBan();
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
         
-        // 4. MutationObserver for immediate reaction (faster than RAF for DOM removals)
-        const observer = new MutationObserver((mutations) => {
-            if (isBanned) {
-                const overlay = document.getElementById("banOverlay");
-                if (!overlay) {
-                    // Re-creation handled by RAF loop, but we can trigger immediate recreation here
-                    secureBan(); 
-                }
+        <!-- Kuba's Exclusive Apps (Top 5) -->
+        <h2 class="section-title" id="exclusive-title">Kuba's Exclusive Apps</h2>
+        <div class="games-grid" id="exclusiveGrid">
+            <!-- Exclusive Games injected here -->
+        </div>
+
+        <h2 class="section-title" id="library-title">Game Library</h2>
+        <div class="games-grid" id="gamesGrid">
+            <!-- All Other Games injected here -->
+        </div>
+    </div>
+
+    <!-- GAME WINDOW -->
+    <div id="app-window">
+        <div id="app-content"></div>
+        <!-- IPHONE HOME BAR (CONSTRAINED WIDTH) -->
+        <div id="home-bar-area" onclick="closeApp()">
+            <div id="home-bar"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="banOverlay">
+        <div>⛔ ACCOUNT PERM BANNED</div>
+    </div>
+
+    <div id="banPopup">
+        <span class="close-btn" onclick="closeBanPopup()">&times;</span>
+        <h2>System Control</h2>
+        <input type="text" id="banNumber" placeholder="User ID (6-digit)" maxlength="6">
+        <button onclick="banPlayer()">Ban User</button>
+        <div style="height:10px"></div>
+        <button onclick="unbanPlayer()" style="background:#2d3436;">Unban User</button>
+        <div style="height:10px"></div>
+        <button onclick="viewBannedIds()" style="background:transparent; border:1px solid #444;">View Banned List</button>
+    </div>
+
+    <!-- FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        /* --------------------------- GAME DATA ----------------------------*/
+        
+        // The 5 Exclusive Apps
+        const exclusiveApps = [
+            { name: "Featured Game 1", img: "https://i.imgur.com/e2UdoyY_d.webp?maxwidth=760&fidelity=grand", url: "https://iridescent-sorbet-f4d53a.netlify.app/" },
+            { name: "Featured Game 2", img: "https://i.postimg.cc/c4Dh4Tgt/Chat-GPT-Image-Nov-1-2025-08-41-59-PM.png", url: "https://calm-cactus-65845c.netlify.app/" },
+            { name: "Featured Game 3", img: "https://static.wixstatic.com/media/713b90_7841ba78e810446f8765776b69ee76e3~mv2.png", url: "https://falling-star-65ae.fireyh8.workers.dev/" },
+            { name: "Featured Game 4", img: "https://i.imgur.com/FtM2q2z.png", url: "https://solitary-disk-4d15.fireyh8.workers.dev/" },
+            { name: "Featured Game 5", img: "https://nxbrew.net/wp-content/uploads/2019/05/request_game_2.jpg", url: "https://clever-banoffee-7dcb76.netlify.app/"}
+        ];
+
+        // The Rest of the Library
+        const libraryGames = [
+            // Page 1
+            { name: "Geometry Dash Subzero", img: "https://th.bing.com/th/id/R.6989633fb434ae22b5c2a5c9e2bb4c26?rik=Ms6FCXQloBgxmg&pid=ImgRaw&r=0", url: "https://super-violet-7c82.fireyh8.workers.dev/" },
+            { name: "Friday Night Funkin", img: "https://m.media-amazon.com/images/M/MV5BMmMwYzZjMzAtN2I3Ny00MTdhLTg1Y2YtNDZiMzhhODY3ZjJjXkEyXkFqcGc@._V1_QL75_UX190_CR0,2,190,281_.jpg", url: "https://holy-sky-d745.fireyh8.workers.dev/" },
+            { name: "Csgoclicker", img: "https://avatars.githubusercontent.com/u/39322951?s=280&v=4", url: "https://crimson-waterfall-f995.fireyh8.workers.dev/" },
+            { name: "Find The Alien", img: "https://m.media-amazon.com/images/I/71Ing8m2GYL.png", url: "https://billowing-bush-698f.fireyh8.workers.dev/" },
+            { name: "GTA: Vice City", img: "https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg", url: "https://lingering-surf-e27b.fireyh8.workers.dev/" },
+            { name: "Stake Mines", img: "https://mines.gen.in/wp-content/uploads/2024/11/maxresdefault-3.jpg", url: "https://winter-waterfall-d092.fireyh8.workers.dev/" },
+            
+            // Page 2
+            { name: "Fruit Ninja", img: "https://th.bing.com/th/id/R.99388c093ab0db9347d6ecfd99370474?rik=2ISiCYnsT4GNOA&pid=ImgRaw&r=0", url: "https://resplendent-palmier-8c6a5d.netlify.app/" },
+            { name: "Football Legends", img: "https://tse1.mm.bing.net/th/id/OIP.0HdCPpdluIYEtiqIC77xGwHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://cerulean-snickerdoodle-f3d692.netlify.app/" },
+            { name: "Movies", img: "https://stylebyemilyhenderson.com/wp-content/uploads/2020/04/UpdatedEmily-Henderson-Current-Animated-Movies-1670x1541.jpg", url: "movie.html" },
+            { name: "Retro Highway", img: "https://tse3.mm.bing.net/th/id/OIP.l8xk37EvBTR8CL0RpPftAQHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://shimmering-cheesecake-937833.netlify.app/" },
+            { name: "Stickman Hook", img: "https://tse3.mm.bing.net/th/id/OIP.X-k2bbsignNh-jtrFUlAugHaHa?cb=12&w=512&h=512&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://stalwart-klepon-784ebe.netlify.app/" },
+            { name: "Count Master", img: "https://image.winudf.com/v2/image1/ZnJlZXBsYXkuY3Jvd2RydW4uY29tX2Jhbm5lcl8xNjM3MDc2MjUzXzA0OQ/banner.jpg?fakeurl=1&w=1200", url: "https://gilded-genie-58d828.netlify.app/" },
+            { name: "OvO", img: "https://tse4.mm.bing.net/th/id/OIP.O7Zbplj_YizcgRXuimGQrwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://voluble-horse-2cfbce.netlify.app/" },
+            { name: "Cupcake 2048", img: "https://tse3.mm.bing.net/th/id/OIP.YYpHf7mwlx4MEvsHt_otjQHaD4?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://resplendent-cannoli-c47d3e.netlify.app/" },
+            { name: "Drift Boss", img: "https://th.bing.com/th/id/R.2998fc224fd74477acf630cb2625b17b?rik=%2bp3XG0LWCN9Fyw&pid=ImgRaw&r=0", url: "https://rad-halva-cd4cc1.netlify.app/" },
+            { name: "2 Player Mini Games", img: "https://tse3.mm.bing.net/th/id/OIP.ccAj9Qu50cIkXxrFHQsz7gHaEL?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://relaxed-salamander-367e3e.netlify.app/" },
+            { name: "Bad Parenting", img: "https://i.ytimg.com/vi/Nsh4CmV0oWg/maxresdefault.jpg", url: "https://stirring-fenglisu-0afb18.netlify.app/" },
+            { name: "Tag", img: "https://tse3.mm.bing.net/th/id/OIP.y4ku8S8edPDcG2q7fzPguAHaFm?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://leafy-kashata-f83d89.netlify.app/" },
+            { name: "Blaze Drifter", img: "https://www.blurrygames.com/wp-content/uploads/2025/09/Blaze-Drifter.webp", url: "https://glistening-duckanoo-afe4fb.netlify.app/" },
+            { name: "Crazy Motorcycles", img: "https://tse3.mm.bing.net/th/id/OIP.sVOku8N2vgaYoLUraZHVxQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://willowy-tanuki-97a60d.netlify.app/" },
+            { name: "FNAF 1", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/38.png", url: "https://creative-tarsier-16110c.netlify.app/" },
+            { name: "FNAF 2", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/39.png", url: "https://zippy-phoenix-73b81e.netlify.app/" },
+            { name: "FNAF 3", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/40.png", url: "https://peaceful-bunny-78a0f8.netlify.app/" },
+            { name: "FNAF 4", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/41.png", url: "https://willowy-cheesecake-09355e.netlify.app/" },
+
+            // Page 3
+            { name: "Among Us", img: "https://tse1.mm.bing.net/th/id/OIP.AacqfiZs8GvV56hXwaIgDwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://peaceful-sunshine-4d36f8.netlify.app/" },
+            { name: "Escape Road 2", img: "https://escaperoad2.org/data/image/what-is-escape-road-2-er2.png", url: "https://zesty-gecko-5d9698.netlify.app/" },
+            { name: "1v1.lol", img: "https://wallpaperaccess.com/full/7145111.png", url: "https://creative-melba-87e471.netlify.app/" },
+            { name: "A Day In The Office", img: "https://i.ytimg.com/vi/2dLD1iWHz9U/maxresdefault.jpg", url: "https://zippy-kangaroo-1f6637.netlify.app/" },
+            { name: "Duck Life Battle", img: "https://tse1.mm.bing.net/th/id/OIP.7eVggBVfXcynxy9CunCeRwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://zesty-paprenjak-423e0b.netlify.app/" },
+            { name: "Idle Breakout", img: "https://tse3.mm.bing.net/th/id/OIP.4USnYTp6w9wm1FY0hPa-MAHaEU?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://silly-semolina-b60400.netlify.app/" },
+            { name: "Iron Snout", img: "https://tse1.mm.bing.net/th/id/OIP.Xo-lTRetb-bRWXBAbHtmSwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://famous-torrone-97e76f.netlify.app/" },
+            { name: "Blade Ball", img: "https://allroblox.com/wp-content/uploads/2025/02/blade-ball-2.jpeg", url: "https://chipper-phoenix-97bc28.netlify.app/" },
+            { name: "A Bite at Freddy's", img: "https://tse2.mm.bing.net/th/id/OIP.Id_ojyc51qR0SwUklOiGlgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://clinquant-faun-4cb47e.netlify.app/" },
+            { name: "Candy Crush", img: "https://lh3.googleusercontent.com/_ZuazlAYNUAmHfHABRjLjE8rIpwn1EXhzVlZwU5iG-V6wQtfMn1PX7dZHeIR7kHybzk=h900", url: "https://eloquent-dolphin-6a528f.netlify.app/" },
+            { name: "Hollow Night", img: "https://tse1.mm.bing.net/th/id/OIP.7u7a63uRHZxoxktB6o7eIwHaEo?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://ornate-gecko-e4ed3c.netlify.app/" },
+            { name: "Recoil", img: "https://recoilgame.net/wp-content/uploads/2024/03/Recoil-300x300.jpg", url: "https://melodious-cheesecake-6d895e.netlify.app/" },
+            { name: "Retro Bowl College", img: "https://tse2.mm.bing.net/th/id/OIP.8ZUDLedLB-TwYxwsDIYviwAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://dulcet-phoenix-54e225.netlify.app/" },
+            { name: "Rolling Forests", img: "https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/TheLostBall.png", url: "https://cerulean-yeot-85c94f.netlify.app/" },
+            { name: "Fluid Simulation", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1131390/ss_603cc0936250511ea71d9467082c1f9b72ba0565.1920x1080.jpg?t=1567547034", url: "https://vocal-begonia-6b093a.netlify.app/" },
+            { name: "R.E.P.O", img: "https://tse2.mm.bing.net/th/id/OIP.Y6akAAbc8A6zp5dhqG58KAHaED?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://magical-tartufo-05b15d.netlify.app/" },
+            { name: "Drive Mad", img: "https://tse2.mm.bing.net/th/id/OIP.OJbAuAZ0DheC2rJJznVtVAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://broken-snow-6cf9.fireyh8.workers.dev/" },
+            { name: "Wheelie Life", img: "https://i.ibb.co/rKh5T3KW/image.png", url: "https://imaginative-arithmetic-deeb09.netlify.app/" },
+
+            // Page 4
+            { name: "Unicycle Hero", img: "https://tse3.mm.bing.net/th/id/OIP.QAPpCTY7lR0Ofo5w2l6BRAHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://magenta-biscuit-9f0165.netlify.app/" },
+            { name: "Subway Surfers", img: "https://tse3.mm.bing.net/th/id/OIP.THckrV-rsMX4P0KNJlK79QHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://quiet-crisp-38718d.netlify.app/" },
+            { name: "Monster Tracks", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/41c7ae4db13e7d7596bb0528f40a4012/monster-tracks.png", url: "https://lingering-firefly-b06e.fireyh8.workers.dev/" },
+            { name: "Cut The Rope Time Travel", img: "https://th.bing.com/th/id/R.e1d5be6be3de1ad9e1a6bc8b2495e886?rik=Fi0tMl39YPWr5w&pid=ImgRaw&r=0", url: "https://zippy-treacle-7a352f.netlify.app/" },
+            { name: "Ragdoll Hit", img: "https://geometrylite.io/data/image/game/ragdoll-hit.png", url: "https://tubular-syrniki-50bf0e.netlify.app/" },
+            { name: "Yohoho.io", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/9b373b5219cd66a82389d81d7cda8e23/yohoho-io.jpeg", url: "https://tangerine-rugelach-abe006.netlify.app/" },
+            { name: "Super Stickman Golf", img: "https://th.bing.com/th/id/R.c801faebc9a18dad80139ddec4eb69dc?rik=hhfttnuAa3vJFA&pid=ImgRaw&r=0", url: "https://chic-bienenstitch-b9e4d7.netlify.app/" },
+            { name: "Rocket Goal", img: "https://zapgames.io/data/image/game/rocket-goal.jpg", url: "https://glittering-swan-4b911c.netlify.app/" },
+            { name: "Hyper Snake", img: "https://media.explodegames.com/photos/large/88_88-game.jpg?_1670423608", url: "https://enchanting-hotteok-a20ea4.netlify.app/" },
+            { name: "Drift Wave", img: "https://ozogames.com/wp-content/uploads/2025/09/Driftwave-image.webp", url: "https://visionary-croquembouche-7a0f70.netlify.app/" },
+            { name: "Adventure Drivers", img: "https://store-images.s-microsoft.com/image/apps.42304.13646312602223146.fc3d6529-2147-49fc-bfda-1963fcd8fa65.7c7789ad-4b93-43aa-877f-fbc7b5271181", url: "https://guileless-bombolone-c07d3b.netlify.app/" },
+            { name: "Touchdowners", img: "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-635169-52.jpg", url: "https://musical-kheer-d0a23c.netlify.app/" },
+            { name: "We Skate", img: "https://geometrydashwave.com/data/image/game/We%20Skate.png", url: "https://chimerical-sundae-bd063a.netlify.app/" },
+            { name: "Dreadhead Parkour", img: "https://dreadheadparkour.online/dreadhead-parkour.webp", url: "https://storied-smakager-b6980f.netlify.app/" },
+            { name: "Grim Donut", img: "https://es.pinkbike.org/246/sprt/i/share/grimdonutgame.jpg", url: "https://starlit-begonia-83699b.netlify.app/" },
+            { name: "Golf Orbit", img: "https://golforbitgame.com/wp-content/uploads/2025/10/Golf-Orbit.webp", url: "https://beautiful-fox-f4c5ed.netlify.app/" },
+            { name: "Survival Race", img: "https://www.drift-boss.cc/uploads/games/main/img_68a85c987cf14.jpg", url: "https://monumental-twilight-f1a341.netlify.app/" },
+            { name: "FNAF 4 Halloween", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/428.png", url: "https://precious-sopapillas-914a2e.netlify.app/" },
+
+            // Page 5
+            { name: "SandBoxels", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3664820/5a38bbd2d1ed7118e4818fd48c33294f64e1a3c5/header.jpg?t=1747706268", url: "https://incomparable-pegasus-7d6a74.netlify.app/" },
+            { name: "Geometry Dash", img: "https://th.bing.com/th/id/OIP.-F4aFPFR0z2PTHGnw1NFtAHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://black-band-dbff.fireyh8.workers.dev/" },
+            { name: "Clash Royale (Real)", img: "https://th.bing.com/th/id/OIP.rC_wi2pze6F4msmYEorg4AHaDt?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://radiant-choux-1a15f7.netlify.app/" },
+            { name: "Kart Bros", img: "https://smash-karts.org/cache/data/image/game/screenshot_1719392717-m374x209.png", url: "https://genuine-empanada-faf1ce.netlify.app/" },
+            { name: "Angry Birds Space", img: "https://th.bing.com/th/id/R.76a3cb7ee724bb2c8ceaf694c90cf499?rik=KHArqnn4FIOoAg&pid=ImgRaw&r=0", url: "https://timely-tiramisu-9bb463.netlify.app/" },
+            { name: "War The Nights", img: "https://tse4.mm.bing.net/th/id/OIP.3t5DISFg0gnT39Q16z-jUQHaEH?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://famous-fox-dec504.netlify.app/" },
+            { name: "Get Yoked", img: "https://tse4.mm.bing.net/th/id/OIP.GNFcydloiWizYJm1ybxtNgHaDd?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://aquamarine-empanada-408492.netlify.app/" },
+            { name: "Bacon May Die", img: "https://images.sftcdn.net/images/t_optimized,f_auto/p/3dfc5f54-19c3-42ca-a466-dbd33245748c/2417889023/bacon-may-die-screenshot.jpg", url: "https://resonant-chebakia-eb8a2d.netlify.app/" },
+            { name: "Eggy Car", img: "https://eggycar2.io/data/image/eggy-car-game.jpg", url: "https://frolicking-brigadeiros-7c8f03.netlify.app/" },
+            { name: "Appel", img: "https://tse1.mm.bing.net/th/id/OIP._lZJJd7YR2dCg_WbL2NliwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://cosmic-bublanina-6d7709.netlify.app/" },
+            { name: "Gun Spin", img: "https://tse1.mm.bing.net/th/id/OIP.Uhr4pC9Y5L63rWdmKxD04AHaE8?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://willowy-crostata-839e22.netlify.app/" },
+            { name: "Mario Party (DS)", img: "https://th.bing.com/th/id/R.b1280ec009c6948d15e20c22e120e51c?rik=uLeDpiMFvHMNNQ&pid=ImgRaw&r=0", url: "https://rad-donut-848f4f.netlify.app/" },
+            { name: "Lego Ninjago (DS)", img: "https://th.bing.com/th/id/R.d3c824000c21c1299fa9ce14459cb4ca?rik=ZsygaCEON0n5ug&pid=ImgRaw&r=0", url: "https://tubular-fudge-9ae668.netlify.app/" },
+            { name: "GTA ChinaTown (DS)", img: "https://th.bing.com/th/id/R.52acc25e64a21051d90f21f5a02c5462?rik=F3e9r1mApMmxzA&pid=ImgRaw&r=0", url: "https://remarkable-banoffee-409e3a.netlify.app/" },
+            { name: "Batman DC 2 (DS)", img: "https://i.ytimg.com/vi/CalaFNhzDI0/maxresdefault.jpg", url: "https://meek-florentine-28a84e.netlify.app/" },
+            { name: "STAR WARS Legacy (DS)", img: "https://tse4.mm.bing.net/th/id/OIP.NIqfRBY-t4Rr6MSI8jt-owHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://timely-fox-7b338b.netlify.app/" },
+            { name: "Infinite Craft", img: "https://i.ytimg.com/vi/F1xcj9Vh_o8/maxresdefault.jpg", url: "https://endearing-kitsune-65701d.netlify.app/" },
+            { name: "Undertale", img: "https://th.bing.com/th/id/R.ca72b99eacd692e1d378ff98156083d2?rik=7dZAFh%2bJNA6Ulg&pid=ImgRaw&r=0", url: "https://silly-dieffenbachia-1cdca9.netlify.app/" },
+
+            // Page 6
+            { name: "Mario Combat", img: "https://th.bing.com/th/id/OIP.JPVvnVzlC-ynDLwmztaa9QHaEK?rs=1&pid=ImgDetMain", url: "https://resilient-axolotl-adf087.netlify.app/" },
+            { name: "99% Lose Obby", img: "https://th.bing.com/th/id/OIP.xoYQIogFckRzklIuWhmsaAHaEW?rs=1&pid=ImgDetMain", url: "https://preeminent-manatee-0c70ee.netlify.app/" },
+            { name: "Dad N Me", img: "https://th.bing.com/th/id/OIP.Uw8co_9sHB9Gct8DQH3oSAHaFi?r=0&rs=1&pid=ImgDetMain", url: "https://cool-hamster-605edb.netlify.app/" },
+            { name: "Stickman RPG", img: "https://tse3.mm.bing.net/th/id/OIP.cW4OFbIO2TD0EBlr6S9CWwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://steady-florentine-fe58f0.netlify.app/" },
+            { name: "SandTres", img: "https://i.ytimg.com/vi/vzYYpS48R1g/maxresdefault.jpg", url: "https://capable-arithmetic-9babbb.netlify.app/" },
+            { name: "Minecraft", img: "https://th.bing.com/th/id/R.d0bf684a7a0bc8d2a7a8d1388cb4d404?rik=2cFJq3TqhDxpRA&pid=ImgRaw&r=0", url: "https://quiet-kelpie-d8daea.netlify.app/" },
+            { name: "Jetpack Joyride", img: "https://th.bing.com/th/id/R.4da718925bdb511e83968d87079c2022?rik=m8E%2bk5m5xaBVGw&riu=http%3a%2f%2fwww.intomobile.com%2fwp-content%2fuploads%2f2011%2f08%2fJetpackJoyride_TitleCard.jpg&ehk=nBy%2bpT0VPPfZyaNxusYdEaqc60fDrJvzuvfUI5AA0f4%3d&risl=&pid=ImgRaw&r=0", url: "https://fastidious-sunshine-49b466.netlify.app/" },
+            { name: "Crossy Road", img: "https://miro.medium.com/1*RqJKuyUx0X6WqC2-3WhCsw.jpeg", url: "https://thriving-chebakia-ca798d.netlify.app/" },
+            { name: "Penalty Shooter", img: "https://tse4.mm.bing.net/th/id/OIP.hqMqw56qhSKoH9oCRIWojwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://hammerplay.cdn.msnfun.com/9ng6vdg4354c/v20/index.html?msstart_sdk_init=eyJwYXJlbnRPcmlnaW4iOiJodHRwczovL3d3dy5tc24uY29tIiwiY2xpZW50SWQiOiIzNzFCOTAyNThBOUM2OTk5MjVFRjg2N0I4QjI0NjhGQSIsImxvY2FsZSI6ImVuLX..." },
+            { name: "Solar Smash", img: "https://th.bing.com/th/id/R.92dfa4f0ecfe63bbc6fec12ff16dc5ef?rik=Gp1c3i71K4Ec9w&pid=ImgRaw&r=0", url: "https://astounding-jalebi-92bc1d.netlify.app/" },
+            { name: "Retro Bowl", img: "https://th.bing.com/th/id/R.ef77456c550751553dae99afba85bd2c?rik=XFHs06OS6Jww7Q&pid=ImgRaw&r=0", url: "https://vocal-moonbeam-e6a9b6.netlify.app/" },
+            { name: "Plinko", img: "https://preview.redd.it/plinko-v0-w04f863eh2lc1.jpeg?auto=webp&s=c365fbbea9e92b5e724ea84db10eaa73d99e4410", url: "https://leafy-daffodil-75ff7c.netlify.app/" },
+            { name: "Football Bros", img: "https://tse1.mm.bing.net/th/id/OIP.ydBsXX0ZjKTLEX2hmnon_QHaDG?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://astonishing-lolly-ed6d65.netlify.app/" },
+            { name: "Run 3", img: "https://tse2.mm.bing.net/th/id/OIP.ZskFVecWkZGpvlYE524C5QHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://jsitor.com/preview/bBv069i3U7B" },
+            { name: "Apes vs Helium", img: "https://i.ytimg.com/vi/3ZHhodaMNf8/maxresdefault.jpg", url: "https://glittery-longma-a693fd.netlify.app/" },
+            { name: "Brawl Stars", img: "https://wp.clutchpoints.com/wp-content/uploads/2025/10/Brawl-Stars-Brawl-Talk-shows-new-Brawler-Stranger-Things-event.jpg", url: "https://cerulean-belekoy-f09d64.netlify.app/" },
+            { name: "Tomb Of The Mask", img: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/a5a54e10-b0d5-43bc-9d8a-e952f1d6ee96/dhnomv2-c4376d38-83e7-4173-9acc-08322f4a8b17.png/v1/fill/w_1032,h_775,q_70,strp/tomb_of_the_mask_logo_by_saeedferrari2k9_dhnomv2-pre.jpg", url: "https://glowing-treacle-0d78fd.netlify.app/" },
+            { name: "Uno", img: "https://tse4.mm.bing.net/th/id/OIP.YvGFFApITkaAeP31D_V3vgHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://luxury-pie-0ee6f7.netlify.app/" },
+
+            // Page 7
+            { name: "DouchBag Beach-Club", img: "https://th.bing.com/th/id/R.861a4c207c1a46f26e7f2263dd28d4be?rik=CyqsC0WFJ46QHA&pid=ImgRaw&r=0", url: "https://chimerical-kringle-abd70c.netlify.app/" },
+            { name: "DouchBag Chick", img: "https://i.ytimg.com/vi/JydFMvxeSE0/hqdefault.jpg", url: "https://endearing-ganache-fa43bb.netlify.app/" },
+            { name: "Liquid Soccer", img: "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-810289-52.jpg", url: "https://deluxe-faloodeh-785bdc.netlify.app/" },
+            { name: "Monkey Mart", img: "https://th.bing.com/th/id/OIP.ULV4D8g7qoHN9ihkT7pbCwHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://startling-yeot-329f28.netlify.app/" },
+            { name: "Tiny Fishing", img: "https://th.bing.com/th/id/OIP._xw2Z9PzauJNFkkp8xDaowHaEU?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://elaborate-sfogliatella-313549.netlify.app/" },
+            { name: "Baseball Bros", img: "https://baseballbros.io/splash.jpg", url: "https://cosmic-raindrop-c8dd6b.netlify.app/" },
+            { name: "Bit-Life", img: "https://th.bing.com/th/id/OIP.gDm4VteNDhv__BHaEZ-ZtQHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://imaginative-froyo-589f94.netlify.app/" },
+            { name: "Table Tennis", img: "https://external-preview.redd.it/table-tennis-world-tour-v0-62M0XdaQckoTVXbTw6apMJ7dtPMyNxqwMH67CqLErfA.jpg?auto=webp&s=eb3e9150c01862caf50a1f001f775edff2681c8a", url: "https://elegant-marigold-2108cf.netlify.app/" },
+            { name: "Toss The Turtle", img: "https://th.bing.com/th/id/OIP.67iZywInioJRqEBdOlOPQQHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://whimsical-creponne-ef862a.netlify.app/" },
+            { name: "Cluster Rush", img: "https://th.bing.com/th/id/OIP.fd3rLIAYj7WAVbS6oAcFtAHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://graceful-naiad-f7767d.netlify.app/" },
+            { name: "Space Waves", img: "https://th.bing.com/th/id/OIP.AsxM2u57ZyVDwrjrE1fEegHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://peaceful-kringle-1180d5.netlify.app/" },
+            { name: "Poly-Track", img: "https://th.bing.com/th/id/OIP.AX0OoWRmZMT9e0g1w503UgHaEK?rs=1&pid=ImgDetMain", url: "https://idyllic-biscuit-9cf9e8.netlify.app/" },
+            { name: "The Binding Of Isaac", img: "https://th.bing.com/th/id/OIP.QLCWr2ct8nKrhaIBnd_KsAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://ornate-macaron-310903.netlify.app/" },
+            { name: "Ragdoll Archers", img: "https://ragdollarcher.com/wp-content/uploads/2024/11/Ragdoll-Archers-.webp", url: "https://singular-cuchufli-70aee8.netlify.app/" },
+            { name: "Tunnel Rush", img: "https://szgames.net/wp-content/uploads/2025/04/tunnel-rush.webp", url: "https://playful-squirrel-b355e3.netlify.app/" },
+            { name: "Getaway Shootout", img: "https://tse3.mm.bing.net/th/id/OIP.cGNVj1eSPUSQQD7SybswJgHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://aesthetic-tapioca-3d2b1d.netlify.app/" },
+            { name: "Balatro", img: "https://tse4.mm.bing.net/th/id/OIP.4a2JT7bxonuRQPdN9jnp_QHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://green-mud-cf30.fireyh8.workers.dev/" },
+            { name: "BTD6", img: "https://tse1.mm.bing.net/th/id/OIP.WZ-roQyGeuqSKd9rfLd2vgHaDt?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://jolly-cat-322efe.netlify.app/" },
+
+            // Page 8
+            { name: "Block Blast", img: "https://th.bing.com/th/id/OIP.8yX4Xrg2f53OijlDHBI3NAHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://inspiring-cuchufli-f303a2.netlify.app/" },
+            { name: "Henry Stickmin", img: "https://th.bing.com/th/id/OIP.rRRif92M-c8uqaY902sAuAAAAA?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://effortless-tarsier-957be7.netlify.app/" },
+            { name: "MotoXM 3", img: "https://th.bing.com/th/id/R.1058adcb09ffe3a2d983ec274d422bc2?rik=3jPrWiDl%2bQLAdA&pid=ImgRaw&r=0", url: "https://jade-seahorse-572323.netlify.app/" },
+            { name: "Basket Bros", img: "https://tse4.mm.bing.net/th/id/OIP.7wJ9InZ2dd9IJTAj65fmbwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://shimmering-sorbet-9fd94a.netlify.app/" },
+            { name: "Pixel-Shooter", img: "https://th.bing.com/th/id/OIP.8IPfil6f90_E6fZAqSnzCwHaEH?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://zesty-pudding-a2a8e5.netlify.app/" },
+            { name: "Rooftop Sniper", img: "https://th.bing.com/th/id/R.64220ae2f476f56573353ab2e1b81a2d?rik=buQuyofSgQ%2fVwg&pid=ImgRaw&r=0", url: "https://inquisitive-bublanina-6ea52c.netlify.app/" },
+            { name: "Scrap Metal 3D", img: "https://www.drifted.com/wp-content/uploads/2018/10/scrap-metal-3-full-size.jpg", url: "https://nimble-empanada-896d02.netlify.app/" },
+            { name: "Snowball IO", img: "https://th.bing.com/th/id/OIP.1AZucEoKrq2AdsuE9fuYlAHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://sparkly-faloodeh-cf9edf.netlify.app/" },
+            { name: "Snow Rider 3D", img: "https://th.bing.com/th/id/OIP.JQdqiXKeLVvMs1r3KXnTtwHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://calm-swan-8164ab.netlify.app/" },
+            { name: "Zach Survival", img: "https://th.bing.com/th/id/OIP.wTY8W_LmBRVwt19ynY2sEgHaF7?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://relaxed-marigold-f9d973.netlify.app/" },
+            { name: "Backyard Baseball", img: "https://th.bing.com/th/id/OIP.1mmmNl_uv_AzCHTp1SkCyQHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://gregarious-jalebi-88ba12.netlify.app/" },
+            { name: "Plants vs Zombies", img: "https://th.bing.com/th/id/R.3b597c11d947425a3a6d481c6023cf1b?rik=cpYrIK0Q1SKsyQ&riu=http%3a%2f%2fimages5.fanpop.com%2fimage%2fphotos%2f29000000%2fPlants-vs-Zombies-Wallpaper-plants-vs-zombies-29019425-1900-1200.jpg&ehk=9hOOm%2fDY8EcKOhxcgnZbRB3p6s4aQBHPEOKnrTuanvQ%3d&risl=&pid=ImgRaw&r=0", url: "https://startling-fudge-2abe50.netlify.app/" },
+            { name: "Bob The Robber", img: "https://tse3.mm.bing.net/th/id/OIP.lKxDALL7WEj5c6FbrvQCRwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://silver-semifreddo-3ea0d7.netlify.app/" },
+            { name: "Bob The Robber 2", img: "https://tse1.mm.bing.net/th/id/OIP.3UBw6zwpmoCQyEiDRwJ1SgHaFj?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://brilliant-sprite-3f39ef.netlify.app/" },
+            { name: "Bob The Robber 5", img: "https://i.ytimg.com/vi/TJyE_LGy8Ew/maxresdefault.jpg", url: "https://comfy-crisp-17a9ee.netlify.app/" },
+            { name: "DouchBag Life", img: "https://th.bing.com/th/id/OIP.kfCWk5a4blAovlndWvCn_AAAAA?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://subtle-peony-2c8a23.netlify.app/" },
+            { name: "DouchBag Workout", img: "https://th.bing.com/th/id/OIP.WHcesvm9_j0_VWijXn9PQgHaEM?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://inspiring-fenglisu-b18545.netlify.app/" },
+            { name: "DouchBag Workout 2", img: "https://i.ytimg.com/vi/FbqRpEbVvxo/maxresdefault.jpg", url: "https://tangerine-piroshki-483b28.netlify.app/" },
+
+            // Page 9
+            { name: "Extension Rem", img: "https://i.ibb.co/n8mnzFcK/Screenshot-20250503-154118.png", url: "https://starlit-pithivier-7a3e46.netlify.app/" },
+            { name: "Hockey Stars", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/7ca343018f8c8339a24a7285cf50db47/hockeystars.png", url: "https://www.cbc.ca/kidscbc2/content/games/hockey_hero/index.html", newTab: true },
+            { name: "Clash Royale", img: "https://th.bing.com/th/id/OIP.k2RbG7UOQKAkxfMQsnNCIAAAAA?cb=iwc2&rs=1&pid=ImgDetMain", url: "https://stellular-gnome-6d76fb.netlify.app/" },
+            { name: "Agar.io", img: "https://th.bing.com/th/id/OIP.l7kno7jkB9jjNBanK9LTGwHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://aesthetic-heliotrope-0fffe2.netlify.app/" },
+            { name: "Basket Random", img: "https://th.bing.com/th/id/OIP.0kjDIVbjDepS3fJ9EFhDzwHaFj?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://musical-chimera-85bc22.netlify.app/" },
+            { name: "Knightmare", img: "https://th.bing.com/th/id/OIP.XRfQMRij31Uty9Jnzh1akgHaJ4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://peppy-shortbread-f69b2e.netlify.app/" },
+            { name: "99 Balls", img: "https://th.bing.com/th/id/OIP.d5xc4WbwDXyio519gSYEVAHaEM?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://lovely-sprinkles-a2c8ed.netlify.app/" },
+            { name: "Pedro", img: "https://th.bing.com/th/id/OIP.Abm_x-pLJvNzwxu8LR0UkwHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://shimmering-mousse-e2b5fa.netlify.app/" },
+            { name: "Slither.io", img: "https://th.bing.com/th/id/OIP.7nIKK6er9HwEjoy8FXjYYgHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://shimmering-cranachan-5ac03a.netlify.app/" },
+            { name: "Mario Bros", img: "https://th.bing.com/th/id/OIP.dRVL3sno3sgBJX_HmxHOhQHaFv?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://dazzling-clafoutis-5c10ba.netlify.app/" },
+            { name: "A Small World Cup", img: "https://th.bing.com/th/id/OIP.0vD0byZ9A0A3ZC0KYtq4jwHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://poetic-rugelach-80b83e.netlify.app/" },
+            { name: "There Is No Game", img: "https://th.bing.com/th/id/OIP.bzGTZdMHN4qCQOMpU-QsfgHaEx?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://leafy-daifuku-4c6a76.netlify.app/" },
+            { name: "Time Shooter 3", img: "https://th.bing.com/th/id/OIP.Lk817ZoTCuGMKBScupfq6wHaD4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://visionary-crostata-e97812.netlify.app/" },
+            { name: "Slope", img: "https://th.bing.com/th/id/OIP.WjZb7fCjM10_lFsFrjQVdwHaFj?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://cozy-cuchufli-410bab.netlify.app/" },
+            { name: "Angry Birds", img: "https://th.bing.com/th/id/R.b0dc60cd459fe9c568d920677371a6d8?rik=mjvzK4I2oUQvHQ&riu=http%3a%2f%2fcdn.collider.com%2fwp-content%2fuploads%2f2016%2f02%2fangry-birds-03.jpg&ehk=A6ZOg8i0FsEMD1rI9DMVeJrF%2b8oiFYYBjBmdP5BUZow%3d&risl=&pid=ImgRaw&r=0", url: "https://gleaming-swan-843d40.netlify.app/" },
+            { name: "Cookie Clicker", img: "https://th.bing.com/th/id/OIP.dTmAPRmmEBm4QTd_E5o_8gHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://earnest-stardust-e17238.netlify.app/" },
+            { name: "House Of Hazards", img: "https://th.bing.com/th/id/OIP.VlPiG2-IR0R3XEPO388fmgHaD4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://prismatic-cucurucho-984e32.netlify.app/" },
+            { name: "Sonic Revert", img: "https://th.bing.com/th/id/OIP.YUnOb_2r9G4yw5nyrcDYUAHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://imaginative-dusk-c97c25.netlify.app/" }
+        ];
+
+        /* --------------------------- UI LOGIC ----------------------------*/
+        
+        function createCard(game) {
+            const card = document.createElement('div');
+            card.className = "game-card";
+            
+            if(game.newTab) {
+                card.onclick = () => window.open(game.url, '_blank');
+            } else {
+                card.onclick = () => embedGame(game.url);
             }
-        });
-        observer.observe(document.body, { childList: true });
-    }
 
-    checkBan();
-
-    // ADMIN LOGIC
-    async function adminLogin() {
-      try {
-        await auth.signOut();
-        const email = prompt("Enter admin email:");
-        const pw = prompt("Enter password:");
-        if (!email || !pw) return;
-
-        const user = await auth.signInWithEmailAndPassword(email, pw);
-        if (user.user) {
-          isAdmin = true;
-          document.getElementById("banPopup").style.display = "block";
-          alert("Admin logged in");
+            card.innerHTML = `
+                <div class="game-thumb-wrapper">
+                    <img class="game-thumb" src="${game.img}" alt="${game.name}" loading="lazy">
+                </div>
+                <div class="game-info">
+                    <div class="game-title">${game.name}</div>
+                </div>
+            `;
+            return card;
         }
-      } catch (e) { alert("Login failed: " + e.message); }
-    }
 
-    auth.onAuthStateChanged(user => { isAdmin = !!user; });
+        function renderAllGames(filterText = "") {
+            const exclusiveGrid = document.getElementById('exclusiveGrid');
+            const libraryGrid = document.getElementById('gamesGrid');
+            const exclusiveTitle = document.getElementById('exclusive-title');
+            
+            exclusiveGrid.innerHTML = "";
+            libraryGrid.innerHTML = "";
+            
+            const lowerFilter = filterText.toLowerCase();
 
-    async function banPlayer() {
-      if (!isAdmin) return alert("Admin only");
-      const id = document.getElementById("banNumber").value.trim();
-      if (!/^\d{6}$/.test(id)) return alert("Invalid 6-digit ID");
-      await db.collection("bans").doc(id).set({
-        id: id,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert(`User ${id} banned globally!`);
-    }
-
-    async function unbanPlayer() {
-      if (!isAdmin) return alert("Admin only");
-      const id = document.getElementById("banNumber").value.trim();
-      await db.collection("bans").doc(id).delete();
-      alert(`User ${id} unbanned`);
-    }
-
-    async function viewBannedIds() {
-      const snap = await db.collection("bans").get();
-      const list = snap.docs.map(d => d.id).join(", ");
-      alert("Banned IDs: " + (list || "None"));
-    }
-
-    function closeBanPopup() {
-      document.getElementById("banPopup").style.display = "none";
-    }
-
-    /* --------------------------- IPADOS UI LOGIC ----------------------------*/
-
-    function updateSystem() {
-        const now = new Date();
-        document.getElementById('time').textContent = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        document.getElementById('date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    }
-    setInterval(updateSystem, 1000);
-    updateSystem();
-
-    function embedGame(url) {
-        document.getElementById('app-content').innerHTML = `<iframe src="${url}" allow="fullscreen"></iframe>`;
-        document.getElementById('app-window').classList.add('open');
-        document.body.classList.add('app-open');
-    }
-
-    function openGameInNewTab(url) { window.open(url, '_blank'); }
-
-    function launchApp(name) {
-        document.getElementById('app-content').innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3.5rem; font-weight: 200; color: #1c1c1e;">${name}</div>`;
-        document.getElementById('app-window').classList.add('open');
-        document.body.classList.add('app-open');
-    }
-
-    function closeApp() {
-        document.getElementById('app-window').classList.remove('open');
-        document.body.classList.remove('app-open');
-        setTimeout(() => { document.getElementById('app-content').innerHTML = ''; }, 600);
-    }
-
-    let appIndex = [];
-    document.querySelectorAll('.app-item').forEach(el => {
-        const name = el.querySelector('.app-label').innerText;
-        const iconHTML = el.querySelector('.app-icon').innerHTML;
-        const action = el.getAttribute('onclick');
-        appIndex.push({ name, iconHTML, action });
-    });
-
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        searchResults.innerHTML = '';
-        if (query.length === 0) { searchResults.style.display = 'none'; return; }
-        const filtered = appIndex.filter(app => app.name.toLowerCase().includes(query));
-        if (filtered.length > 0) {
-            searchResults.style.display = 'block';
-            filtered.forEach(app => {
-                const item = document.createElement('div');
-                item.className = 'result-item';
-                item.innerHTML = `<div class="result-icon">${app.iconHTML}</div><div class="result-name">${app.name}</div>`;
-                item.onclick = () => { toggleSearch(false); new Function(app.action)(); };
-                searchResults.appendChild(item);
+            // 1. Render Exclusive Games (Only show if no search OR if they match search)
+            let exclusiveVisibleCount = 0;
+            exclusiveApps.forEach(game => {
+                if(game.name.toLowerCase().includes(lowerFilter)) {
+                    exclusiveGrid.appendChild(createCard(game));
+                    exclusiveVisibleCount++;
+                }
             });
-        } else { searchResults.style.display = 'none'; }
-    });
 
-    function toggleSearch(show) {
-        const overlay = document.getElementById('search-overlay');
-        const body = document.body;
-        if (show) { overlay.classList.add('active'); body.classList.add('search-open'); setTimeout(() => searchInput.focus(), 100); }
-        else { overlay.classList.remove('active'); body.classList.remove('search-open'); searchInput.value = ''; searchResults.style.display = 'none'; }
-    }
+            // Hide Exclusive Section title if no matches
+            if(exclusiveVisibleCount === 0) {
+                exclusiveTitle.style.display = 'none';
+                exclusiveGrid.style.display = 'none';
+            } else {
+                exclusiveTitle.style.display = 'flex';
+                exclusiveGrid.style.display = 'grid';
+            }
 
-    let gestureStartY = 0;
-    const homeBarEl = document.getElementById('home-bar-area');
-    document.addEventListener('mousedown', e => { if(!document.body.classList.contains('app-open')) gestureStartY = e.clientY; });
-    document.addEventListener('mouseup', e => {
-        if(document.body.classList.contains('app-open') || document.body.classList.contains('search-open')) return;
-        if (e.clientY - gestureStartY > 50) toggleSearch(true);
-    });
-    document.addEventListener('touchstart', e => { if(!document.body.classList.contains('app-open')) gestureStartY = e.touches[0].clientY; }, {passive: true});
-    document.addEventListener('touchend', e => {
-        if(document.body.classList.contains('app-open') || document.body.classList.contains('search-open')) return;
-        if (e.changedTouches[0].clientY - gestureStartY > 50) toggleSearch(true);
-    });
+            // 2. Render Library Games
+            libraryGames.forEach(game => {
+                if(game.name.toLowerCase().includes(lowerFilter)) {
+                    libraryGrid.appendChild(createCard(game));
+                }
+            });
+        }
 
-    const container = document.getElementById('pages-container');
-    let isDown = false, startX, scrollLeft;
-    container.addEventListener('mousedown', (e) => { if (document.body.classList.contains('search-open')) return; isDown = true; startX = e.pageX - container.offsetLeft; scrollLeft = container.scrollLeft; });
-    container.addEventListener('mouseleave', () => isDown = false);
-    container.addEventListener('mouseup', () => isDown = false);
-    container.addEventListener('mousemove', (e) => { if(!isDown) return; e.preventDefault(); const walk = (e.pageX - container.offsetLeft - startX) * 2; container.scrollLeft = scrollLeft - walk; });
+        // Search Listener
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            renderAllGames(e.target.value);
+        });
 
-    homeBarEl.addEventListener('touchstart', (e) => { gestureStartY = e.touches[0].clientY; });
-    homeBarEl.addEventListener('touchend', (e) => { if (gestureStartY - e.changedTouches[0].clientY > 50) closeApp(); });
-    homeBarEl.addEventListener('mousedown', (e) => { gestureStartY = e.clientY; });
-    homeBarEl.addEventListener('mouseup', (e) => { if (gestureStartY - e.clientY > 30 || Math.abs(gestureStartY - e.clientY) < 10) closeApp(); });
+        // Initial Render
+        renderAllGames();
 
-    container.addEventListener('scroll', () => {
-        const currentPage = Math.round(container.scrollLeft / container.offsetWidth);
-        document.querySelectorAll('.page-dot').forEach((dot, index) => { dot.classList.toggle('active', index === currentPage); });
-    });
-</script>
+        function embedGame(url) {
+            document.getElementById('app-content').innerHTML = `<iframe src="${url}" allow="fullscreen"></iframe>`;
+            document.getElementById('app-window').classList.add('open');
+        }
+
+        function closeApp() {
+            document.getElementById('app-window').classList.remove('open');
+            setTimeout(() => { document.getElementById('app-content').innerHTML = ''; }, 400);
+        }
+
+        /* --------------------------- FIREBASE & ADMIN SYSTEM ----------------------------*/
+        const firebaseConfig = {
+          apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
+          authDomain: "stuff-8cfdc.firebaseapp.com",
+          databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
+          projectId: "stuff-8cfdc",
+          storageBucket: "stuff-8cfdc.appspot.com",
+          messagingSenderId: "327097823566",
+          appId: "1:327097823566:web:3442b4f46dbd2731abee1f"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const database = firebase.database();
+        let isAdmin = false;
+
+        // USER ID
+        let userNumber = localStorage.getItem("userNumber");
+        if (!userNumber || !/^\d{6}$/.test(userNumber)) {
+          userNumber = Math.floor(100000 + Math.random() * 900000);
+          localStorage.setItem("userNumber", userNumber);
+        }
+        document.getElementById("userNumberDisplay").textContent = userNumber;
+
+        // ACTIVE USERS
+        const userRef = database.ref("onlineUsers/" + userNumber);
+        userRef.set(true);
+        userRef.onDisconnect().remove();
+
+        database.ref("onlineUsers").on("value", snapshot => {
+          const users = snapshot.val() || {};
+          document.getElementById("activeUsersCount").textContent = Object.keys(users).length;
+        });
+
+        // BAN SYSTEM
+        let isBanned = false; 
+
+        async function checkBan() {
+          try {
+            const doc = await db.collection("bans").doc(userNumber.toString()).get();
+            if (doc.exists) {
+                isBanned = true;
+                enforceBanProtection();
+            }
+          } catch (err) { console.error("Ban check failed:", err); }
+        }
+
+        function enforceBanProtection() {
+            const secureBan = () => {
+                if (!isBanned) return;
+                let overlay = document.getElementById("banOverlay");
+                if (!overlay) {
+                    overlay = document.createElement("div");
+                    overlay.id = "banOverlay";
+                    overlay.innerHTML = "<div>⛔ ACCOUNT SUSPENDED</div>";
+                    document.body.appendChild(overlay);
+                }
+                const requiredStyles = {
+                    display: "block", position: "fixed", top: "0", left: "0",
+                    width: "100%", height: "100%", background: "black", color: "#FF3333",
+                    fontSize: "32px", fontWeight: "bold", textAlign: "center", paddingTop: "40vh",
+                    zIndex: "2147483647", pointerEvents: "all"
+                };
+                for (const [key, value] of Object.entries(requiredStyles)) {
+                    if (overlay.style[key] !== value) overlay.style[key] = value;
+                }
+                if (document.body.style.overflow !== "hidden") document.body.style.overflow = "hidden";
+                requestAnimationFrame(secureBan);
+            };
+            secureBan();
+        }
+        checkBan();
+
+        // ADMIN LOGIC
+        async function adminLogin() {
+          try {
+            await auth.signOut();
+            const email = prompt("Enter admin email:");
+            const pw = prompt("Enter password:");
+            if (!email || !pw) return;
+
+            const user = await auth.signInWithEmailAndPassword(email, pw);
+            if (user.user) {
+              isAdmin = true;
+              document.getElementById("banPopup").style.display = "block";
+            }
+          } catch (e) { alert("Login failed: " + e.message); }
+        }
+
+        auth.onAuthStateChanged(user => { isAdmin = !!user; });
+
+        async function banPlayer() {
+          if (!isAdmin) return alert("Admin only");
+          const id = document.getElementById("banNumber").value.trim();
+          if (!/^\d{6}$/.test(id)) return alert("Invalid 6-digit ID");
+          await db.collection("bans").doc(id).set({
+            id: id,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          alert(`User ${id} banned globally!`);
+        }
+
+        async function unbanPlayer() {
+          if (!isAdmin) return alert("Admin only");
+          const id = document.getElementById("banNumber").value.trim();
+          await db.collection("bans").doc(id).delete();
+          alert(`User ${id} unbanned`);
+        }
+
+        async function viewBannedIds() {
+          const snap = await db.collection("bans").get();
+          const list = snap.docs.map(d => d.id).join(", ");
+          alert("Banned IDs: " + (list || "None"));
+        }
+
+        function closeBanPopup() {
+          document.getElementById("banPopup").style.display = "none";
+        }
+    </script>
 </body>
 </html>
