@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +32,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #0f0f0f;
-            /* BACKGROUND */
+            /* BACKGROUND DEFAULT */
             background-image: url('https://i.imgur.com/5753Ply.jpeg');
             background-size: cover;
             background-position: center;
@@ -41,9 +40,10 @@
             color: var(--text-main);
             height: 100vh;
             width: 100vw;
-            overflow: hidden;
+            overflow: hidden; /* Body doesn't scroll, main-content does */
             display: flex;
             flex-direction: column;
+            transition: background-image 0.5s ease-in-out;
         }
 
         body::before {
@@ -87,9 +87,16 @@
             filter: drop-shadow(0 0 15px rgba(108, 92, 231, 0.3));
         }
 
+        /* Container for Search + Settings */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .search-wrapper {
             position: relative;
-            width: 400px;
+            width: 350px;
         }
 
         #search-input {
@@ -115,6 +122,57 @@
             border-color: var(--primary);
             box-shadow: 0 0 20px rgba(108, 92, 231, 0.25);
         }
+
+        /* SETTINGS BUTTON */
+        #settings-btn {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
+            color: white;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        #settings-btn:hover {
+            background: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        /* --- SETTINGS MODAL --- */
+        #settings-modal {
+            display: none;
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            padding: 25px;
+            border-radius: 20px;
+            z-index: 6000;
+        }
+        #settings-modal h3 { margin-bottom: 15px; color: white; }
+        .wallpaper-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;
+        }
+        .wp-option {
+            height: 60px; border-radius: 8px; cursor: pointer;
+            border: 2px solid transparent; background-size: cover; background-position: center;
+            transition: 0.2s;
+        }
+        .wp-option:hover { transform: scale(1.05); border-color: white; }
+        
+        #custom-wp-input {
+            width: 100%; padding: 10px; border-radius: 8px;
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            color: white; font-family: inherit; margin-bottom: 10px;
+        }
+        .btn-row { display: flex; gap: 10px; }
+        .action-btn {
+            flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer;
+        }
+        .save-btn { background: var(--primary); color: white; }
+        .close-modal-btn { background: rgba(255,255,255,0.1); color: white; }
+
 
         /* --- BOTTOM UI ELEMENTS --- */
 
@@ -206,6 +264,7 @@
             border-radius: 100px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.5);
             transition: 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: auto; /* Only the bar interacts */
         }
         
         #home-bar-area:hover #home-bar {
@@ -230,6 +289,11 @@
             width: 100%;
             max-width: 1600px;
             margin: 0 auto;
+        }
+
+        /* Hide scrollbar on main content when app is open */
+        #main-content.locked {
+            overflow: hidden;
         }
 
         h2.section-title {
@@ -270,6 +334,8 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
             cursor: pointer;
+            /* Performance: don't render offscreen stuff heavily */
+            content-visibility: auto; 
         }
 
         .game-card:hover {
@@ -373,9 +439,11 @@
         @media (max-width: 768px) {
             #navbar { padding: 0 20px; height: 60px; }
             .logo { font-size: 22px; }
-            .search-wrapper { width: 150px; }
+            .nav-right { gap: 10px; }
+            .search-wrapper { width: 140px; }
             #search-input { padding: 10px 15px; padding-left: 35px; }
             .search-icon { left: 10px; font-size: 14px; }
+            #settings-btn { width: 38px; height: 38px; font-size: 16px; }
             
             #exclusiveGrid { grid-template-columns: repeat(2, 1fr); }
             .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
@@ -404,9 +472,26 @@
     <!-- TOP NAVBAR -->
     <div id="navbar" class="glass-panel">
         <div class="logo">Kuba OS</div>
-        <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="Search games...">
+        <div class="nav-right">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Search games...">
+            </div>
+            <!-- WALLPAPER BUTTON -->
+            <button id="settings-btn" onclick="toggleSettings()">🎨</button>
+        </div>
+    </div>
+
+    <!-- WALLPAPER / SETTINGS MODAL -->
+    <div id="settings-modal" class="glass-panel">
+        <h3>System Theme</h3>
+        <div class="wallpaper-grid" id="wp-grid">
+            <!-- Injected by JS -->
+        </div>
+        <input type="text" id="custom-wp-input" placeholder="Paste Custom Image URL...">
+        <div class="btn-row">
+            <button class="action-btn save-btn" onclick="applyCustomWallpaper()">Apply</button>
+            <button class="action-btn close-modal-btn" onclick="toggleSettings()">Close</button>
         </div>
     </div>
 
@@ -643,12 +728,15 @@
             { name: "Sonic Revert", img: "https://th.bing.com/th/id/OIP.YUnOb_2r9G4yw5nyrcDYUAHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://imaginative-dusk-c97c25.netlify.app/" }
         ];
 
-        /* --------------------------- UI LOGIC ----------------------------*/
+        /* --------------------------- UI & PERFORMANCE LOGIC ----------------------------*/
         
-        function createCard(game) {
+        // 1. GENERATE ALL CARDS ONCE ON LOAD (Performance Fix)
+        function createCard(game, sectionId) {
             const card = document.createElement('div');
             card.className = "game-card";
-            
+            card.dataset.name = game.name.toLowerCase(); // Cache for search
+            card.dataset.section = sectionId;
+
             if(game.newTab) {
                 card.onclick = () => window.open(game.url, '_blank');
             } else {
@@ -666,59 +754,124 @@
             return card;
         }
 
-        function renderAllGames(filterText = "") {
+        function initGames() {
             const exclusiveGrid = document.getElementById('exclusiveGrid');
             const libraryGrid = document.getElementById('gamesGrid');
-            const exclusiveTitle = document.getElementById('exclusive-title');
             
-            exclusiveGrid.innerHTML = "";
-            libraryGrid.innerHTML = "";
-            
-            const lowerFilter = filterText.toLowerCase();
-
-            // 1. Render Exclusive Games (Only show if no search OR if they match search)
-            let exclusiveVisibleCount = 0;
+            // Render Exclusive
             exclusiveApps.forEach(game => {
-                if(game.name.toLowerCase().includes(lowerFilter)) {
-                    exclusiveGrid.appendChild(createCard(game));
+                exclusiveGrid.appendChild(createCard(game, 'exclusive'));
+            });
+            
+            // Render Library
+            libraryGames.forEach(game => {
+                libraryGrid.appendChild(createCard(game, 'library'));
+            });
+        }
+
+        // 2. EFFICIENT SEARCH (Performance Fix)
+        function filterGames(query) {
+            const lowerQuery = query.toLowerCase();
+            const allCards = document.querySelectorAll('.game-card');
+            let exclusiveVisibleCount = 0;
+
+            allCards.forEach(card => {
+                const name = card.dataset.name;
+                const isMatch = name.includes(lowerQuery);
+                
+                // Toggle visibility efficiently
+                card.style.display = isMatch ? 'block' : 'none';
+
+                // Track if exclusive section has items
+                if (isMatch && card.dataset.section === 'exclusive') {
                     exclusiveVisibleCount++;
                 }
             });
 
-            // Hide Exclusive Section title if no matches
-            if(exclusiveVisibleCount === 0) {
-                exclusiveTitle.style.display = 'none';
-                exclusiveGrid.style.display = 'none';
+            // Logic to hide the "Exclusive" title if empty
+            const exTitle = document.getElementById('exclusive-title');
+            const exGrid = document.getElementById('exclusiveGrid');
+            
+            if (exclusiveVisibleCount === 0) {
+                exTitle.style.display = 'none';
+                exGrid.style.display = 'none';
             } else {
-                exclusiveTitle.style.display = 'flex';
-                exclusiveGrid.style.display = 'grid';
+                exTitle.style.display = 'flex';
+                exGrid.style.display = 'grid'; 
             }
-
-            // 2. Render Library Games
-            libraryGames.forEach(game => {
-                if(game.name.toLowerCase().includes(lowerFilter)) {
-                    libraryGrid.appendChild(createCard(game));
-                }
-            });
         }
 
-        // Search Listener
         document.getElementById('search-input').addEventListener('input', (e) => {
-            renderAllGames(e.target.value);
+            filterGames(e.target.value);
         });
 
         // Initial Render
-        renderAllGames();
+        initGames();
+
+
+        /* --------------------------- APP WINDOW LOGIC ----------------------------*/
 
         function embedGame(url) {
-            document.getElementById('app-content').innerHTML = `<iframe src="${url}" allow="fullscreen"></iframe>`;
-            document.getElementById('app-window').classList.add('open');
+            const win = document.getElementById('app-window');
+            const content = document.getElementById('app-content');
+            const main = document.getElementById('main-content');
+
+            content.innerHTML = `<iframe src="${url}" allow="fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+            win.classList.add('open');
+            
+            // LOCK SCROLLING of background content (UX Fix)
+            main.classList.add('locked');
         }
 
         function closeApp() {
-            document.getElementById('app-window').classList.remove('open');
-            setTimeout(() => { document.getElementById('app-content').innerHTML = ''; }, 400);
+            const win = document.getElementById('app-window');
+            const content = document.getElementById('app-content');
+            const main = document.getElementById('main-content');
+
+            win.classList.remove('open');
+            main.classList.remove('locked'); // Unlock scrolling
+
+            setTimeout(() => { content.innerHTML = ''; }, 400); // Clear iframe to stop sound
         }
+
+        /* --------------------------- WALLPAPER SYSTEM ----------------------------*/
+        const wallpapers = [
+            "https://i.imgur.com/5753Ply.jpeg", // Default
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop", // Space
+            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop", // Abstract
+            "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=2074&auto=format&fit=crop", // Dark Rain
+            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"  // Cyberpunk
+        ];
+
+        // Init Wallpaper Modal
+        const wpGrid = document.getElementById('wp-grid');
+        wallpapers.forEach(url => {
+            const div = document.createElement('div');
+            div.className = 'wp-option';
+            div.style.backgroundImage = `url('${url}')`;
+            div.onclick = () => setWallpaper(url);
+            wpGrid.appendChild(div);
+        });
+
+        function setWallpaper(url) {
+            document.body.style.backgroundImage = `url('${url}')`;
+            localStorage.setItem("kubaOS_wallpaper", url);
+        }
+
+        function applyCustomWallpaper() {
+            const url = document.getElementById('custom-wp-input').value;
+            if(url) setWallpaper(url);
+        }
+
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // Load Saved Wallpaper
+        const savedWP = localStorage.getItem("kubaOS_wallpaper");
+        if(savedWP) document.body.style.backgroundImage = `url('${savedWP}')`;
+
 
         /* --------------------------- FIREBASE & ADMIN SYSTEM ----------------------------*/
         const firebaseConfig = {
