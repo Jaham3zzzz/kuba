@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -646,13 +647,51 @@
         <button onclick="viewBannedIds()" style="background:transparent; border:1px solid #444;">View Banned List</button>
     </div>
 
-    <!-- FIREBASE -->
+      <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
+        /* --------------------------- STEALTH & SECURITY ----------------------------*/
+        
+        // 1. DOMAIN BLACKLIST: Blocks school filters from communicating with the site
+        const schoolList = ["deledao", "goguardian", "lightspeed", "linewize", "securly", ".edu/"];
+        
+        function isBlockedDomain(url) {
+            try {
+                // Convert URL to a string and check against the blacklist
+                const urlString = String(url).toLowerCase();
+                return schoolList.some(school => urlString.includes(school));
+            } catch(e) { return false; }
+        }
+
+        // Hijack the "fetch" function
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            if (isBlockedDomain(url)) {
+                console.warn("Kuba OS: Blocked filter request (fetch)");
+                return Promise.reject(new Error("Blocked by Security Policy"));
+            }
+            return originalFetch.apply(this, arguments);
+        };
+
+        // Hijack the "XMLHttpRequest" (older way sites talk to servers)
+        const originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            if (isBlockedDomain(url)) {
+                console.warn("Kuba OS: Blocked filter request (XHR)");
+                return;
+            }
+            return originalOpen.apply(this, arguments);
+        };
+
+        // 2. CANVAS BLOCKER: Prevents screenshots/thumbnails from being taken
+        // This forces any "snapshot" of the screen to come up as a blank image
+        HTMLCanvasElement.prototype.toDataURL = function() {
+            return ""; 
+        };
         /* --------------------------- INFO MODAL CONTENT ----------------------------*/
         
         const privacyText = `
