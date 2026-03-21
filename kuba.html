@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuba OS | System Update</title>
-    <!-- Premium Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <title>Kuba OS | Moving to New Site</title>
+    <!-- High-end Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --purple: #A855F7; /* Electric Purple */
-            --dark-purple: #6B21A8;
+            --bright-purple: #C084FC;
+            --deep-purple: #7E22CE;
             --bg-black: #050505;
-            --glass: rgba(168, 85, 247, 0.04);
-            --border: rgba(168, 85, 247, 0.2);
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(192, 132, 252, 0.2);
         }
 
         * {
@@ -30,188 +30,180 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            /* Deep radial background for a void effect */
-            background: radial-gradient(circle at center, #0f0716 0%, #050505 100%);
+            /* Deep purple background glow */
+            background: radial-gradient(circle at center, #120621 0%, #050505 100%);
         }
 
-        /* The Nebula Glow */
-        .bg-glow {
+        /* The "Nebula" Moving Glow */
+        .ambient-glow {
             position: absolute;
-            width: 900px;
-            height: 900px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-            filter: blur(100px);
-            animation: nebulaPulse 12s infinite alternate ease-in-out;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(126, 34, 206, 0.15) 0%, transparent 70%);
+            filter: blur(80px);
+            animation: moveGlow 10s infinite alternate ease-in-out;
         }
 
-        @keyframes nebulaPulse {
-            from { transform: scale(1) translate(-5%, -5%); opacity: 0.5; }
-            to { transform: scale(1.3) translate(5%, 5%); opacity: 0.8; }
+        @keyframes moveGlow {
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(10%, 10%) scale(1.2); }
         }
 
-        .container {
+        /* The Million Dollar Glass Box */
+        .main-card {
             position: relative;
             z-index: 10;
             text-align: center;
-            padding: 80px 60px;
+            padding: 60px 40px;
             background: var(--glass);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
-            border-radius: 50px;
-            box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(168, 85, 247, 0.05);
-            max-width: 550px;
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            max-width: 500px;
             width: 90%;
-            animation: vaultEntry 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* High-End Purple Chrome Logo */
+        /* Big Pro Logo */
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 5rem;
+            font-size: 4.5rem;
             font-weight: 700;
-            letter-spacing: -3px;
+            letter-spacing: -2px;
             margin-bottom: 5px;
-            background: linear-gradient(to right, #fff 20%, var(--purple) 40%, #E9D5FF 60%, #fff 80%);
+            background: linear-gradient(to right, #fff 20%, var(--bright-purple) 40%, #E9D5FF 60%, #fff 80%);
             background-size: 200% auto;
             color: #000;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shimmer 6s linear infinite;
+            animation: shimmer 5s linear infinite;
         }
 
         @keyframes shimmer {
             to { background-position: 200% center; }
         }
 
-        .os-tag {
-            font-size: 0.75rem;
+        .os-badge {
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 10px;
-            color: var(--purple);
-            margin-bottom: 50px;
+            letter-spacing: 8px;
+            color: var(--bright-purple);
+            margin-bottom: 40px;
             font-weight: 800;
-            text-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+            opacity: 0.8;
         }
 
-        .status-text {
+        /* Simple Text */
+        .status-msg {
             font-weight: 300;
             font-size: 1.1rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 40px;
-        }
-
-        /* The Quantum Progress Bar */
-        .progress-container {
-            width: 100%;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            overflow: hidden;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 30px;
         }
 
-        .progress-bar {
+        /* Pro Loading Bar */
+        .bar-bg {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .bar-fill {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, var(--purple), #fff);
-            box-shadow: 0 0 25px var(--purple);
+            background: var(--bright-purple);
+            box-shadow: 0 0 20px var(--bright-purple);
         }
 
-        .footer-links {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            align-items: center;
-        }
-
-        /* The Premium Button */
-        .btn-legacy {
+        /* The "Old Link" Professional Button */
+        .btn-secondary {
             display: inline-block;
-            padding: 14px 34px;
-            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 12px 28px;
+            border: 1px solid rgba(192, 132, 252, 0.3);
             border-radius: 100px;
-            color: white;
+            color: #fff;
             text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            background: transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-legacy:hover {
-            border-color: var(--purple);
-            box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
-            transform: translateY(-3px);
-            background: rgba(168, 85, 247, 0.1);
-        }
-
-        .auto-redirect-msg {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.2);
-            text-decoration: none;
-            transition: color 0.3s;
+            font-size: 0.8rem;
+            font-weight: 500;
             letter-spacing: 1px;
+            transition: all 0.4s ease;
+            background: rgba(192, 132, 252, 0.05);
         }
 
-        @keyframes vaultEntry {
-            from { opacity: 0; transform: scale(0.95) translateY(40px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+        .btn-secondary:hover {
+            background: rgba(192, 132, 252, 0.2);
+            border-color: var(--bright-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .redirect-text {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div class="ambient-glow"></div>
 
-    <div class="container">
+    <div class="main-card">
         <div class="logo">Kuba</div>
-        <div class="os-tag">Operating System</div>
+        <div class="os-badge">Operating System</div>
         
-        <p class="status-text">Infrastructure upgrade complete.<br>Synchronizing secure nodes...</p>
+        <p class="status-msg">
+            This website has been updated.<br>
+            Taking you to the new site now...
+        </p>
         
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
+        <div class="bar-bg">
+            <div class="bar-fill" id="fill"></div>
         </div>
 
-        <div class="footer-links">
-            <a href="https://kubaz.pages.dev/" class="auto-redirect-msg">Transferring to kubaz.pages.dev...</a>
-            
-            <a href="https://kuba.fireyh8.workers.dev/" class="btn-legacy">
-                Use Legacy Link
-            </a>
-        </div>
+        <a href="https://kuba.fireyh8.workers.dev/" class="btn-secondary">
+            Go to the old website
+        </a>
+
+        <span class="redirect-text">Redirecting in a few seconds...</span>
     </div>
 
     <script>
-        const targetURL = "https://kubaz.pages.dev/";
-        const duration = 4500; 
-        const progressBar = document.getElementById('progressBar');
+        const destination = "https://kubaz.pages.dev/";
+        const timeLimit = 4000; // 4 seconds
+        const fill = document.getElementById('fill');
+        
         let start = null;
-
-        function animate(timestamp) {
+        function step(timestamp) {
             if (!start) start = timestamp;
             const progress = timestamp - start;
-            const percentage = Math.min((progress / duration) * 100, 100);
+            const width = Math.min((progress / timeLimit) * 100, 100);
             
-            progressBar.style.width = percentage + "%";
+            fill.style.width = width + "%";
 
-            if (progress < duration) {
-                requestAnimationFrame(animate);
+            if (progress < timeLimit) {
+                window.requestAnimationFrame(step);
             } else {
-                window.location.href = targetURL;
+                window.location.href = destination;
             }
         }
 
+        // Small delay to let the page load visually
         setTimeout(() => {
-            requestAnimationFrame(animate);
+            window.requestAnimationFrame(step);
         }, 800);
     </script>
 </body>
