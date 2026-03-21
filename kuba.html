@@ -1,1257 +1,218 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="bvyTU2fW5UN38CNywbvZF6Zw9Nk7aRC4TKkwh-1gF7c" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝔎𝔲𝔟𝔞 OS</title>
-    <link rel="icon" type="image/jpeg" href="favicon.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <title>Kuba OS | System Update</title>
+    <!-- Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6c5ce7;
-            --accent: #a29bfe;
-            --glass-bg: rgba(15, 15, 15, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-blur: blur(20px);
-            --text-main: #ffffff;
-            --text-muted: #b2bec3;
-            --navbar-height: 70px;
+            --purple: #A855F7; /* Electric Purple */
+            --dark-purple: #6B21A8;
+            --bg-black: #050505;
+            --glass: rgba(168, 85, 247, 0.04);
+            --border: rgba(168, 85, 247, 0.2);
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            outline: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #0f0f0f;
-            /* BACKGROUND DEFAULT */
-            background-image: url('https://i.imgur.com/5753Ply.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: var(--text-main);
+            background-color: var(--bg-black);
+            color: white;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
-            width: 100vw;
-            overflow: hidden; /* Body doesn't scroll, main-content does */
-            display: flex;
-            flex-direction: column;
-            transition: background-image 0.5s ease-in-out;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* --- GLASS UTILITY --- */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-
-        /* --- TOP NAVBAR --- */
-        #navbar {
-            width: 100%;
-            height: var(--navbar-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* Keeps Logo Left, Links Center, Search Right */
-            padding: 0 40px;
-            z-index: 100;
-            border-bottom: 1px solid var(--glass-border);
-            position: relative;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(to right, #fff, #a29bfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-            filter: drop-shadow(0 0 15px rgba(108, 92, 231, 0.3));
-        }
-
-        /* --- NEW LIQUID BUTTONS --- */
-        .nav-links-container {
-            display: flex;
-            gap: 10px;
-        }
-
-        .liquid-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        /* Liquid Glass Hover Effect */
-        .liquid-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 
-                0 0 15px rgba(255, 255, 255, 0.1),
-                inset 0 0 10px rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px) scale(1.02);
-            backdrop-filter: blur(10px);
-            text-shadow: 0 0 8px rgba(255,255,255,0.6);
-        }
-
-        .liquid-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Container for Search + Settings */
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .search-wrapper {
-            position: relative;
-            width: 350px;
-        }
-
-        #search-input {
-            width: 100%;
-            padding: 12px 20px;
-            padding-left: 45px;
-            border-radius: 50px;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            font-family: 'Outfit', sans-serif;
-            transition: all 0.3s ease;
-        }
-        
-        .search-icon {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            color: var(--text-muted); font-size: 16px; pointer-events: none;
-        }
-
-        #search-input:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.25);
-        }
-
-        /* SETTINGS BUTTON */
-        #settings-btn {
-            width: 42px; height: 42px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.08);
-            color: white;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-            transition: 0.3s;
-        }
-        #settings-btn:hover {
-            background: var(--primary);
-            transform: rotate(90deg);
-        }
-
-        /* --- SETTINGS MODAL --- */
-        #settings-modal {
-            display: none;
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            padding: 25px;
-            border-radius: 20px;
-            z-index: 6000;
-        }
-        #settings-modal h3 { margin-bottom: 15px; color: white; }
-        .wallpaper-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;
-        }
-        .wp-option {
-            height: 60px; border-radius: 8px; cursor: pointer;
-            border: 2px solid transparent; background-size: cover; background-position: center;
-            transition: 0.2s;
-        }
-        .wp-option:hover { transform: scale(1.05); border-color: white; }
-        
-        #custom-wp-input {
-            width: 100%; padding: 10px; border-radius: 8px;
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
-            color: white; font-family: inherit; margin-bottom: 10px;
-        }
-        .btn-row { display: flex; gap: 10px; }
-        .action-btn {
-            flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer;
-        }
-        .save-btn { background: var(--primary); color: white; }
-        .close-modal-btn { background: rgba(255,255,255,0.1); color: white; }
-
-        /* --- INFO MODAL (Privacy/DMCA) --- */
-        #info-modal {
-            display: none;
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            max-height: 80vh;
-            padding: 30px;
-            border-radius: 24px;
-            z-index: 6500;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        #info-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        #info-title {
-            font-size: 24px; font-weight: 800; margin-bottom: 20px;
-            color: var(--primary); border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 15px;
-        }
-        #info-body {
-            flex: 1;
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #dcdcdc;
-            padding-right: 10px;
-        }
-        #info-body p { margin-bottom: 15px; }
-        #info-body strong { color: white; }
-        #info-body a { color: var(--accent); text-decoration: none; }
-        
-        .info-close {
-            position: absolute; top: 20px; right: 25px;
-            font-size: 28px; cursor: pointer; color: white;
-            transition: 0.2s;
-        }
-        .info-close:hover { color: #ff4757; transform: scale(1.1); }
-
-
-        /* --- BOTTOM UI ELEMENTS --- */
-
-        /* 1. ID Wrapper (Bottom Left) */
-        #id-wrapper {
-            position: fixed;
-            bottom: 10px;
-            left: 15px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column; /* Button on TOP of ID */
-            align-items: flex-start;
-            gap: 5px;
-        }
-
-        #admin-hover-btn {
-            opacity: 0;
-            transform: translateY(10px);
-            pointer-events: none;
-            background: var(--primary);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            border: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-
-        #id-wrapper:hover #admin-hover-btn {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        #overlay-id {
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            color: white;
-            cursor: default;
-            display: flex;
-            align-items: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        /* 2. Active Users (Bottom Right) */
-        #overlay-active {
-            position: fixed;
-            bottom: 10px;
-            right: 15px;
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            color: white;
-            z-index: 9999;
-            pointer-events: none;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        /* 3. iPhone Home Bar - LOWERED POSITION */
-        #home-bar-area {
-            position: absolute;
-            bottom: 0; /* Anchored to the very bottom */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 140px; 
-            height: 20px; 
             display: flex;
             justify-content: center;
-            align-items: flex-end; 
-            padding-bottom: 6px; /* Small padding from edge */
-            cursor: pointer;
-            z-index: 5002;
-            border-radius: 20px 20px 0 0;
-        }
-        
-        #home-bar {
-            width: 130px;
-            height: 5px;
-            background: #ffffff;
-            border-radius: 100px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-            transition: 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-            pointer-events: auto; /* Only the bar interacts */
-        }
-        
-        #home-bar-area:hover #home-bar {
-            transform: scaleY(1.3);
-            background: #f0f0f0;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        
-        #home-bar-area:active #home-bar {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        /* --- MAIN CONTENT --- */
-        #main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px;
-            padding-bottom: 80px;
-            z-index: 5;
-            scroll-behavior: smooth;
-            width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        /* Hide scrollbar on main content when app is open */
-        #main-content.locked {
-            overflow: hidden;
-        }
-
-        h2.section-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: white;
-            display: flex;
             align-items: center;
-            gap: 12px;
-        }
-        
-        #exclusive-title::before {
-            content: ''; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 10px #FFD700;
-        }
-        
-        #library-title::before {
-            content: ''; width: 6px; height: 6px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary);
-        }
-
-        /* Games Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-        
-        #exclusiveGrid {
-            grid-template-columns: repeat(5, 1fr);
-        }
-
-        .game-card {
-            border-radius: 16px;
             overflow: hidden;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            cursor: pointer;
-            /* Performance: don't render offscreen stuff heavily */
-            content-visibility: auto; 
+            /* Deep radial background for a void effect */
+            background: radial-gradient(circle at center, #0f0716 0%, #050505 100%);
         }
 
-        .game-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            z-index: 5;
-        }
-        
-        #exclusiveGrid .game-card:hover {
-            border-color: #FFD700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
-        }
-
-        .game-thumb-wrapper {
-            width: 100%;
-            padding-top: 100%;
-            position: relative;
-        }
-
-        .game-thumb {
+        /* The Nebula Glow */
+        .bg-glow {
             position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
+            filter: blur(100px);
+            animation: nebulaPulse 12s infinite alternate ease-in-out;
         }
 
-        .game-card:hover .game-thumb { transform: scale(1.08); }
-
-        .game-info {
-            padding: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+        @keyframes nebulaPulse {
+            from { transform: scale(1) translate(-5%, -5%); opacity: 0.5; }
+            to { transform: scale(1.3) translate(5%, 5%); opacity: 0.8; }
         }
 
-        .game-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            white-space: nowrap;
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 80px 60px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(168, 85, 247, 0.05);
+            max-width: 550px;
+            width: 90%;
+            animation: vaultEntry 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* High-End Purple Chrome Logo */
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: -3px;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #fff 20%, var(--purple) 40%, #E9D5FF 60%, #fff 80%);
+            background-size: 200% auto;
+            color: #000;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 6s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .os-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            color: var(--purple);
+            margin-bottom: 50px;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .status-text {
+            font-weight: 300;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+        }
+
+        /* The Quantum Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
             overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 30px;
         }
 
-        /* --- GAME WINDOW --- */
-        #app-window {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: #000;
-            z-index: 5000;
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--purple), #fff);
+            box-shadow: 0 0 25px var(--purple);
+        }
+
+        .footer-links {
+            margin-top: 40px;
             display: flex;
             flex-direction: column;
-            transform: translateY(100vh);
-            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            gap: 25px;
+            align-items: center;
         }
 
-        #app-window.open { transform: translateY(0); }
-
-        #app-content { flex: 1; width: 100%; height: 100%; }
-        #app-content iframe { width: 100%; height: 100%; border: none; }
-
-        /* --- ADMIN POPUPS --- */
-        #banOverlay {
-            display: none; position: fixed; top:0; left:0; width:100%; height:100%;
-            background: black; color: #ff4757; font-size: 40px; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 2px;
-            text-align: center; padding-top: 40vh; z-index: 20000; pointer-events: all;
+        /* The Premium Button */
+        .btn-legacy {
+            display: inline-block;
+            padding: 14px 34px;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 100px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            background: transparent;
+            position: relative;
+            overflow: hidden;
         }
 
-        #banPopup { 
-            display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); 
-            z-index: 20001; width:350px; padding:30px; border-radius: 24px;
-            background: rgba(15, 15, 20, 0.95);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .btn-legacy:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+            transform: translateY(-3px);
+            background: rgba(168, 85, 247, 0.1);
         }
-        #banPopup h2 { margin-bottom: 20px; font-size: 20px; text-align: center; color: var(--primary); }
-        #banPopup input { 
-            width:100%; margin-bottom:15px; padding:15px; border-radius: 12px; 
-            border:1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: white;
-            font-family: inherit;
-        }
-        #banPopup button { 
-            margin:5px 0; width:100%; padding:15px; cursor:pointer; 
-            background: var(--primary); border: none; border-radius: 12px; color: white; font-weight: 700;
-            transition: 0.2s;
-        }
-        #banPopup button:hover { opacity: 0.9; transform: scale(1.02); }
-        .close-btn { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px; color: #ff4757; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        .auto-redirect-msg {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            transition: color 0.3s;
+            letter-spacing: 1px;
+        }
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            #navbar { padding: 0 20px; height: 60px; }
-            .logo { font-size: 22px; }
-            /* Hide extra buttons on small screens if needed, or scale them */
-            .nav-links-container { display: none; } 
-            
-            .nav-right { gap: 10px; }
-            .search-wrapper { width: 140px; }
-            #search-input { padding: 10px 15px; padding-left: 35px; }
-            .search-icon { left: 10px; font-size: 14px; }
-            #settings-btn { width: 38px; height: 38px; font-size: 16px; }
-            
-            #exclusiveGrid { grid-template-columns: repeat(2, 1fr); }
-            .games-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-            
-            #id-wrapper { bottom: 10px; left: 10px; }
-            #overlay-active { bottom: 10px; right: 10px; }
-            #overlay-id, #overlay-active { font-size: 11px; padding: 6px 12px; }
-            
-            #info-modal { width: 90%; padding: 20px; }
+        @keyframes vaultEntry {
+            from { opacity: 0; transform: scale(0.95) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
     </style>
 </head>
 <body>
 
-    <!-- ID WRAPPER (HOVER TO SEE ADMIN) -->
-    <div id="id-wrapper">
-        <button id="admin-hover-btn" onclick="adminLogin()">Admin Login</button>
-        <div id="overlay-id" class="glass-panel">
-            ID: <span id="userNumberDisplay" style="margin-left:5px">...</span>
-        </div>
-    </div>
+    <div class="bg-glow"></div>
 
-    <!-- ACTIVE USERS OVERLAY -->
-    <div id="overlay-active" class="glass-panel">
-        Active Users: <span id="activeUsersCount" style="margin-left:5px">0</span>
-    </div>
-
-    <!-- TOP NAVBAR -->
-    <div id="navbar" class="glass-panel">
-        <div class="logo-section">
-            <div class="logo">Kuba OS</div>
-            
-            <!-- NEW LIQUID BUTTONS -->
-            <div class="nav-links-container">
-                <button class="liquid-btn" onclick="openInfoModal('privacy')">Privacy Policy</button>
-                <button class="liquid-btn" onclick="openInfoModal('dmca')">DMCA</button>
-                <button class="liquid-btn" onclick="openInfoModal('contact')">Contact</button>
-            </div>
-        </div>
-
-        <div class="nav-right">
-            <div class="search-wrapper">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="search-input" placeholder="Search games...">
-            </div>
-            <!-- WALLPAPER BUTTON -->
-            <button id="settings-btn" onclick="toggleSettings()">🎨</button>
-        </div>
-    </div>
-
-    <!-- INFO MODAL (PRIVACY / DMCA / CONTACT) -->
-    <div id="info-modal" class="glass-panel">
-        <span class="info-close" onclick="closeInfoModal()">&times;</span>
-        <div id="info-title">Title</div>
-        <div id="info-body">Content goes here...</div>
-    </div>
-
-    <!-- WALLPAPER / SETTINGS MODAL -->
-    <div id="settings-modal" class="glass-panel">
-        <h3>System Theme</h3>
-        <div class="wallpaper-grid" id="wp-grid">
-            <!-- Injected by JS -->
-        </div>
-        <input type="text" id="custom-wp-input" placeholder="Paste Custom Image URL...">
-        <div class="btn-row">
-            <button class="action-btn save-btn" onclick="applyCustomWallpaper()">Apply</button>
-            <button class="action-btn close-modal-btn" onclick="toggleSettings()">Close</button>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main-content">
+    <div class="container">
+        <div class="logo">Kuba</div>
+        <div class="os-tag">Operating System</div>
         
-        <!-- Kuba's Exclusive Apps (Top 5) -->
-        <h2 class="section-title" id="exclusive-title">Kuba's Exclusive Apps</h2>
-        <div class="games-grid" id="exclusiveGrid">
-            <!-- Exclusive Games injected here -->
+        <p class="status-text">Infrastructure upgrade complete.<br>Synchronizing secure nodes...</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <h2 class="section-title" id="library-title">Game Library</h2>
-        <div class="games-grid" id="gamesGrid">
-            <!-- All Other Games injected here -->
+        <div class="footer-links">
+            <a href="https://kubaz.pages.dev/" class="auto-redirect-msg">Transferring to kubaz.pages.dev...</a>
+            
+            <a href="https://kuba.fireyh8.workers.dev/" class="btn-legacy">
+                Use Legacy Link
+            </a>
         </div>
     </div>
-
-    <!-- GAME WINDOW -->
-    <div id="app-window">
-        <div id="app-content"></div>
-        <!-- IPHONE HOME BAR (CONSTRAINED WIDTH) -->
-        <div id="home-bar-area" onclick="closeApp()">
-            <div id="home-bar"></div>
-        </div>
-    </div>
-
-    <!-- ADMIN -->
-    <div id="banOverlay">
-        <div>⛔ ACCOUNT PERM BANNED</div>
-    </div>
-
-    <div id="banPopup">
-        <span class="close-btn" onclick="closeBanPopup()">&times;</span>
-        <h2>System Control</h2>
-        <input type="text" id="banNumber" placeholder="User ID (6-digit)" maxlength="6">
-        <button onclick="banPlayer()">Ban User</button>
-        <div style="height:10px"></div>
-        <button onclick="unbanPlayer()" style="background:#2d3436;">Unban User</button>
-        <div style="height:10px"></div>
-        <button onclick="viewBannedIds()" style="background:transparent; border:1px solid #444;">View Banned List</button>
-    </div>
-
-      <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <script>
-        /* --------------------------- STEALTH & SECURITY ----------------------------*/
-        
-        // 1. DOMAIN BLACKLIST: Blocks school filters from communicating with the site
-        const schoolList = ["deledao", "goguardian", "lightspeed", "linewize", "securly", ".edu/"];
-        
-        function isBlockedDomain(url) {
-            try {
-                // Convert URL to a string and check against the blacklist
-                const urlString = String(url).toLowerCase();
-                return schoolList.some(school => urlString.includes(school));
-            } catch(e) { return false; }
-        }
+        const targetURL = "https://kubaz.pages.dev/";
+        const duration = 4500; 
+        const progressBar = document.getElementById('progressBar');
+        let start = null;
 
-        // Hijack the "fetch" function
-        const originalFetch = window.fetch;
-        window.fetch = function(url, options) {
-            if (isBlockedDomain(url)) {
-                console.warn("Kuba OS: Blocked filter request (fetch)");
-                return Promise.reject(new Error("Blocked by Security Policy"));
-            }
-            return originalFetch.apply(this, arguments);
-        };
-
-        // Hijack the "XMLHttpRequest" (older way sites talk to servers)
-        const originalOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(method, url) {
-            if (isBlockedDomain(url)) {
-                console.warn("Kuba OS: Blocked filter request (XHR)");
-                return;
-            }
-            return originalOpen.apply(this, arguments);
-        };
-
-        // 2. CANVAS BLOCKER: Prevents screenshots/thumbnails from being taken
-        // This forces any "snapshot" of the screen to come up as a blank image
-        HTMLCanvasElement.prototype.toDataURL = function() {
-            return ""; 
-        };
-        /* --------------------------- INFO MODAL CONTENT ----------------------------*/
-        
-        const privacyText = `
-            <strong>Last updated February 5, 2026</strong><br><br>
-            This Privacy Notice for Kuba ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:<br>
-            • Visit our website at kuba.fireyh8.workers.dev/kuba, or any website of ours that links to this Privacy Notice<br>
-            • Engage with us in other related ways, including any sales, marketing, or events<br><br>
-            Questions or concerns? Reading this Privacy Notice will help you understand your privacy rights and choices. We are responsible for making decisions about how your personal information is processed. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us by pressing the Contact Button<br><br>
-            <strong>SUMMARY OF KEY POINTS</strong><br>
-            This summary provides key points from our Privacy Notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for.<br><br>
-            <strong>What personal information do we process?</strong> When you visit, use, or navigate our Services, we may process personal information depending on how you interact with us and the Services, the choices you make, and the products and features you use. Learn more about personal information you disclose to us.<br><br>
-            <strong>Do we process any sensitive personal information?</strong> Some of the information may be considered "special" or "sensitive" in certain jurisdictions, for example your racial or ethnic origins, sexual orientation, and religious beliefs. We do not process sensitive personal information.<br><br>
-            <strong>Do we collect any information from third parties?</strong> We do not collect any information from third parties.<br><br>
-            <strong>How do we process your information?</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so. Learn more about how we process your information.<br><br>
-            <strong>In what situations and with which parties do we share personal information?</strong> We may share information in specific situations and with specific third parties. Learn more about when and with whom we share your personal information.<br><br>
-            <strong>How do we keep your information safe?</strong> We have adequate organizational and technical processes and procedures in place to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Learn more about how we keep your information safe.<br><br>
-            <strong>What are your rights?</strong> Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information. Learn more about your privacy rights.<br><br>
-            <strong>How do you exercise your rights?</strong> The easiest way to exercise your rights is by submitting a data subject access request, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.
-        `;
-
-        const dmcaText = `
-            <strong>Last updated February 5, 2026</strong><br><br>
-            This Privacy Notice for Kuba ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:<br>
-            • Visit our website at kuba.fireyh8.workers.dev/kuba, or any website of ours that links to this Privacy Notice<br>
-            • Engage with us in other related ways, including any sales, marketing, or events<br><br>
-            Questions or concerns? Reading this Privacy Notice will help you understand your privacy rights and choices. We are responsible for making decisions about how your personal information is processed. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="Kubasnap (Username Kuba)" target="_blank">https://solitary-disk-4d15.fireyh8.workers.dev/</a>.<br><br>
-            <strong>SUMMARY OF KEY POINTS</strong><br>
-            This summary provides key points from our Privacy Notice, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for.<br><br>
-            <strong>What personal information do we process?</strong> When you visit, use, or navigate our Services, we may process personal information depending on how you interact with us and the Services, the choices you make, and the products and features you use. Learn more about personal information you disclose to us.<br><br>
-            <strong>Do we process any sensitive personal information?</strong> Some of the information may be considered "special" or "sensitive" in certain jurisdictions, for example your racial or ethnic origins, sexual orientation, and religious beliefs. We do not process sensitive personal information.<br><br>
-            <strong>Do we collect any information from third parties?</strong> We do not collect any information from third parties.<br><br>
-            <strong>How do we process your information?</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so. Learn more about how we process your information.<br><br>
-            <strong>In what situations and with which parties do we share personal information?</strong> We may share information in specific situations and with specific third parties. Learn more about when and with whom we share your personal information.<br><br>
-            <strong>How do we keep your information safe?</strong> We have adequate organizational and technical processes and procedures in place to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Learn more about how we keep your information safe.<br><br>
-            <strong>What are your rights?</strong> Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information. Learn more about your privacy rights.<br><br>
-            <strong>How do you exercise your rights?</strong> The easiest way to exercise your rights is by submitting a data subject access request, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.
-        `;
-
-        const contactText = `
-            <strong>Contact Us</strong><br><br>
-            KubaSnap: <a href="https://solitary-disk-4d15.fireyh8.workers.dev" target="_blank">Username Kuba</a><br><br>
-            Email: <a href="mailto:fireyh8@gmail.com">fireyh8@gmail.com</a>
-        `;
-
-        function openInfoModal(type) {
-            const modal = document.getElementById('info-modal');
-            const title = document.getElementById('info-title');
-            const body = document.getElementById('info-body');
-            const main = document.getElementById('main-content');
-
-            if(type === 'privacy') {
-                title.textContent = "Privacy Policy";
-                body.innerHTML = privacyText;
-            } else if(type === 'dmca') {
-                title.textContent = "DMCA Policy";
-                body.innerHTML = dmcaText;
-            } else if(type === 'contact') {
-                title.textContent = "Contact Us";
-                body.innerHTML = contactText;
-            }
+        function animate(timestamp) {
+            if (!start) start = timestamp;
+            const progress = timestamp - start;
+            const percentage = Math.min((progress / duration) * 100, 100);
             
-            modal.style.display = 'flex';
-            // Small delay to allow display:flex to apply before opacity transition
-            setTimeout(() => { modal.classList.add('active'); }, 10);
-            
-            // Prevent background scroll
-            main.classList.add('locked');
-        }
+            progressBar.style.width = percentage + "%";
 
-        function closeInfoModal() {
-            const modal = document.getElementById('info-modal');
-            const main = document.getElementById('main-content');
-            
-            modal.classList.remove('active');
-            main.classList.remove('locked');
-            
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
-        }
-
-        /* --------------------------- GAME DATA ----------------------------*/
-        
-        // The 5 Exclusive Apps
-        const exclusiveApps = [
-            { name: "KubTube (Update)", img: "https://i.imgur.com/opDtgAK.jpeg", url: "https://broad-recipe-a889.fireyh8.workers.dev/" },
-            { name: "KubaInsta (Beta/Bugs)", img: "https://i.imgur.com/EXYdoym.png", url: "https://sweet-scene-5aef.fireyh8.workers.dev/" },
-            { name: "Chat", img: "https://static.wixstatic.com/media/713b90_7841ba78e810446f8765776b69ee76e3~mv2.png", url: "https://padlet.com/fireyh8/admin-chat-cpzq1ks0did4bfy" },
-            { name: "KubaSnap", img: "https://i.imgur.com/FtM2q2z.png", url: "https://solitary-disk-4d15.fireyh8.workers.dev/" },
-            { name: "Request Games", img: "https://nxbrew.net/wp-content/uploads/2019/05/request_game_2.jpg", url: "https://clever-banoffee-7dcb76.netlify.app/"}
-        ];
-
-        // The Rest of the Library
-        const libraryGames = [
-            // Page 1 
-            { name: "Stickman Dual", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/769.png", url: "stickmandual.html" },
-             { name: "Stickman Combat 2D", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/768.png", url: "https://nameless-darkness-ff77.fireyh8.workers.dev/" },
-                { name: "Web Fishing", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/423.png", url: "https://throbbing-term-9245.fireyh8.workers.dev/" },
-             { name: "Scary Shawarma", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/765.png", url: "https://lively-butterfly-399e.fireyh8.workers.dev/" },
-            { name: "Dice a Million", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/759.png", url: "https://frosty-tree-db8b.fireyh8.workers.dev/" },
-             { name: "Brawl Stars 3D", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/755.png", url: "https://rapid-water-0d8d.fireyh8.workers.dev/" },
-            { name: "Minecraft Pocket Edition", img: "https://imgs.search.brave.com/ZRdSkfN_eF_PbParMnt-Tsq3Flbxa-uj5f-jsQcxC-4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bmljZXBuZy5jb20v/cG5nL2Z1bGwvMjct/Mjc4MDMwX21pbmVj/cmFmdC1sb2dvLW1p/bmVjcmFmdC1wb2Nr/ZXQtZWRpdGlvbi5w/bmc", url: "https://square-paper-3443.fireyh8.workers.dev/" },
-              { name: "Bad Piggies", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/752.png", url: "https://lucky-glade-93a1.fireyh8.workers.dev/" },
-        { name: "Five nights at Freddys World", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/190.png", url: "https://steep-grass-8eec.fireyh8.workers.dev/" },
-            { name: "Escape Road 2 city", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/744.png", url: "https://red-queen-44cd.fireyh8.workers.dev/" },
-              { name: "Power Hover", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/743.png", url: "https://curly-dream-d441.fireyh8.workers.dev/" },
-              { name: "Soccer Random", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/739.png", url: "https://round-wood-89aa.fireyh8.workers.dev/" },
-             { name: "Soundboard", img: "https://www.myinstants.com/media/favicon-96x96.png", url: "https://sweet-limit-0644.fireyh8.workers.dev/" },
-             { name: "Bottle Flip 3D", img: "https://imgs.search.brave.com/4JiZLOqRpKvuht7LjC_U5Glmo41HpPijEXoJsADAUm8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/ODEwcVh4d0tQRkwu/cG5n", url: "https://odd-frost-8d1d.fireyh8.workers.dev/" },
-            { name: "Tabs", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU8FZ6XPeIxacmKTslK3Ao-x7_9uhHehw2EQ&s", url: "https://hidden-cake-57e1.fireyh8.workers.dev/" },
-                { name: "Tung Tung Horror", img: "https://cdn-0001.qstv.on.epicgames.com/XgWTSXKgDdwlRyMmWZ/image/landscape_comp.jpeg", url: "https://wandering-snow-3335.fireyh8.workers.dev/" },
-                { name: "Tile Topia", img: "https://www4.minijuegosgratis.com/v3/games/thumbnails/252120_7_sq.jpg", url: "https://raspy-king-3d85.fireyh8.workers.dev/" },
-             { name: "Fireboy and Watergirl", img: "https://play-lh.googleusercontent.com/6N_ON50BZiEAe-ll2lM92NrVrgp5I5Ha6VI0a4Usw7uPmgEjL6tgJR6jWYUkkYgx2LM", url: "https://dark-hill-240d.fireyh8.workers.dev/" },
-             { name: "Kiwi CLicker", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQCOVxaWScYeozBe6KYFFV5y9qJplNtisQSQ&s", url: "https://morning-mouse-a364.fireyh8.workers.dev/" },
-            { name: "Dumb Ways to die", img: "https://cdn1.epicgames.com/spt-assets/63dd97c2c58d47e195b51b2663337c9a/dumb-ways-to-die-zvhqg.png", url: "https://jolly-truth-7465.fireyh8.workers.dev/" },
-            { name: "Slime Rancher", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/591.png", url: "https://throbbing-fire-4450.fireyh8.workers.dev/" },
-            { name: "Five Nights At Epst", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/710.png", url: "https://ancient-wood-875e.fireyh8.workers.dev/" },
-            { name: "A dance of fire and ice", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/59.png", url: "https://small-sound-f7d9.fireyh8.workers.dev/" },
-            { name: "Paper.io 2", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/102.png", url: "https://dark-king-bc84.fireyh8.workers.dev/" },
-            { name: "FNF Vs Shaggy", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/559.png", url: "https://ancient-water-4afe.fireyh8.workers.dev/" },
-            { name: "Friday Night Funkin': Sarvente's Mid-Fight Masses", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/480.png", url: "https://old-bush-be0a.fireyh8.workers.dev/" },
-            { name: "Friday Night Funkin': vs. Garcello", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/485.png", url: "https://snowy-pond-ff72.fireyh8.workers.dev/" },
-            { name: "MaddoxCloud", img: "https://maddoxcloud.com/imgs/egg_cloud_logo.png", url: "https://maddoxcloud.com/redeem/d3068461-af92-44db-a4db-1d1b9e114e8d" },
-             { name: "Survivor.io", img: "https://img.utdstc.com/icon/f93/7ca/f937caa391b47753451a57d040fca3968050826ad5999d01eabe59b1b5bffedf:200", url: "https://lingering-credit-3490.fireyh8.workers.dev/" },
-             { name: "Untitled Goose Game", img: "https://m.media-amazon.com/images/M/MV5BN2ViNmMzMjYtMmQyMC00YmJjLThiNDYtMTUwOWMwNWQ3MWE5XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", url: "https://winter-dust-13a5.fireyh8.workers.dev/" },
-            { name: "Shell Shockers", img: "https://pbs.twimg.com/profile_images/1456048577839435781/GiJJhpA3_400x400.jpg", url: "https://odd-meadow-70b1.fireyh8.workers.dev/" },
-             { name: "Temple Run 2", img: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/92/35/87/92358778-534e-7d6c-ba20-bb57420f5f98/AppIcon-0-0-1x_U007emarketing-0-10-0-85-220.png/1200x630wa.jpg", url: "https://black-sea-7964.fireyh8.workers.dev/" },
-            { name: "Subway Surfers", img: "https://img.utdstc.com/icon/590/0ed/5900ed3c1d60b6f8e108a233d11cf94c3636ecef9687f571767ebf7b6e2b0b74:200", url: "https://shiny-disk-3207.fireyh8.workers.dev/" },
-             { name: "Super Maio N64", img: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgvrP1bEnX_50P8gD-h-g8ViFHlroIf0ByFllOkmmtJJlLiFxYEHxyvAGpcQn1yOlxjxUq6xbNamei6i_Wb14pI837-xqFsBfauvRYJsj-McSKXtQD3l_MdCzMOCTtKmJ7qzywTz_p8oj0l/s959/Mario+64+2.jpg", url: "https://floral-haze-0e6e.fireyh8.workers.dev/" },
-            { name: "Minecraft", img: "https://wallpapers.com/images/hd/hd-minecraft-logo-3nehf0ctjgk3d0zp.jpg", url: "https://fragrant-disk-4229.fireyh8.workers.dev/" },
-            { name: "Google Proxy", img: "https://raw.githubusercontent.com/MercuryWorkshop/scramjet/main/assets/scramjet.png", url: "https://asic.amrityadav.com.np/browser/start.html" },
-             { name: "Plants Vs Zombies 2", img: "https://img.utdstc.com/icon/889/533/8895331dfa5d196b0447dae5849a66c663080e5931a36e3909586fae09d5d238:200", url: "https://lingering-grass-f849.fireyh8.workers.dev/" },
-             { name: "Basketball Legends", img: "https://basketball-legends.gitlab.io/img/basketball-legends.png", url: "https://wild-fog-bc8a.fireyh8.workers.dev/" },
-             { name: "Geometry Dash Breeze", img: "https://i.imgur.com/yFKLgqh.png", url: "https://dark-dream-281a.fireyh8.workers.dev/" },
-             { name: "Stacktris", img: "https://stacktris.net/stacktris.webp", url: "https://muddy-dawn-6011.fireyh8.workers.dev/" },
-             { name: "Thorns And Balloons", img: "https://tse4.mm.bing.net/th/id/OIP.f6wokiVKYUAklx4dRkf_QAHaHa?cb=defcachec2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://shiny-wood-47dd.fireyh8.workers.dev/" },
-            { name: "Geometry Dash Subzero (Fixed)", img: "https://imgs.search.brave.com/FsU9gG7YMlFQoYbX2YExDyaKFVimz_UGAUf6XmxA45s/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9nZW9k/YXNoLm9yZy9pbWFn/ZXMvZ2VvbWV0cnkt/ZGFzaC1zdWJ6ZXJv/LWltYWdlLndlYnA", url: "https://yellow-sky-3e92.fireyh8.workers.dev/" },
-            { name: "Friday Night Funkin", img: "https://m.media-amazon.com/images/M/MV5BMmMwYzZjMzAtN2I3Ny00MTdhLTg1Y2YtNDZiMzhhODY3ZjJjXkEyXkFqcGc@._V1_QL75_UX190_CR0,2,190,281_.jpg", url: "https://holy-sky-d745.fireyh8.workers.dev/" },
-            { name: "Csgoclicker", img: "https://avatars.githubusercontent.com/u/39322951?s=280&v=4", url: "https://crimson-waterfall-f995.fireyh8.workers.dev/" },
-            { name: "Find The Alien", img: "https://m.media-amazon.com/images/I/71Ing8m2GYL.png", url: "https://billowing-bush-698f.fireyh8.workers.dev/" },
-            { name: "GTA: Vice City", img: "https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg", url: "https://lingering-surf-e27b.fireyh8.workers.dev/" },
-            { name: "Stake Mines", img: "https://mines.gen.in/wp-content/uploads/2024/11/maxresdefault-3.jpg", url: "https://winter-waterfall-d092.fireyh8.workers.dev/" },
-            
-            // Page 2
-            { name: "Fruit Ninja", img: "https://th.bing.com/th/id/R.99388c093ab0db9347d6ecfd99370474?rik=2ISiCYnsT4GNOA&pid=ImgRaw&r=0", url: "https://resplendent-palmier-8c6a5d.netlify.app/" },
-            { name: "Football Legends", img: "https://tse1.mm.bing.net/th/id/OIP.0HdCPpdluIYEtiqIC77xGwHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://cerulean-snickerdoodle-f3d692.netlify.app/" },
-            { name: "Movies", img: "https://stylebyemilyhenderson.com/wp-content/uploads/2020/04/UpdatedEmily-Henderson-Current-Animated-Movies-1670x1541.jpg", url: "movie.html" },
-            { name: "Retro Highway", img: "https://tse3.mm.bing.net/th/id/OIP.l8xk37EvBTR8CL0RpPftAQHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://shimmering-cheesecake-937833.netlify.app/" },
-            { name: "Stickman Hook", img: "https://tse3.mm.bing.net/th/id/OIP.X-k2bbsignNh-jtrFUlAugHaHa?cb=12&w=512&h=512&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://stalwart-klepon-784ebe.netlify.app/" },
-            { name: "Count Master", img: "https://image.winudf.com/v2/image1/ZnJlZXBsYXkuY3Jvd2RydW4uY29tX2Jhbm5lcl8xNjM3MDc2MjUzXzA0OQ/banner.jpg?fakeurl=1&w=1200", url: "https://gilded-genie-58d828.netlify.app/" },
-            { name: "OvO", img: "https://tse4.mm.bing.net/th/id/OIP.O7Zbplj_YizcgRXuimGQrwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://voluble-horse-2cfbce.netlify.app/" },
-            { name: "Cupcake 2048", img: "https://tse3.mm.bing.net/th/id/OIP.YYpHf7mwlx4MEvsHt_otjQHaD4?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://resplendent-cannoli-c47d3e.netlify.app/" },
-            { name: "Drift Boss", img: "https://th.bing.com/th/id/R.2998fc224fd74477acf630cb2625b17b?rik=%2bp3XG0LWCN9Fyw&pid=ImgRaw&r=0", url: "https://rad-halva-cd4cc1.netlify.app/" },
-            { name: "2 Player Mini Games", img: "https://tse3.mm.bing.net/th/id/OIP.ccAj9Qu50cIkXxrFHQsz7gHaEL?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://relaxed-salamander-367e3e.netlify.app/" },
-            { name: "Bad Parenting", img: "https://i.ytimg.com/vi/Nsh4CmV0oWg/maxresdefault.jpg", url: "https://stirring-fenglisu-0afb18.netlify.app/" },
-            { name: "Tag", img: "https://tse3.mm.bing.net/th/id/OIP.y4ku8S8edPDcG2q7fzPguAHaFm?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://leafy-kashata-f83d89.netlify.app/" },
-            { name: "Blaze Drifter", img: "https://www.blurrygames.com/wp-content/uploads/2025/09/Blaze-Drifter.webp", url: "https://glistening-duckanoo-afe4fb.netlify.app/" },
-            { name: "Crazy Motorcycles", img: "https://tse3.mm.bing.net/th/id/OIP.sVOku8N2vgaYoLUraZHVxQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://willowy-tanuki-97a60d.netlify.app/" },
-            { name: "FNAF 1", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/38.png", url: "https://creative-tarsier-16110c.netlify.app/" },
-            { name: "FNAF 2", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/39.png", url: "https://zippy-phoenix-73b81e.netlify.app/" },
-            { name: "FNAF 3", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/40.png", url: "https://peaceful-bunny-78a0f8.netlify.app/" },
-            { name: "FNAF 4", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/41.png", url: "https://willowy-cheesecake-09355e.netlify.app/" },
-
-            // Page 3
-            { name: "Among Us", img: "https://tse1.mm.bing.net/th/id/OIP.AacqfiZs8GvV56hXwaIgDwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://peaceful-sunshine-4d36f8.netlify.app/" },
-            { name: "Escape Road 2", img: "https://escaperoad2.org/data/image/what-is-escape-road-2-er2.png", url: "https://zesty-gecko-5d9698.netlify.app/" },
-            { name: "1v1.lol", img: "https://wallpaperaccess.com/full/7145111.png", url: "https://creative-melba-87e471.netlify.app/" },
-            { name: "A Day In The Office", img: "https://i.ytimg.com/vi/2dLD1iWHz9U/maxresdefault.jpg", url: "https://zippy-kangaroo-1f6637.netlify.app/" },
-            { name: "Duck Life Battle", img: "https://tse1.mm.bing.net/th/id/OIP.7eVggBVfXcynxy9CunCeRwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://zesty-paprenjak-423e0b.netlify.app/" },
-            { name: "Idle Breakout", img: "https://tse3.mm.bing.net/th/id/OIP.4USnYTp6w9wm1FY0hPa-MAHaEU?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://silly-semolina-b60400.netlify.app/" },
-            { name: "Iron Snout", img: "https://tse1.mm.bing.net/th/id/OIP.Xo-lTRetb-bRWXBAbHtmSwHaEK?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://famous-torrone-97e76f.netlify.app/" },
-            { name: "Blade Ball", img: "https://allroblox.com/wp-content/uploads/2025/02/blade-ball-2.jpeg", url: "https://chipper-phoenix-97bc28.netlify.app/" },
-            { name: "A Bite at Freddy's", img: "https://tse2.mm.bing.net/th/id/OIP.Id_ojyc51qR0SwUklOiGlgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://clinquant-faun-4cb47e.netlify.app/" },
-            { name: "Candy Crush", img: "https://lh3.googleusercontent.com/_ZuazlAYNUAmHfHABRjLjE8rIpwn1EXhzVlZwU5iG-V6wQtfMn1PX7dZHeIR7kHybzk=h900", url: "https://eloquent-dolphin-6a528f.netlify.app/" },
-            { name: "Hollow Night", img: "https://tse1.mm.bing.net/th/id/OIP.7u7a63uRHZxoxktB6o7eIwHaEo?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://ornate-gecko-e4ed3c.netlify.app/" },
-            { name: "Recoil", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/546.png", url: "https://melodious-cheesecake-6d895e.netlify.app/" },
-            { name: "Retro Bowl College", img: "https://tse2.mm.bing.net/th/id/OIP.8ZUDLedLB-TwYxwsDIYviwAAAA?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://dulcet-phoenix-54e225.netlify.app/" },
-            { name: "Rolling Forests", img: "https://raw.githubusercontent.com/sz-games/sz-games.github.io/main/cover/TheLostBall.png", url: "https://cerulean-yeot-85c94f.netlify.app/" },
-            { name: "Fluid Simulation", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1131390/ss_603cc0936250511ea71d9467082c1f9b72ba0565.1920x1080.jpg?t=1567547034", url: "https://vocal-begonia-6b093a.netlify.app/" },
-            { name: "R.E.P.O", img: "https://tse2.mm.bing.net/th/id/OIP.Y6akAAbc8A6zp5dhqG58KAHaED?cb=ucfimgc2&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://magical-tartufo-05b15d.netlify.app/" },
-            { name: "Drive Mad", img: "https://tse2.mm.bing.net/th/id/OIP.OJbAuAZ0DheC2rJJznVtVAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://broken-snow-6cf9.fireyh8.workers.dev/" },
-            { name: "Wheelie Life", img: "https://i.ibb.co/rKh5T3KW/image.png", url: "https://imaginative-arithmetic-deeb09.netlify.app/" },
-
-            // Page 4
-            { name: "Unicycle Hero", img: "https://tse3.mm.bing.net/th/id/OIP.QAPpCTY7lR0Ofo5w2l6BRAHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://magenta-biscuit-9f0165.netlify.app/" },
-            { name: "Monster Tracks", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/41c7ae4db13e7d7596bb0528f40a4012/monster-tracks.png", url: "https://lingering-firefly-b06e.fireyh8.workers.dev/" },
-            { name: "Yohoho.io", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=1200,height=1200,fit=cover,f=png/9b373b5219cd66a82389d81d7cda8e23/yohoho-io.jpeg", url: "https://tangerine-rugelach-abe006.netlify.app/" },
-            { name: "Super Stickman Golf", img: "https://th.bing.com/th/id/R.c801faebc9a18dad80139ddec4eb69dc?rik=hhfttnuAa3vJFA&pid=ImgRaw&r=0", url: "https://chic-bienenstitch-b9e4d7.netlify.app/" },
-            { name: "Rocket Goal", img: "https://zapgames.io/data/image/game/rocket-goal.jpg", url: "https://summer-snowflake-dd3a.fireyh8.workers.dev/" },
-            { name: "Hyper Snake", img: "https://media.explodegames.com/photos/large/88_88-game.jpg?_1670423608", url: "https://enchanting-hotteok-a20ea4.netlify.app/" },
-            { name: "Drift Wave", img: "https://ozogames.com/wp-content/uploads/2025/09/Driftwave-image.webp", url: "https://visionary-croquembouche-7a0f70.netlify.app/" },
-            { name: "Adventure Drivers", img: "https://store-images.s-microsoft.com/image/apps.42304.13646312602223146.fc3d6529-2147-49fc-bfda-1963fcd8fa65.7c7789ad-4b93-43aa-877f-fbc7b5271181", url: "https://guileless-bombolone-c07d3b.netlify.app/" },
-            { name: "Touchdowners", img: "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-635169-52.jpg", url: "https://musical-kheer-d0a23c.netlify.app/" },
-            { name: "We Skate", img: "https://geometrydashwave.com/data/image/game/We%20Skate.png", url: "https://chimerical-sundae-bd063a.netlify.app/" },
-            { name: "Dreadhead Parkour", img: "https://dreadheadparkour.online/dreadhead-parkour.webp", url: "https://storied-smakager-b6980f.netlify.app/" },
-            { name: "Grim Donut", img: "https://es.pinkbike.org/246/sprt/i/share/grimdonutgame.jpg", url: "https://starlit-begonia-83699b.netlify.app/" },
-            { name: "Golf Orbit", img: "https://golforbitgame.com/wp-content/uploads/2025/10/Golf-Orbit.webp", url: "https://beautiful-fox-f4c5ed.netlify.app/" },
-            { name: "FNAF 4 Halloween", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/428.png", url: "https://precious-sopapillas-914a2e.netlify.app/" },
-
-            // Page 5
-            { name: "SandBoxels", img: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3664820/5a38bbd2d1ed7118e4818fd48c33294f64e1a3c5/header.jpg?t=1747706268", url: "https://incomparable-pegasus-7d6a74.netlify.app/" },
-            { name: "Geometry Dash", img: "https://th.bing.com/th/id/OIP.-F4aFPFR0z2PTHGnw1NFtAHaHa?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://black-band-dbff.fireyh8.workers.dev/" },
-            { name: "Clash Royale (Real)", img: "https://th.bing.com/th/id/OIP.rC_wi2pze6F4msmYEorg4AHaDt?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://radiant-choux-1a15f7.netlify.app/" },
-            { name: "Kart Bros", img: "https://smash-karts.org/cache/data/image/game/screenshot_1719392717-m374x209.png", url: "https://genuine-empanada-faf1ce.netlify.app/" },
-            { name: "Angry Birds Space", img: "https://th.bing.com/th/id/R.76a3cb7ee724bb2c8ceaf694c90cf499?rik=KHArqnn4FIOoAg&pid=ImgRaw&r=0", url: "https://timely-tiramisu-9bb463.netlify.app/" },
-            { name: "War The Nights", img: "https://tse4.mm.bing.net/th/id/OIP.3t5DISFg0gnT39Q16z-jUQHaEH?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://famous-fox-dec504.netlify.app/" },
-            { name: "Get Yoked", img: "https://tse4.mm.bing.net/th/id/OIP.GNFcydloiWizYJm1ybxtNgHaDd?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://aquamarine-empanada-408492.netlify.app/" },
-            { name: "Bacon May Die", img: "https://images.sftcdn.net/images/t_optimized,f_auto/p/3dfc5f54-19c3-42ca-a466-dbd33245748c/2417889023/bacon-may-die-screenshot.jpg", url: "https://resonant-chebakia-eb8a2d.netlify.app/" },
-            { name: "Eggy Car", img: "https://eggycar2.io/data/image/eggy-car-game.jpg", url: "https://frolicking-brigadeiros-7c8f03.netlify.app/" },
-            { name: "Appel", img: "https://tse1.mm.bing.net/th/id/OIP._lZJJd7YR2dCg_WbL2NliwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://cosmic-bublanina-6d7709.netlify.app/" },
-            { name: "Gun Spin", img: "https://tse1.mm.bing.net/th/id/OIP.Uhr4pC9Y5L63rWdmKxD04AHaE8?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://willowy-crostata-839e22.netlify.app/" },
-            { name: "Mario Party (DS)", img: "https://th.bing.com/th/id/R.b1280ec009c6948d15e20c22e120e51c?rik=uLeDpiMFvHMNNQ&pid=ImgRaw&r=0", url: "https://rad-donut-848f4f.netlify.app/" },
-            { name: "Lego Ninjago (DS)", img: "https://th.bing.com/th/id/R.d3c824000c21c1299fa9ce14459cb4ca?rik=ZsygaCEON0n5ug&pid=ImgRaw&r=0", url: "https://tubular-fudge-9ae668.netlify.app/" },
-            { name: "GTA ChinaTown (DS)", img: "https://th.bing.com/th/id/R.52acc25e64a21051d90f21f5a02c5462?rik=F3e9r1mApMmxzA&pid=ImgRaw&r=0", url: "https://remarkable-banoffee-409e3a.netlify.app/" },
-            { name: "Batman DC 2 (DS)", img: "https://i.ytimg.com/vi/CalaFNhzDI0/maxresdefault.jpg", url: "https://meek-florentine-28a84e.netlify.app/" },
-            { name: "STAR WARS Legacy (DS)", img: "https://tse4.mm.bing.net/th/id/OIP.NIqfRBY-t4Rr6MSI8jt-owHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://timely-fox-7b338b.netlify.app/" },
-            { name: "Infinite Craft", img: "https://i.ytimg.com/vi/F1xcj9Vh_o8/maxresdefault.jpg", url: "https://endearing-kitsune-65701d.netlify.app/" },
-            { name: "Undertale", img: "https://th.bing.com/th/id/R.ca72b99eacd692e1d378ff98156083d2?rik=7dZAFh%2bJNA6Ulg&pid=ImgRaw&r=0", url: "https://silly-dieffenbachia-1cdca9.netlify.app/" },
-
-            // Page 6
-            { name: "Mario Combat", img: "https://th.bing.com/th/id/OIP.JPVvnVzlC-ynDLwmztaa9QHaEK?rs=1&pid=ImgDetMain", url: "https://resilient-axolotl-adf087.netlify.app/" },
-            { name: "99% Lose Obby", img: "https://th.bing.com/th/id/OIP.xoYQIogFckRzklIuWhmsaAHaEW?rs=1&pid=ImgDetMain", url: "https://preeminent-manatee-0c70ee.netlify.app/" },
-            { name: "Dad N Me", img: "https://th.bing.com/th/id/OIP.Uw8co_9sHB9Gct8DQH3oSAHaFi?r=0&rs=1&pid=ImgDetMain", url: "https://cool-hamster-605edb.netlify.app/" },
-            { name: "Stickman RPG", img: "https://tse3.mm.bing.net/th/id/OIP.cW4OFbIO2TD0EBlr6S9CWwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://steady-florentine-fe58f0.netlify.app/" },
-            { name: "SandTres", img: "https://i.ytimg.com/vi/vzYYpS48R1g/maxresdefault.jpg", url: "https://capable-arithmetic-9babbb.netlify.app/" },
-            { name: "Jetpack Joyride", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/7.png", url: "https://fastidious-sunshine-49b466.netlify.app/" },
-            { name: "Crossy Road", img: "https://miro.medium.com/1*RqJKuyUx0X6WqC2-3WhCsw.jpeg", url: "https://thriving-chebakia-ca798d.netlify.app/" },
-            { name: "Penalty Shooter", img: "https://tse4.mm.bing.net/th/id/OIP.hqMqw56qhSKoH9oCRIWojwHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://hammerplay.cdn.msnfun.com/9ng6vdg4354c/v20/index.html?msstart_sdk_init=eyJwYXJlbnRPcmlnaW4iOiJodHRwczovL3d3dy5tc24uY29tIiwiY2xpZW50SWQiOiIzNzFCOTAyNThBOUM2OTk5MjVFRjg2N0I4QjI0NjhGQSIsImxvY2FsZSI6ImVuLX..." },
-            { name: "Solar Smash", img: "https://th.bing.com/th/id/R.92dfa4f0ecfe63bbc6fec12ff16dc5ef?rik=Gp1c3i71K4Ec9w&pid=ImgRaw&r=0", url: "https://astounding-jalebi-92bc1d.netlify.app/" },
-            { name: "Retro Bowl", img: "https://th.bing.com/th/id/R.ef77456c550751553dae99afba85bd2c?rik=XFHs06OS6Jww7Q&pid=ImgRaw&r=0", url: "https://vocal-moonbeam-e6a9b6.netlify.app/" },
-            { name: "Plinko", img: "https://preview.redd.it/plinko-v0-w04f863eh2lc1.jpeg?auto=webp&s=c365fbbea9e92b5e724ea84db10eaa73d99e4410", url: "https://leafy-daffodil-75ff7c.netlify.app/" },
-            { name: "Football Bros", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/548.png", url: "https://astonishing-lolly-ed6d65.netlify.app/" },
-            { name: "Run 3", img: "https://tse2.mm.bing.net/th/id/OIP.ZskFVecWkZGpvlYE524C5QHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://jsitor.com/preview/bBv069i3U7B" },
-            { name: "Brawl Stars", img: "https://wp.clutchpoints.com/wp-content/uploads/2025/10/Brawl-Stars-Brawl-Talk-shows-new-Brawler-Stranger-Things-event.jpg", url: "https://cerulean-belekoy-f09d64.netlify.app/" },
-            { name: "Tomb Of The Mask", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/109.png", url: "https://glowing-treacle-0d78fd.netlify.app/" },
-            { name: "Uno", img: "https://tse4.mm.bing.net/th/id/OIP.YvGFFApITkaAeP31D_V3vgHaHa?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://luxury-pie-0ee6f7.netlify.app/" },
-
-            // Page 7
-            { name: "DouchBag Beach-Club", img: "https://th.bing.com/th/id/R.861a4c207c1a46f26e7f2263dd28d4be?rik=CyqsC0WFJ46QHA&pid=ImgRaw&r=0", url: "https://chimerical-kringle-abd70c.netlify.app/" },
-            { name: "DouchBag Chick", img: "https://i.ytimg.com/vi/JydFMvxeSE0/hqdefault.jpg", url: "https://endearing-ganache-fa43bb.netlify.app/" },
-            { name: "Liquid Soccer", img: "https://www.metacritic.com/a/img/catalog/provider/6/12/6-1-810289-52.jpg", url: "https://deluxe-faloodeh-785bdc.netlify.app/" },
-            { name: "Monkey Mart", img: "https://th.bing.com/th/id/OIP.ULV4D8g7qoHN9ihkT7pbCwHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://startling-yeot-329f28.netlify.app/" },
-            { name: "Tiny Fishing", img: "https://th.bing.com/th/id/OIP._xw2Z9PzauJNFkkp8xDaowHaEU?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://elaborate-sfogliatella-313549.netlify.app/" },
-            { name: "Baseball Bros", img: "https://baseballbros.io/splash.jpg", url: "https://cosmic-raindrop-c8dd6b.netlify.app/" },
-            { name: "Bit-Life", img: "https://th.bing.com/th/id/OIP.gDm4VteNDhv__BHaEZ-ZtQHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://imaginative-froyo-589f94.netlify.app/" },
-            { name: "Table Tennis", img: "https://external-preview.redd.it/table-tennis-world-tour-v0-62M0XdaQckoTVXbTw6apMJ7dtPMyNxqwMH67CqLErfA.jpg?auto=webp&s=eb3e9150c01862caf50a1f001f775edff2681c8a", url: "https://elegant-marigold-2108cf.netlify.app/" },
-            { name: "Toss The Turtle", img: "https://th.bing.com/th/id/OIP.67iZywInioJRqEBdOlOPQQHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://whimsical-creponne-ef862a.netlify.app/" },
-            { name: "Cluster Rush", img: "https://th.bing.com/th/id/OIP.fd3rLIAYj7WAVbS6oAcFtAHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://graceful-naiad-f7767d.netlify.app/" },
-            { name: "Space Waves", img: "https://th.bing.com/th/id/OIP.AsxM2u57ZyVDwrjrE1fEegHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://peaceful-kringle-1180d5.netlify.app/" },
-            { name: "Poly-Track", img: "https://th.bing.com/th/id/OIP.AX0OoWRmZMT9e0g1w503UgHaEK?rs=1&pid=ImgDetMain", url: "https://idyllic-biscuit-9cf9e8.netlify.app/" },
-            { name: "The Binding Of Isaac", img: "https://th.bing.com/th/id/OIP.QLCWr2ct8nKrhaIBnd_KsAHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://ornate-macaron-310903.netlify.app/" },
-            { name: "Ragdoll Archers", img: "https://ragdollarcher.com/wp-content/uploads/2024/11/Ragdoll-Archers-.webp", url: "https://singular-cuchufli-70aee8.netlify.app/" },
-            { name: "Tunnel Rush", img: "https://szgames.net/wp-content/uploads/2025/04/tunnel-rush.webp", url: "https://playful-squirrel-b355e3.netlify.app/" },
-            { name: "Getaway Shootout", img: "https://tse3.mm.bing.net/th/id/OIP.cGNVj1eSPUSQQD7SybswJgHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://aesthetic-tapioca-3d2b1d.netlify.app/" },
-            { name: "Balatro", img: "https://tse4.mm.bing.net/th/id/OIP.4a2JT7bxonuRQPdN9jnp_QHaEK?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://green-mud-cf30.fireyh8.workers.dev/" },
-            { name: "BTD6", img: "https://tse1.mm.bing.net/th/id/OIP.WZ-roQyGeuqSKd9rfLd2vgHaDt?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://hidden-recipe-27fa.fireyh8.workers.dev/" },
-
-            // Page 8
-            { name: "Block Blast", img: "https://th.bing.com/th/id/OIP.8yX4Xrg2f53OijlDHBI3NAHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://inspiring-cuchufli-f303a2.netlify.app/" },
-            { name: "Henry Stickmin", img: "https://th.bing.com/th/id/OIP.rRRif92M-c8uqaY902sAuAAAAA?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://effortless-tarsier-957be7.netlify.app/" },
-            { name: "MotoXM 3", img: "https://th.bing.com/th/id/R.1058adcb09ffe3a2d983ec274d422bc2?rik=3jPrWiDl%2bQLAdA&pid=ImgRaw&r=0", url: "https://jade-seahorse-572323.netlify.app/" },
-            { name: "Basket Bros", img: "https://tse4.mm.bing.net/th/id/OIP.7wJ9InZ2dd9IJTAj65fmbwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://shimmering-sorbet-9fd94a.netlify.app/" },
-            { name: "Pixel-Shooter", img: "https://th.bing.com/th/id/OIP.8IPfil6f90_E6fZAqSnzCwHaEH?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://zesty-pudding-a2a8e5.netlify.app/" },
-            { name: "Rooftop Sniper", img: "https://th.bing.com/th/id/R.64220ae2f476f56573353ab2e1b81a2d?rik=buQuyofSgQ%2fVwg&pid=ImgRaw&r=0", url: "https://inquisitive-bublanina-6ea52c.netlify.app/" },
-            { name: "Scrap Metal 3D", img: "https://www.drifted.com/wp-content/uploads/2018/10/scrap-metal-3-full-size.jpg", url: "https://nimble-empanada-896d02.netlify.app/" },
-            { name: "Snowball IO", img: "https://th.bing.com/th/id/OIP.1AZucEoKrq2AdsuE9fuYlAHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://sparkly-faloodeh-cf9edf.netlify.app/" },
-            { name: "Snow Rider 3D", img: "https://th.bing.com/th/id/OIP.JQdqiXKeLVvMs1r3KXnTtwHaDt?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://calm-swan-8164ab.netlify.app/" },
-            { name: "Zach Survival", img: "https://th.bing.com/th/id/OIP.wTY8W_LmBRVwt19ynY2sEgHaF7?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://relaxed-marigold-f9d973.netlify.app/" },
-            { name: "Backyard Baseball", img: "https://th.bing.com/th/id/OIP.1mmmNl_uv_AzCHTp1SkCyQHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://gregarious-jalebi-88ba12.netlify.app/" },
-            { name: "Plants vs Zombies", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/232.png", url: "https://startling-fudge-2abe50.netlify.app/" },
-            { name: "Bob The Robber", img: "https://tse3.mm.bing.net/th/id/OIP.lKxDALL7WEj5c6FbrvQCRwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://silver-semifreddo-3ea0d7.netlify.app/" },
-            { name: "Bob The Robber 2", img: "https://tse1.mm.bing.net/th/id/OIP.3UBw6zwpmoCQyEiDRwJ1SgHaFj?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3", url: "https://brilliant-sprite-3f39ef.netlify.app/" },
-            { name: "Bob The Robber 5", img: "https://i.ytimg.com/vi/TJyE_LGy8Ew/maxresdefault.jpg", url: "https://comfy-crisp-17a9ee.netlify.app/" },
-            { name: "DouchBag Life", img: "https://imgs.search.brave.com/1iolDghIzHPDOwOvbcEXBioIOVMkDUYDD_XEnbbjsQ0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9hLnNp/bHZlcmdhbWVzLmNv/bS9qL2IvZG91Y2hl/YmFnLWxpZmUuanBn", url: "https://subtle-peony-2c8a23.netlify.app/" },
-            { name: "DouchBag Workout", img: "https://th.bing.com/th/id/OIP.WHcesvm9_j0_VWijXn9PQgHaEM?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://inspiring-fenglisu-b18545.netlify.app/" },
-            { name: "DouchBag Workout 2", img: "https://i.ytimg.com/vi/FbqRpEbVvxo/maxresdefault.jpg", url: "https://tangerine-piroshki-483b28.netlify.app/" },
-
-            // Page 9
-            { name: "Extension Rem", img: "https://i.ibb.co/n8mnzFcK/Screenshot-20250503-154118.png", url: "https://starlit-pithivier-7a3e46.netlify.app/" },
-            { name: "Hockey Stars", img: "https://img.poki-cdn.com/cdn-cgi/image/q=78,scq=50,width=314,height=314,fit=cover,f=auto/7ca343018f8c8339a24a7285cf50db47/hockeystars.png", url: "https://www.cbc.ca/kidscbc2/content/games/hockey_hero/index.html", newTab: true },
-            { name: "Clash Royale", img: "https://th.bing.com/th/id/OIP.k2RbG7UOQKAkxfMQsnNCIAAAAA?cb=iwc2&rs=1&pid=ImgDetMain", url: "https://stellular-gnome-6d76fb.netlify.app/" },
-            { name: "Agar.io", img: "https://th.bing.com/th/id/OIP.l7kno7jkB9jjNBanK9LTGwHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://aesthetic-heliotrope-0fffe2.netlify.app/" },
-            { name: "Basket Random", img: "https://th.bing.com/th/id/OIP.0kjDIVbjDepS3fJ9EFhDzwHaFj?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://musical-chimera-85bc22.netlify.app/" },
-            { name: "Knightmare", img: "https://th.bing.com/th/id/OIP.XRfQMRij31Uty9Jnzh1akgHaJ4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://peppy-shortbread-f69b2e.netlify.app/" },
-            { name: "99 Balls", img: "https://th.bing.com/th/id/OIP.d5xc4WbwDXyio519gSYEVAHaEM?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://lovely-sprinkles-a2c8ed.netlify.app/" },
-            { name: "Pedro", img: "https://th.bing.com/th/id/OIP.Abm_x-pLJvNzwxu8LR0UkwHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://shimmering-mousse-e2b5fa.netlify.app/" },
-            { name: "Slither.io", img: "https://th.bing.com/th/id/OIP.7nIKK6er9HwEjoy8FXjYYgHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://shimmering-cranachan-5ac03a.netlify.app/" },
-            { name: "Mario Bros", img: "https://th.bing.com/th/id/OIP.dRVL3sno3sgBJX_HmxHOhQHaFv?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://dazzling-clafoutis-5c10ba.netlify.app/" },
-            { name: "A Small World Cup", img: "https://th.bing.com/th/id/OIP.0vD0byZ9A0A3ZC0KYtq4jwHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://poetic-rugelach-80b83e.netlify.app/" },
-            { name: "There Is No Game", img: "https://th.bing.com/th/id/OIP.bzGTZdMHN4qCQOMpU-QsfgHaEx?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://leafy-daifuku-4c6a76.netlify.app/" },
-            { name: "Time Shooter 3", img: "https://th.bing.com/th/id/OIP.Lk817ZoTCuGMKBScupfq6wHaD4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://visionary-crostata-e97812.netlify.app/" },
-            { name: "Slope", img: "https://th.bing.com/th/id/OIP.WjZb7fCjM10_lFsFrjQVdwHaFj?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://cozy-cuchufli-410bab.netlify.app/" },
-            { name: "Angry Birds", img: "https://cdn.jsdelivr.net/gh/gn-math/covers@main/63.png", url: "https://gleaming-swan-843d40.netlify.app/" },
-            { name: "Cookie Clicker", img: "https://th.bing.com/th/id/OIP.dTmAPRmmEBm4QTd_E5o_8gHaHa?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://earnest-stardust-e17238.netlify.app/" },
-            { name: "House Of Hazards", img: "https://th.bing.com/th/id/OIP.VlPiG2-IR0R3XEPO388fmgHaD4?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://prismatic-cucurucho-984e32.netlify.app/" },
-            { name: "Sonic Revert", img: "https://th.bing.com/th/id/OIP.YUnOb_2r9G4yw5nyrcDYUAHaEK?cb=iwp2&rs=1&pid=ImgDetMain", url: "https://imaginative-dusk-c97c25.netlify.app/" }
-        ];
-
-        /* --------------------------- UI & PERFORMANCE LOGIC ----------------------------*/
-        
-        // 1. GENERATE ALL CARDS ONCE ON LOAD (Performance Fix)
-        function createCard(game, sectionId) {
-            const card = document.createElement('div');
-            card.className = "game-card";
-            card.dataset.name = game.name.toLowerCase(); // Cache for search
-            card.dataset.section = sectionId;
-
-            if(game.newTab) {
-                card.onclick = () => window.open(game.url, '_blank');
+            if (progress < duration) {
+                requestAnimationFrame(animate);
             } else {
-                card.onclick = () => embedGame(game.url);
-            }
-
-            card.innerHTML = `
-                <div class="game-thumb-wrapper">
-                    <img class="game-thumb" src="${game.img}" alt="${game.name}" loading="lazy">
-                </div>
-                <div class="game-info">
-                    <div class="game-title">${game.name}</div>
-                </div>
-            `;
-            return card;
-        }
-
-        function initGames() {
-            const exclusiveGrid = document.getElementById('exclusiveGrid');
-            const libraryGrid = document.getElementById('gamesGrid');
-            
-            // Render Exclusive
-            exclusiveApps.forEach(game => {
-                exclusiveGrid.appendChild(createCard(game, 'exclusive'));
-            });
-            
-            // Render Library
-            libraryGames.forEach(game => {
-                libraryGrid.appendChild(createCard(game, 'library'));
-            });
-        }
-
-        // 2. EFFICIENT SEARCH (Performance Fix)
-        function filterGames(query) {
-            const lowerQuery = query.toLowerCase();
-            const allCards = document.querySelectorAll('.game-card');
-            let exclusiveVisibleCount = 0;
-
-            allCards.forEach(card => {
-                const name = card.dataset.name;
-                const isMatch = name.includes(lowerQuery);
-                
-                // Toggle visibility efficiently
-                card.style.display = isMatch ? 'block' : 'none';
-
-                // Track if exclusive section has items
-                if (isMatch && card.dataset.section === 'exclusive') {
-                    exclusiveVisibleCount++;
-                }
-            });
-
-            // Logic to hide the "Exclusive" title if empty
-            const exTitle = document.getElementById('exclusive-title');
-            const exGrid = document.getElementById('exclusiveGrid');
-            
-            if (exclusiveVisibleCount === 0) {
-                exTitle.style.display = 'none';
-                exGrid.style.display = 'none';
-            } else {
-                exTitle.style.display = 'flex';
-                exGrid.style.display = 'grid'; 
+                window.location.href = targetURL;
             }
         }
 
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            filterGames(e.target.value);
-        });
-
-        // Initial Render
-        initGames();
-
-
-        /* --------------------------- APP WINDOW LOGIC ----------------------------*/
-
-        function embedGame(url) {
-            const win = document.getElementById('app-window');
-            const content = document.getElementById('app-content');
-            const main = document.getElementById('main-content');
-
-            content.innerHTML = `<iframe src="${url}" allow="fullscreen; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
-            win.classList.add('open');
-            
-            // LOCK SCROLLING of background content (UX Fix)
-            main.classList.add('locked');
-        }
-
-        function closeApp() {
-            const win = document.getElementById('app-window');
-            const content = document.getElementById('app-content');
-            const main = document.getElementById('main-content');
-
-            win.classList.remove('open');
-            main.classList.remove('locked'); // Unlock scrolling
-
-            setTimeout(() => { content.innerHTML = ''; }, 400); // Clear iframe to stop sound
-        }
-
-        /* --------------------------- WALLPAPER SYSTEM ----------------------------*/
-        const wallpapers = [
-            "https://i.imgur.com/5753Ply.jpeg", // Default
-            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop", // Space
-            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop", // Abstract
-            "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=2074&auto=format&fit=crop", // Dark Rain
-            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"  // Cyberpunk
-        ];
-
-        // Init Wallpaper Modal
-        const wpGrid = document.getElementById('wp-grid');
-        wallpapers.forEach(url => {
-            const div = document.createElement('div');
-            div.className = 'wp-option';
-            div.style.backgroundImage = `url('${url}')`;
-            div.onclick = () => setWallpaper(url);
-            wpGrid.appendChild(div);
-        });
-
-        function setWallpaper(url) {
-            document.body.style.backgroundImage = `url('${url}')`;
-            localStorage.setItem("kubaOS_wallpaper", url);
-        }
-
-        function applyCustomWallpaper() {
-            const url = document.getElementById('custom-wp-input').value;
-            if(url) setWallpaper(url);
-        }
-
-        function toggleSettings() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
-        }
-
-        // Load Saved Wallpaper
-        const savedWP = localStorage.getItem("kubaOS_wallpaper");
-        if(savedWP) document.body.style.backgroundImage = `url('${savedWP}')`;
-
-
-        /* --------------------------- FIREBASE & ADMIN SYSTEM ----------------------------*/
-        const firebaseConfig = {
-          apiKey: "AIzaSyADk2D_6TgRAq-9FSadaKeiRZOYV-wZvyM",
-          authDomain: "stuff-8cfdc.firebaseapp.com",
-          databaseURL: "https://stuff-8cfdc-default-rtdb.firebaseio.com/",
-          projectId: "stuff-8cfdc",
-          storageBucket: "stuff-8cfdc.appspot.com",
-          messagingSenderId: "327097823566",
-          appId: "1:327097823566:web:3442b4f46dbd2731abee1f"
-        };
-        firebase.initializeApp(firebaseConfig);
-
-        const db = firebase.firestore();
-        const auth = firebase.auth();
-        const database = firebase.database();
-        let isAdmin = false;
-
-        // USER ID
-        let userNumber = localStorage.getItem("userNumber");
-        if (!userNumber || !/^\d{6}$/.test(userNumber)) {
-          userNumber = Math.floor(100000 + Math.random() * 900000);
-          localStorage.setItem("userNumber", userNumber);
-        }
-        document.getElementById("userNumberDisplay").textContent = userNumber;
-
-        // ACTIVE USERS
-        const userRef = database.ref("onlineUsers/" + userNumber);
-        userRef.set(true);
-        userRef.onDisconnect().remove();
-
-        database.ref("onlineUsers").on("value", snapshot => {
-          const users = snapshot.val() || {};
-          document.getElementById("activeUsersCount").textContent = Object.keys(users).length;
-        });
-
-        // BAN SYSTEM
-        let isBanned = false; 
-
-        async function checkBan() {
-          try {
-            const doc = await db.collection("bans").doc(userNumber.toString()).get();
-            if (doc.exists) {
-                isBanned = true;
-                enforceBanProtection();
-            }
-          } catch (err) { console.error("Ban check failed:", err); }
-        }
-
-        function enforceBanProtection() {
-            const secureBan = () => {
-                if (!isBanned) return;
-                let overlay = document.getElementById("banOverlay");
-                if (!overlay) {
-                    overlay = document.createElement("div");
-                    overlay.id = "banOverlay";
-                    overlay.innerHTML = "<div>⛔ ACCOUNT SUSPENDED</div>";
-                    document.body.appendChild(overlay);
-                }
-                const requiredStyles = {
-                    display: "block", position: "fixed", top: "0", left: "0",
-                    width: "100%", height: "100%", background: "black", color: "#FF3333",
-                    fontSize: "32px", fontWeight: "bold", textAlign: "center", paddingTop: "40vh",
-                    zIndex: "2147483647", pointerEvents: "all"
-                };
-                for (const [key, value] of Object.entries(requiredStyles)) {
-                    if (overlay.style[key] !== value) overlay.style[key] = value;
-                }
-                if (document.body.style.overflow !== "hidden") document.body.style.overflow = "hidden";
-                requestAnimationFrame(secureBan);
-            };
-            secureBan();
-        }
-        checkBan();
-
-        // ADMIN LOGIC
-        async function adminLogin() {
-          try {
-            await auth.signOut();
-            const email = prompt("Enter admin email:");
-            const pw = prompt("Enter password:");
-            if (!email || !pw) return;
-
-            const user = await auth.signInWithEmailAndPassword(email, pw);
-            if (user.user) {
-              isAdmin = true;
-              document.getElementById("banPopup").style.display = "block";
-            }
-          } catch (e) { alert("Login failed: " + e.message); }
-        }
-
-        auth.onAuthStateChanged(user => { isAdmin = !!user; });
-
-        async function banPlayer() {
-          if (!isAdmin) return alert("Admin only");
-          const id = document.getElementById("banNumber").value.trim();
-          if (!/^\d{6}$/.test(id)) return alert("Invalid 6-digit ID");
-          await db.collection("bans").doc(id).set({
-            id: id,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          alert(`User ${id} banned globally!`);
-        }
-
-        async function unbanPlayer() {
-          if (!isAdmin) return alert("Admin only");
-          const id = document.getElementById("banNumber").value.trim();
-          await db.collection("bans").doc(id).delete();
-          alert(`User ${id} unbanned`);
-        }
-
-        async function viewBannedIds() {
-          const snap = await db.collection("bans").get();
-          const list = snap.docs.map(d => d.id).join(", ");
-          alert("Banned IDs: " + (list || "None"));
-        }
-
-        function closeBanPopup() {
-          document.getElementById("banPopup").style.display = "none";
-        }
+        setTimeout(() => {
+            requestAnimationFrame(animate);
+        }, 800);
     </script>
 </body>
 </html>
