@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,7 @@ window.sadjgknsdfjg='https://'+window.location.hostname;
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   KUBA OS — ENHANCED v2.0
+   KUBA OS — ENHANCED v2.0 - Made by Kuba
    Design: Dark luxury OS aesthetic · Syne display · DM Sans body
    ============================================================ */
 
@@ -842,8 +843,6 @@ h2.section-title {
   </div>
 </div>
 
-<!-- FILTER BAR -->
-<div id="filter-bar"></div>
 
 <!-- MAIN -->
 <div id="main-content">
@@ -885,15 +884,6 @@ h2.section-title {
 
 <!-- APP WINDOW -->
 <div id="app-window">
-  <!-- Top bar (hover to reveal) -->
-  <div id="app-topbar">
-    <div id="app-game-name">Game</div>
-    <div class="topbar-actions">
-      <button class="topbar-btn" onclick="refreshGame()">↺ Refresh</button>
-      <button class="topbar-btn" onclick="fullscreenGame()">⛶ Fullscreen</button>
-      <button class="topbar-btn close" onclick="closeApp()">✕ Close</button>
-    </div>
-  </div>
   <!-- Loading overlay -->
   <div id="loading-overlay">
     <div class="loading-game-name" id="loading-game-name">Loading…</div>
@@ -1336,7 +1326,6 @@ function initGames() {
   });
   renderFavs();
   renderRecent();
-  buildFilterBar();
 }
 
 /* =====================================================
@@ -1352,16 +1341,17 @@ searchInput.addEventListener('input', e => {
     c.style.display = match ? '' : 'none';
     if (match) visible++;
   });
-  // reset filter chips when searching
+
+  // Simplified: logic for showing headers during search
   if (q) {
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
     document.getElementById('ex-header').style.display = '';
     document.getElementById('exclusiveGrid').style.display = '';
   } else {
-    setFilter(activeFilter);
+    document.getElementById('ex-header').style.display = '';
+    document.getElementById('exclusiveGrid').style.display = '';
   }
+  
   document.getElementById('no-results').classList.toggle('show', visible === 0 && !!q);
-  // hide fav/recent when searching
   document.getElementById('favorites-section-wrap').style.display = q ? 'none' : '';
   document.getElementById('recently-section').style.display = q ? 'none' : '';
 });
@@ -1391,12 +1381,8 @@ function embedGame(url, name) {
   const win     = document.getElementById('app-window');
   const content = document.getElementById('app-content');
   const overlay = document.getElementById('loading-overlay');
-  const gameNameEl   = document.getElementById('app-game-name');
-  const loadNameEl   = document.getElementById('loading-game-name');
   const statusEl     = document.getElementById('loading-status');
 
-  gameNameEl.textContent = currentGameName;
-  loadNameEl.textContent = currentGameName;
   overlay.classList.remove('hidden');
 
   content.innerHTML = '';
